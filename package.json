@@ -1,15 +1,14 @@
 {
-  "name": "FakeOverflow",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "fake-overflow",
+  "version": "1.0.0-SNAPSHOT",
+  "description": "A social media platform for sharing and discussing rising fake news",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Alen Alex,Shreyas Vijay, Jobit Jose, Shaun Mascarenhas",
+  "license": "MIT",
   "packageManager": "pnpm@10.16.1",
   "devDependencies": {
     "husky": "^9.1.7"

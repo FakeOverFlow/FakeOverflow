@@ -6,6 +6,7 @@
 /e2e/test-output/
 /.angular/
 .angular/
+/.idea/**
 
 # Node modules and dependency files
 /node_modules/

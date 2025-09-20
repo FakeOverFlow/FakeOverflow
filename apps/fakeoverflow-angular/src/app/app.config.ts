@@ -1,4 +1,9 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+  provideZoneChangeDetection
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 import Aura from '@primeuix/themes/aura';
 import { routes } from './app.routes';
@@ -6,6 +11,7 @@ import {provideAnimationsAsync} from '@angular/platform-browser/animations/async
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {provideHotToastConfig} from '@ngxpert/hot-toast';
 import {providePrimeNG} from 'primeng/config';
+import {initializeAuthentications, overrideLoggers} from '@utils/initializers.utils';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -34,6 +40,8 @@ export const appConfig: ApplicationConfig = {
       position: 'top-right',
       duration: 3000,
       dismissible: true,
-    })
+    }),
+    provideAppInitializer(overrideLoggers),
+    provideAppInitializer(initializeAuthentications)
   ]
 };

@@ -1,6 +1,7 @@
 {
   "name": "fakeoverflow-angular",
   "version": "0.0.1",
+  "homepage": "https://FakeOverFlow.github.io/FakeOverflow/",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

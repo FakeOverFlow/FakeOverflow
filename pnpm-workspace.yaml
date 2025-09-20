@@ -1,4 +1,11 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
-  - 'scripts/*'
+  - apps/*
+  - packages/*
+  - scripts/*
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@tailwindcss/oxide'
+  - esbuild
+  - lmdb
+  - msgpackr-extract

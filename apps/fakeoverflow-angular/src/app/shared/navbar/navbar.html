@@ -1,0 +1,103 @@
+<nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-14">
+
+      <div class="md:hidden">
+        <button
+          type="button"
+          (click)="toggleMobileMenu()"
+          class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none"
+        >
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <svg class="h-8 w-auto" viewBox="0 0 169 36" fill="none">
+            <text x="38" y="24" class="fill-gray-900 dark:fill-gray-100"
+                  style="font-family: Arial, sans-serif; font-size: 20px; font-weight: bold;">Fake</text>
+            <text x="115" y="24" class="fill-gray-600 dark:fill-gray-400"
+                  style="font-family: Arial, sans-serif; font-size: 20px;">overflow</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="hidden md:block">
+        <div class="ml-10 flex items-baseline space-x-8">
+          <a href="#" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 px-3 py-2 text-sm font-medium">About</a>
+          <a href="#" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 px-3 py-2 text-sm font-medium">Products</a>
+          <a href="#" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 px-3 py-2 text-sm font-medium">For Teams</a>
+        </div>
+      </div>
+
+      <div class="flex-1 max-w-md mx-4 md:mx-8">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input type="search" placeholder="Search..."
+                 class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm" />
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <button (click)="toggleTheme()"
+                class="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none">
+          @if ((darkMode$ | async) === false) {
+            <i class="pi pi-moon"></i>
+          } @else {
+            <i class="pi pi-sun"></i>
+
+          }
+        </button>
+
+        @if (identity$ | async; as identity) {
+          <a href="/profile"
+             class="flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:text-orange-500">
+            @if (identity.avatarUrl) {
+              <img [src]="identity.avatarUrl" alt="avatar"
+                   class="h-6 w-6 rounded-full mr-2" />
+            }
+            <span>{{ identity.name }}</span>
+          </a>
+        } @else {
+          <button
+            class="hidden sm:inline-flex items-center px-4 py-2 border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 text-sm font-medium rounded hover:bg-blue-50 dark:hover:bg-blue-900/20">
+            Log in
+          </button>
+          <button
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded text-white bg-blue-600 hover:bg-blue-700">
+            Sign up
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div [class.hidden]="!isMobileMenuOpen" class="md:hidden">
+    <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200 dark:border-gray-700">
+      <a href="#" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 block px-3 py-2 text-base font-medium">About</a>
+      <a href="#" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 block px-3 py-2 text-base font-medium">Products</a>
+      <a href="#" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 block px-3 py-2 text-base font-medium">For Teams</a>
+      <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
+        @if (identity$ | async; as identity) {
+          <a href="/profile" class="block px-3 py-2 text-base font-medium text-blue-600 dark:text-blue-400">
+            {{ identity.name }}
+          </a>
+        } @else {
+          <button class="w-full text-left px-3 py-2 text-base font-medium text-blue-600 dark:text-blue-400">
+            Log in
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+</nav>

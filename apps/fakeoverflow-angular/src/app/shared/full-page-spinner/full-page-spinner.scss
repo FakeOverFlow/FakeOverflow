@@ -1,0 +1,27 @@
+:host ::ng-deep .custom-spinner .p-progress-spinner-circle {
+  stroke: #3b82f6;
+}
+
+:host ::ng-deep .custom-spinner .p-progress-spinner-path {
+  stroke: #e5e7eb;
+}
+
+@media (max-width: 640px) {
+  :host ::ng-deep .custom-spinner {
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+.fixed {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

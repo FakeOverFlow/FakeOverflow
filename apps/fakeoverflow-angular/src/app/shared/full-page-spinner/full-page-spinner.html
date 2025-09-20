@@ -1,0 +1,20 @@
+@if (spinner$ | async; as currentSpinner) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center"
+       [class.bg-opacity-50]="currentSpinner.blur"
+       [class.backdrop-blur-sm]="currentSpinner.blur"
+  >
+    <div class="flex flex-col items-center justify-center p-8 w-full mx-4">
+      <p-progressSpinner
+        [style]="{ width: '50px', height: '50px' }"
+        [class]="'custom-spinner'"
+        strokeWidth="4"
+        animationDuration="1s">
+      </p-progressSpinner>
+      @if (currentSpinner.text) {
+        <p class="mt-4 dark:text-gray-50 light:text-gray-700 text-center font-medium text-sm sm:text-base">
+          {{ currentSpinner.text }}
+        </p>
+      }
+    </div>
+  </div>
+}

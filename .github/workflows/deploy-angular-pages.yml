@@ -1,4 +1,4 @@
-name: Deploy Angular to GitHub Pages
+name: Deploy Angular App to GitHub Pages
 
 on:
   push:
@@ -12,33 +12,48 @@ permissions:
   id-token: write
 
 jobs:
-  build-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
           version: 8
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
-      - name: Build Angular app (prod)
+      - name: Build Angular application
         run: pnpm build:angular:prod --base-href="/FakeOverflow/"
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Create 404.html for SPA routing
+        run: cp ./apps/fakeoverflow-angular/dist/fakeoverflow-angular/browser/index.html ./apps/fakeoverflow-angular/dist/fakeoverflow-angular/browser/404.html
+
+      - name: Verify build output
+        run: |
+          echo "Build output structure:"
+          ls -la ./apps/fakeoverflow-angular/dist/fakeoverflow-angular/browser/
+          echo "Files to deploy:"
+          find ./apps/fakeoverflow-angular/dist/fakeoverflow-angular/browser/ -type f | head -10
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./apps/fakeoverflow-angular/dist/fakeoverflow-angular
-          force_orphan: true
+          path: ./apps/fakeoverflow-angular/dist/fakeoverflow-angular/browser
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

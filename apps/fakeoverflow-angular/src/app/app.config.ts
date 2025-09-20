@@ -4,7 +4,7 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import {provideRouter, withHashLocation} from '@angular/router';
 import Aura from '@primeuix/themes/aura';
 import { routes } from './app.routes';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
@@ -12,12 +12,15 @@ import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {provideHotToastConfig} from '@ngxpert/hot-toast';
 import {providePrimeNG} from 'primeng/config';
 import {initializeAuthentications, overrideLoggers} from '@utils/initializers.utils';
+import {environment} from '@environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
+    environment.useHashBasedRouting ?
+      provideRouter(routes, withHashLocation()) :
+      provideRouter(routes),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

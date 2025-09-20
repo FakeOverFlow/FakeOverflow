@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'apps/fakeoverflow-angular/**'
+      - '.github/workflows/deploy-angular-pages.yml' ##This file, any change, need to update
+      # - 'scripts/prep-wrangler-jsonc.mjs' ## Any change in the script file
   workflow_dispatch:
 
 permissions:

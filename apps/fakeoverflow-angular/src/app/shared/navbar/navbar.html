@@ -68,11 +68,11 @@
             <span>{{ identity.name }}</span>
           </a>
         } @else {
-          <button
+          <button [routerLink]="['/auth/login']"
             class="hidden sm:inline-flex items-center px-4 py-2 border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 text-sm font-medium rounded hover:bg-blue-50 dark:hover:bg-blue-900/20">
             Log in
           </button>
-          <button
+          <button [routerLink]="['/auth/sign-up']"
             class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded text-white bg-blue-600 hover:bg-blue-700">
             Sign up
           </button>

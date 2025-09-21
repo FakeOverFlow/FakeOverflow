@@ -13,8 +13,9 @@
   "keywords": [],
   "author": "Alen Alex,Shreyas Vijay, Jobit Jose, Shaun Mascarenhas",
   "license": "MIT",
-  "packageManager": "pnpm@10.16.1",
+  "packageManager": "pnpm@10.17.0",
   "devDependencies": {
+    "adm-zip": "^0.5.16",
     "husky": "^9.1.7"
   }
 }

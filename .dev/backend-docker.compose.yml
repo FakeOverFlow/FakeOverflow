@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: postgres_vector
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fake_overflow
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: db_password
+      TZ: UTC
+    ports:
+      - "5432:5432"
+    volumes:
+      - fof_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d vectordb"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    command: >
+      postgres
+      -c shared_preload_libraries=vector
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+
+
+volumes:
+  fof_postgres_data:
+    driver: local
+
+
+networks:
+  default:
+    driver: bridge

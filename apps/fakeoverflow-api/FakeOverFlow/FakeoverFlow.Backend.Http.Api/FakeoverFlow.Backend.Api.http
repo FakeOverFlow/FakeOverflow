@@ -1,0 +1,6 @@
+@FakeoverFlow.Backend.Api_HostAddress = http://localhost:5017
+
+GET {{FakeoverFlow.Backend.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

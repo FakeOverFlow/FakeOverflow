@@ -1,5 +1,7 @@
 using FakeoverFlow.Backend.Abstraction.Context;
 using FakeoverFlow.Backend.Abstraction.Models;
+using FakeoverFlow.Backend.Http.Api.Models;
+using FakeoverFlow.Backend.Http.Api.Models.Accounts;
 using Microsoft.EntityFrameworkCore;
 
 namespace FakeoverFlow.Backend.Http.Api;
@@ -8,6 +10,11 @@ public class AppDbContext : DbContext
 {
     
     private readonly IContextFactory _contextFactory;
+
+    // Tables
+    public DbSet<UserAccount> UserAccounts { get; set; } = null!;
+    
+    public DbSet<UserAccountVerification> UserAccountVerifications { get; set; } = null!;
     
     protected AppDbContext(IContextFactory contextFactory)
     {

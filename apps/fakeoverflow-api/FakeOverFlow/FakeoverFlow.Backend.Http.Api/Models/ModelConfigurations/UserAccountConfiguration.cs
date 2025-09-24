@@ -1,4 +1,5 @@
 using FakeoverFlow.Backend.Http.Api.Constants;
+using FakeoverFlow.Backend.Http.Api.Models.Accounts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,13 +11,27 @@ public class UserAccountConfiguration : IEntityTypeConfiguration<UserAccount>
     {
         builder.HasKey(x => x.Id);
 
+        builder.OwnsOne<UserAccountSettings>(x => x.Settings, builder =>
+        {
+            builder.ToJson();
+        });
+
         // Required Properties
         builder.Property(x => x.Email)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(200);
+
         builder.Property(x => x.FirstName)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(20);
+        
         builder.Property(x => x.LastName)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(20);
+        
+        builder.Property(x => x.Username)
+            .IsRequired()
+            .HasMaxLength(50);
         
         // Unique Properties
         builder.HasIndex(x => x.Email)

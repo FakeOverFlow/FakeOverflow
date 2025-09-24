@@ -11,6 +11,11 @@
       <PackageReference Include="Npgsql" Version="9.0.3" />
       <PackageReference Include="Serilog" Version="4.3.0" />
       <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.2" />
+      <PackageReference Include="Ulid" Version="1.4.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Mails\" />
     </ItemGroup>
 
 </Project>

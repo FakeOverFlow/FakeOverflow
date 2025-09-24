@@ -6,6 +6,7 @@ import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
+  standalone: true,
   imports: [
     AsyncPipe,
     RouterLink

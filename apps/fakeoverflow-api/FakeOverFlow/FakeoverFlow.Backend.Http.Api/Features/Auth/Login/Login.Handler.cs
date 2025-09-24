@@ -1,9 +1,10 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace FakeoverFlow.Backend.Http.Api.Features.Auth.Login;
 
-internal partial class Login 
+public static partial class Login 
 {
     public class Handler : Endpoint<Request,
     Results<Ok<Response>, ErrorResponse, ProblemDetails>
@@ -24,6 +25,7 @@ internal partial class Login
 
         public async override Task<Results<Ok<Response>, ErrorResponse, ProblemDetails>> ExecuteAsync(Request req, CancellationToken ct)
         {
+            
             var x = TypedResults.Ok(new Login.Response());
             return x;
         }

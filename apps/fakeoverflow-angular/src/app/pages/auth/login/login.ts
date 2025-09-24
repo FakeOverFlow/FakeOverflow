@@ -7,6 +7,7 @@ import {Navbar} from '@shared/navbar/navbar';
     Navbar
   ],
   templateUrl: './login.html',
+  standalone: true,
   styleUrl: './login.scss'
 })
 export class Login {

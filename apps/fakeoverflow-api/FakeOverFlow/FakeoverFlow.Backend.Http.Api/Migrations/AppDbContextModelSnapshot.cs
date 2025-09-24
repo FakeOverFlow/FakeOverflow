@@ -25,7 +25,7 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "user_roles", new[] { "admin", "moderator", "user" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("FakeoverFlow.Backend.Http.Api.Models.UserAccount", b =>
+            modelBuilder.Entity("FakeoverFlow.Backend.Http.Api.Models.Accounts.UserAccount", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -39,11 +39,13 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -57,7 +59,8 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<byte[]>("Password")
                         .HasColumnType("bytea");
@@ -68,9 +71,6 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
                     b.Property<UserRoles>("Role")
                         .HasColumnType("user_roles");
 
-                    b.Property<byte[]>("Salt")
-                        .HasColumnType("bytea");
-
                     b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uuid");
 
@@ -79,7 +79,8 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<NpgsqlTsVector>("VectorText")
                         .IsRequired()
@@ -113,7 +114,58 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("VectorText"), "GIN");
 
-                    b.ToTable("UserAccount");
+                    b.ToTable("UserAccounts");
+                });
+
+            modelBuilder.Entity("FakeoverFlow.Backend.Http.Api.Models.Accounts.UserAccountVerification", b =>
+                {
+                    b.Property<string>("VerificationToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("VerificationToken");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserAccountVerifications");
+                });
+
+            modelBuilder.Entity("FakeoverFlow.Backend.Http.Api.Models.Accounts.UserAccount", b =>
+                {
+                    b.OwnsOne("FakeoverFlow.Backend.Http.Api.Models.Accounts.UserAccountSettings", "Settings", b1 =>
+                        {
+                            b1.Property<Guid>("UserAccountId")
+                                .HasColumnType("uuid");
+
+                            b1.HasKey("UserAccountId");
+
+                            b1.ToTable("UserAccounts");
+
+                            b1.ToJson("Settings");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserAccountId");
+                        });
+
+                    b.Navigation("Settings")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FakeoverFlow.Backend.Http.Api.Models.Accounts.UserAccountVerification", b =>
+                {
+                    b.HasOne("FakeoverFlow.Backend.Http.Api.Models.Accounts.UserAccount", "Account")
+                        .WithOne()
+                        .HasForeignKey("FakeoverFlow.Backend.Http.Api.Models.Accounts.UserAccountVerification", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
                 });
 #pragma warning restore 612, 618
         }

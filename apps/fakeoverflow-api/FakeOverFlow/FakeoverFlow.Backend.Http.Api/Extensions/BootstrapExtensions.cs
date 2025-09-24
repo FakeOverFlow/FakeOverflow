@@ -1,19 +1,27 @@
 using System.Collections;
 using System.Text;
 using FakeoverFlow.Backend.Abstraction.Context;
+using FakeoverFlow.Backend.Http.Api.Abstracts.Clients;
+using FakeoverFlow.Backend.Http.Api.Abstracts.Services;
 using FakeoverFlow.Backend.Http.Api.Constants;
 using FakeoverFlow.Backend.Http.Api.Context;
+using FakeoverFlow.Backend.Http.Api.Models.Accounts;
 using FakeoverFlow.Backend.Http.Api.Options;
+using FakeoverFlow.Backend.Http.Api.Services;
 using FastEndpoints;
 using FastEndpoints.Security;
 using FastEndpoints.Swagger;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
 using Serilog.Formatting.Json;
 using Serilog.Sinks.SystemConsole.Themes;
+using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
 namespace FakeoverFlow.Backend.Http.Api.Extensions;
 
@@ -22,12 +30,34 @@ public static class BootstrapExtensions
     public static void ConfigureApiServices(this WebApplicationBuilder builder, ILoggerFactory loggerFactory)
     {
         builder.ConfigureCors();
-        builder.ConfigureContext();
-        builder.ConfigureDatabase();
+        builder.Services.ConfigureContext();
+        builder.Services.ConfigureDatabase(builder.Configuration);
         builder.ConfigureAuthentication();
         builder.ConfigureFastEndpoint();
+        
+        builder.SetupServices();
+        builder.SetupClients();
     }
 
+    private static void SetupServices(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddScoped<IPasswordHasher<UserAccount>, PasswordHasher<UserAccount>>();
+        builder.Services.AddScoped<IUserService, UserService>();
+    }
+
+    private static void SetupClients(this WebApplicationBuilder builder)
+    {
+        var connectionString = builder.Configuration.GetConnectionString("SmtpConnectionString");
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            builder.Services.AddSingleton<IEmailClient, NullEmailClient>();
+            Log.Logger.Information("Disabled SMTP client configuration.");
+            return;
+        }
+
+        
+    }
+    
     public static ILoggerFactory SetupLoggers(this WebApplicationBuilder builder)
     {
         // Enable debugging if env is present 
@@ -69,13 +99,13 @@ public static class BootstrapExtensions
         return new SerilogLoggerFactory(logger);;
     }
 
-    private static void ConfigureContext(this WebApplicationBuilder builder)
+    public static void ConfigureContext(this IServiceCollection serviceCollection)
     {
-        builder.Services.AddHttpContextAccessor();
-        builder.Services.AddScoped<IContextFactory, ContextFactory>();
+        serviceCollection.AddHttpContextAccessor();
+        serviceCollection.AddScoped<IContextFactory, ContextFactory>();
         Log.Logger.Information("Wired HttpContextAccessor and ContextFactory");       
     }    
-    private static void ConfigureDatabase(this WebApplicationBuilder builder)
+    public static void ConfigureDatabase(this IServiceCollection service, IConfiguration configuration)
     {
         var modelEnums = typeof(BootstrapExtensions).Assembly
             .GetTypes()
@@ -83,9 +113,9 @@ public static class BootstrapExtensions
                         x.FullName.StartsWith("FakeoverFlow.Backend.Http.Api.Models.Enums."))
             .ToList();
         
-        builder.Services.AddDbContext<AppDbContext>(opt =>
+        service.AddDbContext<AppDbContext>(opt =>
         {
-            opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgresSQL"), o =>
+            opt.UseNpgsql(configuration.GetConnectionString("PostgresSQL"), o =>
             {
                 o.SetPostgresVersion(17, 0);
                 o.UseNodaTime();
@@ -95,6 +125,7 @@ public static class BootstrapExtensions
                     o.MapEnum(modelEnum);
                 }
             });
+
         });
         Log.Logger.Information("Initializing database");
     }
@@ -159,5 +190,29 @@ public static class BootstrapExtensions
         builder.Services.AddFastEndpoints();
         builder.Services.SwaggerDocument();
         Log.Logger.Information("FastEndpoint configured");       
+    }
+
+    public static void ConfigureProblemDetails(this WebApplication app)
+    {
+        app.UseExceptionHandler(errorApp =>
+        {
+            errorApp.Run(async context =>
+            {
+                var exception = context.Features.Get<IExceptionHandlerPathFeature>()?.Error;
+
+                var problem = new ProblemDetails()
+                {
+                    Title = "An unexpected error occurred",
+                    Status = StatusCodes.Status500InternalServerError,
+                    Detail = exception?.Message,
+                    Instance = context.TraceIdentifier
+                };
+
+                context.Response.StatusCode = problem.Status.Value;
+                context.Response.ContentType = "application/problem+json";
+                await context.Response.WriteAsJsonAsync(problem);
+            });
+        });
+        
     }
 }

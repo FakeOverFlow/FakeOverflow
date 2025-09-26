@@ -49,6 +49,10 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Compute range of commits for this push
+          BEFORE_SHA=${{ github.event.before || '' }}
+          AFTER_SHA=${{ github.sha }}
+
           # Get the current date (folder name)
           CURRENT_DATE=$(date +"%Y%m%d")
           DATE_OUTPUT_DIR="${OUTPUT_DIR}/${CURRENT_DATE}"
@@ -56,72 +60,151 @@ jobs:
           # Ensure output directory exists (with date folder)
           mkdir -p "${DATE_OUTPUT_DIR}"
 
-          # Find the latest migration file (exclude Designer and Snapshot files)
-          LATEST_FILE=$(find "${MIGRATIONS_DIR}" -maxdepth 1 -type f -name "*_*.cs" ! -name "*Designer.cs" ! -name "*Snapshot.cs" | sort | tail -n1)
-          if [ -z "${LATEST_FILE}" ]; then
-            echo "No migration file found in ${MIGRATIONS_DIR}"
-            exit 1
-          fi
-
-          # Extract migration name without extension
-          LATEST_MIGRATION=$(basename "${LATEST_FILE}" .cs)
-
-          echo "Latest migration: ${LATEST_MIGRATION}"
-          echo "MIGRATION_NAME=${LATEST_MIGRATION}" >> $GITHUB_ENV
           echo "CURRENT_DATE=${CURRENT_DATE}" >> $GITHUB_ENV
           echo "DATE_OUTPUT_DIR=${DATE_OUTPUT_DIR}" >> $GITHUB_ENV
 
-          # Filenames inside the date folder
-          INCREMENTAL_SCRIPT_FILENAME="${LATEST_MIGRATION}.sql"
-          IDEMPOTENT_SCRIPT_FILENAME="${LATEST_MIGRATION}_idempotent.sql"
-
-          # Expose for later steps
-          echo "INCREMENTAL_SCRIPT_FILENAME=${INCREMENTAL_SCRIPT_FILENAME}" >> $GITHUB_ENV
-          echo "IDEMPOTENT_SCRIPT_FILENAME=${IDEMPOTENT_SCRIPT_FILENAME}" >> $GITHUB_ENV
-
-          # Determine previous migration (second latest), if any
-          PREV_FILE=$(find "${MIGRATIONS_DIR}" -maxdepth 1 -type f -name "*_*.cs" ! -name "*Designer.cs" ! -name "*Snapshot.cs" | sort | tail -n2 | head -n1 || true)
-          INCREMENTAL_ARGS=""
-          if [ -n "${PREV_FILE}" ] && [ "${PREV_FILE}" != "${LATEST_FILE}" ]; then
-            PREV_MIGRATION=$(basename "${PREV_FILE}" .cs)
-            echo "Previous migration: ${PREV_MIGRATION}"
-            echo "PREV_MIGRATION=${PREV_MIGRATION}" >> $GITHUB_ENV
-            INCREMENTAL_ARGS="${PREV_MIGRATION} ${LATEST_MIGRATION}"
+          # Collect changed migration files in this push (added or modified), excluding Designer/Snapshot
+          if [ -n "${BEFORE_SHA}" ]; then
+            CHANGED_FILES=$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA" | grep -E "^${MIGRATIONS_DIR}/.*_.*\.cs$" | grep -vE "Designer\.cs$|Snapshot\.cs$" || true)
           else
-            # No previous migration, generate from 0 to latest
-            INCREMENTAL_ARGS="0 ${LATEST_MIGRATION}"
+            # Fallback: use last commit only
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep -E "^${MIGRATIONS_DIR}/.*_.*\.cs$" | grep -vE "Designer\.cs$|Snapshot\.cs$" || true)
           fi
 
-          # Generate incremental (non-idempotent) script to show this migration's changes
-          dotnet ef migrations script ${INCREMENTAL_ARGS} \
-            --project "${API_PROJECT_PATH}" \
-            --output "${DATE_OUTPUT_DIR}/${INCREMENTAL_SCRIPT_FILENAME}"
+          if [ -z "${CHANGED_FILES}" ]; then
+            echo "No changed migration files detected; falling back to latest migration present in directory."
+            CHANGED_FILES=$(find "${MIGRATIONS_DIR}" -maxdepth 1 -type f -name "*_*.cs" ! -name "*Designer.cs" ! -name "*Snapshot.cs" | sort | tail -n1)
+          fi
 
-          # Generate idempotent script (safe to run multiple times)
-          dotnet ef migrations script \
-            --project "${API_PROJECT_PATH}" \
-            --idempotent \
-            --output "${DATE_OUTPUT_DIR}/${IDEMPOTENT_SCRIPT_FILENAME}"
+          # Build an ordered list of all migrations (by filename sort) to determine predecessors
+          mapfile -t ALL_MIGS < <(find "${MIGRATIONS_DIR}" -maxdepth 1 -type f -name "*_*.cs" ! -name "*Designer.cs" ! -name "*Snapshot.cs" | sort)
+
+          if [ ${#ALL_MIGS[@]} -eq 0 ]; then
+            echo "No migration files found in ${MIGRATIONS_DIR}"
+            exit 1
+          fi
+
+          # Normalize and sort the changed list according to overall order
+          mapfile -t CHANGED_SORTED < <(printf "%s\n" ${CHANGED_FILES} | sort)
+
+          GENERATED_FILES_LIST=""
+          TITLE_FIRST=""
+          TITLE_LAST=""
+          COUNT=0
+
+          # Helper to find previous migration filename given current
+          find_prev() {
+            local current="$1"
+            local prev=""
+            for i in "${!ALL_MIGS[@]}"; do
+              if [ "${ALL_MIGS[$i]}" = "$current" ]; then
+                if [ $i -gt 0 ]; then
+                  prev="${ALL_MIGS[$((i-1))]}"
+                fi
+                break
+              fi
+            done
+            echo "$prev"
+          }
+
+          for FILE in "${CHANGED_SORTED[@]}"; do
+            [ -z "$FILE" ] && continue
+            if [ ! -f "$FILE" ]; then
+              # In case git diff listed something that no longer exists (rare), skip
+              continue
+            fi
+            MIG_NAME=$(basename "$FILE" .cs)
+
+            # Determine previous migration for incremental script
+            PREV_FILE=$(find_prev "$FILE")
+            if [ -n "$PREV_FILE" ]; then
+              PREV_NAME=$(basename "$PREV_FILE" .cs)
+              INC_ARGS="$PREV_NAME $MIG_NAME"
+            else
+              INC_ARGS="0 $MIG_NAME"
+            fi
+
+            # Filenames inside date folder
+            INC_OUT="${DATE_OUTPUT_DIR}/${MIG_NAME}.sql"
+            IDEM_OUT="${DATE_OUTPUT_DIR}/${MIG_NAME}_idempotent.sql"
+
+            echo "Generating scripts for migration: $MIG_NAME"
+            # Generate incremental
+            dotnet ef migrations script $INC_ARGS \
+              --project "${API_PROJECT_PATH}" \
+              --output "$INC_OUT"
+
+            # Generate idempotent
+            dotnet ef migrations script \
+              --project "${API_PROJECT_PATH}" \
+              --idempotent \
+              --output "$IDEM_OUT"
+
+            GENERATED_FILES_LIST+="- \`${INC_OUT}\` (incremental)\n"
+            GENERATED_FILES_LIST+="- \`${IDEM_OUT}\` (idempotent)\n"
+
+            if [ $COUNT -eq 0 ]; then
+              TITLE_FIRST="$MIG_NAME"
+            fi
+            TITLE_LAST="$MIG_NAME"
+            COUNT=$((COUNT+1))
+          done
+
+          # Export details for later steps
+          echo "GENERATED_FILES<<EOF" >> $GITHUB_ENV
+          echo -e "$GENERATED_FILES_LIST" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+          if [ $COUNT -eq 1 ]; then
+            echo "MIGRATION_NAME=${TITLE_FIRST}" >> $GITHUB_ENV
+            echo "PR_TITLE_SUFFIX=${TITLE_FIRST}" >> $GITHUB_ENV
+            echo "PR_BRANCH=migration-scripts/${TITLE_FIRST}" >> $GITHUB_ENV
+          else
+            echo "MIGRATION_NAME=${TITLE_FIRST}_to_${TITLE_LAST}" >> $GITHUB_ENV
+            echo "PR_TITLE_SUFFIX=${COUNT} migrations (${TITLE_FIRST} → ${TITLE_LAST})" >> $GITHUB_ENV
+            echo "PR_BRANCH=migration-scripts/${CURRENT_DATE}" >> $GITHUB_ENV
+          fi
 
       - name: Build Change Summary
         id: build_summary
         shell: bash
         run: |
           set -euo pipefail
-          FILE_PATH="${MIGRATIONS_DIR}/${MIGRATION_NAME}.cs"
-          SUBJECT=$(git log -n 1 --pretty=format:%s -- "$FILE_PATH" || true)
-          BODY=$(git log -n 1 --pretty=format:%b -- "$FILE_PATH" || true)
-          if [ -z "$SUBJECT" ]; then
-            SUBJECT="Database migration ${MIGRATION_NAME}"
+
+          BEFORE_SHA=${{ github.event.before || '' }}
+          AFTER_SHA=${{ github.sha }}
+
+          if [ -n "${BEFORE_SHA}" ]; then
+            CHANGED_FILES=$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA" | grep -E "^${MIGRATIONS_DIR}/.*_.*\.cs$" | grep -vE "Designer\.cs$|Snapshot\.cs$" || true)
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep -E "^${MIGRATIONS_DIR}/.*_.*\.cs$" | grep -vE "Designer\.cs$|Snapshot\.cs$" || true)
           fi
-          SUMMARY="$SUBJECT"
-          if [ -n "$BODY" ]; then
-            BODY_TRIM=$(echo "$BODY" | head -c 800)
-            SUMMARY=$(printf "%s\n\n%s" "$SUMMARY" "$BODY_TRIM")
+
+          SUMMARY=""
+          if [ -n "$CHANGED_FILES" ]; then
+            while IFS= read -r FILE; do
+              [ -z "$FILE" ] && continue
+              TITLE=$(git log -n 1 --pretty=format:%s -- "$FILE" || true)
+              BODY=$(git log -n 1 --pretty=format:%b -- "$FILE" || true)
+              MIG_NAME=$(basename "$FILE")
+              if [ -z "$TITLE" ]; then
+                TITLE="Update to migration $MIG_NAME"
+              fi
+              SUMMARY+="- ${TITLE} (${MIG_NAME})\n"
+              if [ -n "$BODY" ]; then
+                BODY_TRIM=$(echo "$BODY" | head -c 600)
+                SUMMARY+="  \n  ${BODY_TRIM}\n"
+              fi
+            done <<< "$(printf "%s\n" $CHANGED_FILES)"
           fi
+
+          if [ -z "$SUMMARY" ]; then
+            SUMMARY="Database migration updates: ${{ env.MIGRATION_NAME }}"
+          fi
+
           {
             echo "SUMMARY<<EOF"
-            echo "$SUMMARY"
+            echo -e "$SUMMARY"
             echo "EOF"
           } >> "$GITHUB_ENV"
 

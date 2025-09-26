@@ -12,6 +12,7 @@ using NpgsqlTypes;
 
 namespace FakeoverFlow.Backend.Http.Api.Migrations
 {
+    
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
     {

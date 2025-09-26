@@ -69,41 +69,63 @@ jobs:
           echo "MIGRATION_NAME=${LATEST_MIGRATION}" >> $GITHUB_ENV
           echo "CURRENT_DATE=${CURRENT_DATE}" >> $GITHUB_ENV
 
-          # Filenames
-          STANDARD_SCRIPT_FILENAME="${CURRENT_DATE}_${LATEST_MIGRATION}.sql"
+          # Filenames (only idempotent script is required)
           IDEMPOTENT_SCRIPT_FILENAME="${CURRENT_DATE}_${LATEST_MIGRATION}_idempotent.sql"
 
-          echo "SCRIPT_FILENAME=${STANDARD_SCRIPT_FILENAME}" >> $GITHUB_ENV
+          # Expose for later steps
+          echo "SCRIPT_FILENAME=${IDEMPOTENT_SCRIPT_FILENAME}" >> $GITHUB_ENV
 
-          # Generate scripts
-          dotnet ef migrations script \
-            --project "${API_PROJECT_PATH}" \
-            --output "${OUTPUT_DIR}/${STANDARD_SCRIPT_FILENAME}"
-
+          # Generate only the idempotent script
           dotnet ef migrations script \
             --project "${API_PROJECT_PATH}" \
             --idempotent \
             --output "${OUTPUT_DIR}/${IDEMPOTENT_SCRIPT_FILENAME}"
+
+      - name: Build Change Summary
+        id: build_summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE_PATH="${MIGRATIONS_DIR}/${MIGRATION_NAME}.cs"
+          SUBJECT=$(git log -n 1 --pretty=format:%s -- "$FILE_PATH" || true)
+          BODY=$(git log -n 1 --pretty=format:%b -- "$FILE_PATH" || true)
+          if [ -z "$SUBJECT" ]; then
+            SUBJECT="Database migration ${MIGRATION_NAME}"
+          fi
+          SUMMARY="$SUBJECT"
+          if [ -n "$BODY" ]; then
+            BODY_TRIM=$(echo "$BODY" | head -c 800)
+            SUMMARY=$(printf "%s\n\n%s" "$SUMMARY" "$BODY_TRIM")
+          fi
+          {
+            echo "SUMMARY<<EOF"
+            echo "$SUMMARY"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: |
-            chore(migrations): add SQL scripts for migration: ${{ env.MIGRATION_NAME }}
+            chore(migrations): add idempotent SQL script for: ${{ env.MIGRATION_NAME }}
+
+            ${{ env.SUMMARY }}
 
             Generated on: ${{ env.CURRENT_DATE }}
-          title: "chore: Database migration SQL scripts for ${{ env.MIGRATION_NAME }}"
+          title: "chore: Idempotent migration script for ${{ env.MIGRATION_NAME }}"
           body: |
-            ## Database Migration SQL Scripts
+            ## Database Migration SQL Script
 
-            This PR contains the auto-generated SQL scripts for the migration: **${{ env.MIGRATION_NAME }}**
+            This PR contains the auto-generated idempotent SQL script for the migration: **${{ env.MIGRATION_NAME }}**
 
-            ### Files Added:
-            - `${{ env.OUTPUT_DIR }}/${{ env.SCRIPT_FILENAME }}` - Standard migration script
-            - `${{ env.OUTPUT_DIR }}/${{ env.CURRENT_DATE }}_${{ env.MIGRATION_NAME }}_idempotent.sql` - Idempotent script (safe to re-run)
+            ### Summary
+            ${{ env.SUMMARY }}
 
-            ### Review Checklist:
+            ### File Added
+            - `${{ env.OUTPUT_DIR }}/${{ env.SCRIPT_FILENAME }}` (idempotent; safe to re-run)
+
+            ### Review Checklist
             - [ ] Review SQL statements for data safety
             - [ ] Check for any destructive operations (DROP, DELETE)
             - [ ] Verify migration logic is correct

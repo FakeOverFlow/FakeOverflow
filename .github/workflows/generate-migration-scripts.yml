@@ -49,11 +49,12 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Ensure output directory exists
-          mkdir -p "${OUTPUT_DIR}"
-
-          # Get the current date
+          # Get the current date (folder name)
           CURRENT_DATE=$(date +"%Y%m%d")
+          DATE_OUTPUT_DIR="${OUTPUT_DIR}/${CURRENT_DATE}"
+
+          # Ensure output directory exists (with date folder)
+          mkdir -p "${DATE_OUTPUT_DIR}"
 
           # Find the latest migration file (exclude Designer and Snapshot files)
           LATEST_FILE=$(find "${MIGRATIONS_DIR}" -maxdepth 1 -type f -name "*_*.cs" ! -name "*Designer.cs" ! -name "*Snapshot.cs" | sort | tail -n1)
@@ -68,18 +69,39 @@ jobs:
           echo "Latest migration: ${LATEST_MIGRATION}"
           echo "MIGRATION_NAME=${LATEST_MIGRATION}" >> $GITHUB_ENV
           echo "CURRENT_DATE=${CURRENT_DATE}" >> $GITHUB_ENV
+          echo "DATE_OUTPUT_DIR=${DATE_OUTPUT_DIR}" >> $GITHUB_ENV
 
-          # Filenames (only idempotent script is required)
-          IDEMPOTENT_SCRIPT_FILENAME="${CURRENT_DATE}_${LATEST_MIGRATION}_idempotent.sql"
+          # Filenames inside the date folder
+          INCREMENTAL_SCRIPT_FILENAME="${LATEST_MIGRATION}.sql"
+          IDEMPOTENT_SCRIPT_FILENAME="${LATEST_MIGRATION}_idempotent.sql"
 
           # Expose for later steps
-          echo "SCRIPT_FILENAME=${IDEMPOTENT_SCRIPT_FILENAME}" >> $GITHUB_ENV
+          echo "INCREMENTAL_SCRIPT_FILENAME=${INCREMENTAL_SCRIPT_FILENAME}" >> $GITHUB_ENV
+          echo "IDEMPOTENT_SCRIPT_FILENAME=${IDEMPOTENT_SCRIPT_FILENAME}" >> $GITHUB_ENV
 
-          # Generate only the idempotent script
+          # Determine previous migration (second latest), if any
+          PREV_FILE=$(find "${MIGRATIONS_DIR}" -maxdepth 1 -type f -name "*_*.cs" ! -name "*Designer.cs" ! -name "*Snapshot.cs" | sort | tail -n2 | head -n1 || true)
+          INCREMENTAL_ARGS=""
+          if [ -n "${PREV_FILE}" ] && [ "${PREV_FILE}" != "${LATEST_FILE}" ]; then
+            PREV_MIGRATION=$(basename "${PREV_FILE}" .cs)
+            echo "Previous migration: ${PREV_MIGRATION}"
+            echo "PREV_MIGRATION=${PREV_MIGRATION}" >> $GITHUB_ENV
+            INCREMENTAL_ARGS="${PREV_MIGRATION} ${LATEST_MIGRATION}"
+          else
+            # No previous migration, generate from 0 to latest
+            INCREMENTAL_ARGS="0 ${LATEST_MIGRATION}"
+          fi
+
+          # Generate incremental (non-idempotent) script to show this migration's changes
+          dotnet ef migrations script ${INCREMENTAL_ARGS} \
+            --project "${API_PROJECT_PATH}" \
+            --output "${DATE_OUTPUT_DIR}/${INCREMENTAL_SCRIPT_FILENAME}"
+
+          # Generate idempotent script (safe to run multiple times)
           dotnet ef migrations script \
             --project "${API_PROJECT_PATH}" \
             --idempotent \
-            --output "${OUTPUT_DIR}/${IDEMPOTENT_SCRIPT_FILENAME}"
+            --output "${DATE_OUTPUT_DIR}/${IDEMPOTENT_SCRIPT_FILENAME}"
 
       - name: Build Change Summary
         id: build_summary
@@ -108,22 +130,25 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: |
-            chore(migrations): add idempotent SQL script for: ${{ env.MIGRATION_NAME }}
+            chore(migrations): add incremental and idempotent SQL scripts for: ${{ env.MIGRATION_NAME }} (in ${{ env.CURRENT_DATE }})
 
             ${{ env.SUMMARY }}
 
             Generated on: ${{ env.CURRENT_DATE }}
-          title: "chore: Idempotent migration script for ${{ env.MIGRATION_NAME }}"
+          title: "chore: Migration SQL scripts for ${{ env.MIGRATION_NAME }} (dated folder)"
           body: |
-            ## Database Migration SQL Script
+            ## Database Migration SQL Scripts
 
-            This PR contains the auto-generated idempotent SQL script for the migration: **${{ env.MIGRATION_NAME }}**
+            This PR contains the auto-generated SQL scripts for the migration: **${{ env.MIGRATION_NAME }}**
+
+            Scripts are stored in the dated folder: `${{ env.DATE_OUTPUT_DIR }}`
 
             ### Summary
             ${{ env.SUMMARY }}
 
-            ### File Added
-            - `${{ env.OUTPUT_DIR }}/${{ env.SCRIPT_FILENAME }}` (idempotent; safe to re-run)
+            ### Files Added
+            - `${{ env.DATE_OUTPUT_DIR }}/${{ env.INCREMENTAL_SCRIPT_FILENAME }}` (incremental; shows developer changes)
+            - `${{ env.DATE_OUTPUT_DIR }}/${{ env.IDEMPOTENT_SCRIPT_FILENAME }}` (idempotent; safe to re-run)
 
             ### Review Checklist
             - [ ] Review SQL statements for data safety

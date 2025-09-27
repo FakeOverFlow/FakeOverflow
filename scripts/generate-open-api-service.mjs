@@ -26,6 +26,7 @@ function validateSwaggerUrl(url) {
 // START LOGIC FROM HERE - I JUST PUT THE ABOVE PART FOR EASE OF USE
 
 const GENERATOR_URL = "http://api.openapi-generator.tech/";
+const API_URL = "https://api-fof.alenalex.me/swagger/v1/swagger.json";
 
 const main = async () => {
     let url = await askQuestion("Enter the generator URL (Pass empty to use default): ");
@@ -44,7 +45,10 @@ const main = async () => {
 
     let swaggerUrl = undefined;
     while (validateSwaggerUrl(swaggerUrl) === false) {
-        swaggerUrl = await askQuestion("Enter the swagger JSON URL: ");
+        swaggerUrl = await askQuestion(`Enter the swagger JSON URL: Default: (${API_URL})`);
+        if(!swaggerUrl || swaggerUrl.trim() === "") {
+            swaggerUrl = API_URL;
+        }
     }
 
     console.log("The swagger URL has been set to: " + swaggerUrl);
@@ -70,7 +74,9 @@ const main = async () => {
     }
 
     console.log("Service generated successfully!");
-    const arrayBuffer = await response.arrayBuffer();
+    console.log(await response.text())
+    console.log("You can download the generated service from the following link:");
+    /*const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
     const outputDir = path.resolve(__dirname, "../packages/fakeoverflow-angular-services");
@@ -79,7 +85,7 @@ const main = async () => {
     const outputFile = path.join(outputDir, "fakeoverflow-angular-services.zip");
     fs.writeFileSync(outputFile, buffer);
 
-    console.log(`Saved generated service to: ${outputFile}`);
+    console.log(`Saved generated service to: ${outputFile}`);*/
 };
 
 await main();

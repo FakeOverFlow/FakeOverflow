@@ -1,0 +1,114 @@
+name: Generate OpenAPI spec and open PR
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'apps/fakeoverflow-api/**'
+      - '.github/workflows/generate-openapi-spec.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate-openapi:
+    name: Generate OpenAPI and create PR
+    runs-on: ubuntu-latest
+    env:
+      SOLUTION_PATH: apps/fakeoverflow-api/FakeOverFlow/FakeOverFlow.sln
+      API_PROJECT_PATH: apps/fakeoverflow-api/FakeOverFlow/FakeoverFlow.Backend.Http.Api/FakeoverFlow.Backend.Http.Api.csproj
+      OUTPUT_DIR: .specification
+      OUTPUT_FILE: fakeoverflow-api.json
+      API_PORT: 8443
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 9 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore
+        run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+      - name: Build (Release)
+        run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
+
+      - name: Generate and configure HTTPS dev certificate
+        shell: bash
+        run: |
+          set -euo pipefail
+          CERT_PFX="$RUNNER_TEMP/httpscert.pfx"
+          CERT_PASSWORD="password123!"
+          dotnet dev-certs https -ep "$CERT_PFX" -p "$CERT_PASSWORD"
+          echo "CERT_PFX=$CERT_PFX" >> $GITHUB_ENV
+          echo "CERT_PASSWORD=$CERT_PASSWORD" >> $GITHUB_ENV
+
+      - name: Run API in background (Development)
+        shell: bash
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+          ASPNETCORE_URLS: https://127.0.0.1:${{ env.API_PORT }}
+          ASPNETCORE_Kestrel__Certificates__Default__Path: ${{ env.CERT_PFX }}
+          ASPNETCORE_Kestrel__Certificates__Default__Password: ${{ env.CERT_PASSWORD }}
+        run: |
+          set -euo pipefail
+          nohup dotnet run --no-build --configuration Release --project "${{ env.API_PROJECT_PATH }}" > api.log 2>&1 &
+          echo $! > api.pid
+          # Wait for the Swagger JSON endpoint to be available
+          for i in {1..60}; do
+            if curl -ksf "https://127.0.0.1:${{ env.API_PORT }}/swagger/v1/swagger.json" > /dev/null; then
+              echo "API is up"
+              break
+            fi
+            echo "Waiting for API... ($i)"
+            sleep 2
+          done
+          if ! curl -ksf "https://127.0.0.1:${{ env.API_PORT }}/swagger/v1/swagger.json" > /dev/null; then
+            echo "API failed to start or swagger endpoint unavailable" >&2
+            echo "===== API LOG (tail) ====="
+            tail -n 200 api.log || true
+            exit 1
+          fi
+
+      - name: Fetch and save OpenAPI spec
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${{ env.OUTPUT_DIR }}"
+          # Save pretty-printed JSON if jq exists; otherwise raw
+          if command -v jq >/dev/null 2>&1; then
+            curl -ks "https://127.0.0.1:${{ env.API_PORT }}/swagger/v1/swagger.json" | jq . > "${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}"
+          else
+            curl -kso "${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}" "https://127.0.0.1:${{ env.API_PORT }}/swagger/v1/swagger.json"
+          fi
+          echo "Saved to ${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}"
+
+      - name: Stop API
+        if: always()
+        shell: bash
+        run: |
+          if [ -f api.pid ]; then
+            kill "$(cat api.pid)" || true
+          fi
+
+      - name: Create Pull Request with updated spec
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore(openapi): update generated OpenAPI spec"
+          title: "chore(openapi): update generated OpenAPI spec"
+          body: |
+            This PR updates the OpenAPI specification generated from the .NET 9 API (FastEndpoints) located at `apps/fakeoverflow-api`.
+
+            - Generated from latest main commit `${{ github.sha }}`
+            - Endpoint: `/swagger/v1/swagger.json`
+          branch: chore/update-openapi-spec
+          add-paths: |
+            ${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}
+          signoff: false
+          delete-branch: true

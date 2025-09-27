@@ -11,6 +11,7 @@ internal partial class Refresh
         {
             Description(x =>
             {
+                x.WithName("Refresh");
                 x.Produces<Ok<Response>>(200);
                 x.Produces<ErrorResponse>(400);
             });

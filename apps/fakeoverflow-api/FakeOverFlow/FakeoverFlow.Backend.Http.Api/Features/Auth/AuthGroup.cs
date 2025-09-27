@@ -10,6 +10,7 @@ public sealed class AuthGroup : Group
         {
             e.Description(x =>
             {
+                x.WithGroupName("Auth");
                 x.WithSummary("Authentication related endpoints");
                 x.WithDescription("Endpoints for authentication related operations");
             });

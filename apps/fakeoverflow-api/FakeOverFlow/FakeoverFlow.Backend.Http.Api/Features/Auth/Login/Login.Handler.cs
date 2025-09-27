@@ -14,6 +14,7 @@ public static partial class Login
         {
             Description(x =>
             {
+                x.WithName("Login");
                 x.Produces<Ok<Response>>(200);
                 x.Produces<ErrorResponse>(400);
             });

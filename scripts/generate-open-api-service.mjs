@@ -2,6 +2,7 @@ const readline = await import('readline');
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { execSync } from "child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -9,6 +10,7 @@ const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
+
 const askQuestion = (question) => {
     return new Promise((resolve) => {
         rl.question(question, (answer) => {
@@ -19,75 +21,54 @@ const askQuestion = (question) => {
 
 function validateSwaggerUrl(url) {
     if(!url || url.trim() === "") return false;
-
     return url.startsWith("http://") || url.startsWith("https://");
 }
 
-// START LOGIC FROM HERE - I JUST PUT THE ABOVE PART FOR EASE OF USE
-
-const GENERATOR_URL = "http://api.openapi-generator.tech/";
+// START LOGIC FROM HERE
 const API_URL = "https://api-fof.alenalex.me/swagger/v1/swagger.json";
 
 const main = async () => {
-    let url = await askQuestion("Enter the generator URL (Pass empty to use default): ");
-    if(!url || url.trim() === "") {
-        url = GENERATOR_URL;
+    let swaggerUrl = await askQuestion(`Enter the swagger JSON URL (default: ${API_URL}): `);
+    if(!swaggerUrl || swaggerUrl.trim() === "") {
+        swaggerUrl = API_URL;
     }
 
-    if(!url.endsWith("/")) {
-        url = url + "/";
-    }
-
-    console.log("URL has been set to: " + url);
-
-    url = `${url}api/gen/clients/typescript-angular`;
-    console.log("The generation url has been set to: " + url);
-
-    let swaggerUrl = undefined;
-    while (validateSwaggerUrl(swaggerUrl) === false) {
-        swaggerUrl = await askQuestion(`Enter the swagger JSON URL: Default: (${API_URL})`);
-        if(!swaggerUrl || swaggerUrl.trim() === "") {
-            swaggerUrl = API_URL;
-        }
+    if (!validateSwaggerUrl(swaggerUrl)) {
+        console.error("❌ Invalid swagger URL provided");
+        rl.close();
+        return;
     }
 
     console.log("The swagger URL has been set to: " + swaggerUrl);
 
-    const body = {
-        options: {
-            ngVersion: "20",
-        },
-        openAPIUrl: swaggerUrl
-    }
-
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-    });
-
-    if(!response.ok) {
-        console.error("Failed to generate the service. Error: " + response.statusText);
-        console.warn("Please check the swagger URL and try again.");
-    }
-
-    console.log("Service generated successfully!");
-    console.log(await response.text())
-    console.log("You can download the generated service from the following link:");
-    /*const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
     const outputDir = path.resolve(__dirname, "../packages/fakeoverflow-angular-services");
-    fs.mkdirSync(outputDir, { recursive: true });
 
-    const outputFile = path.join(outputDir, "fakeoverflow-angular-services.zip");
-    fs.writeFileSync(outputFile, buffer);
+    try {
+        console.log("Generating client with OpenAPI Generator CLI...");
 
-    console.log(`Saved generated service to: ${outputFile}`);*/
+        // Create output directory
+        fs.mkdirSync(outputDir, { recursive: true });
+
+        // Build the command
+        const command = [
+            'npx @openapitools/openapi-generator-cli generate',
+            `-i "${swaggerUrl}"`,
+            '-g typescript-angular',
+            `-o "${outputDir}"`,
+            '--additional-properties ngVersion=20,npmName=fakeoverflow-angular-services,snapshot=false'
+        ].join(' ');
+
+        console.log("Executing:", command);
+        execSync(command, { stdio: 'inherit' });
+
+        console.log("✅ Client generated successfully!");
+        console.log(`📁 Output directory: ${outputDir}`);
+
+    } catch (error) {
+        console.error("❌ Failed to generate client:", error.message);
+    } finally {
+        rl.close();
+    }
 };
 
 await main();
-
-

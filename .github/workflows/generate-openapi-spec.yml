@@ -19,9 +19,9 @@ jobs:
     env:
       SOLUTION_PATH: apps/fakeoverflow-api/FakeOverFlow/FakeOverFlow.sln
       API_PROJECT_PATH: apps/fakeoverflow-api/FakeOverFlow/FakeoverFlow.Backend.Http.Api/FakeoverFlow.Backend.Http.Api.csproj
+      API_DLL_PATH: apps/fakeoverflow-api/FakeOverFlow/FakeoverFlow.Backend.Http.Api/bin/Release/net9.0/FakeoverFlow.Backend.Http.Api.dll
       OUTPUT_DIR: .specification
       OUTPUT_FILE: fakeoverflow-api.json
-      API_PORT: 8443
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -33,68 +33,67 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Restore
+      - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_PATH }}
 
-      - name: Build (Release)
+      - name: Build solution (Release)
         run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
 
-      - name: Generate and configure HTTPS dev certificate
-        shell: bash
-        run: |
-          set -euo pipefail
-          CERT_PFX="$RUNNER_TEMP/httpscert.pfx"
-          CERT_PASSWORD="password123!"
-          dotnet dev-certs https -ep "$CERT_PFX" -p "$CERT_PASSWORD"
-          echo "CERT_PFX=$CERT_PFX" >> $GITHUB_ENV
-          echo "CERT_PASSWORD=$CERT_PASSWORD" >> $GITHUB_ENV
+      - name: Install Swashbuckle CLI
+        run: dotnet tool install -g Swashbuckle.AspNetCore.Cli
 
-      - name: Run API in background (Development)
-        shell: bash
-        env:
-          ASPNETCORE_ENVIRONMENT: Development
-          ASPNETCORE_URLS: https://127.0.0.1:${{ env.API_PORT }}
-          ASPNETCORE_Kestrel__Certificates__Default__Path: ${{ env.CERT_PFX }}
-          ASPNETCORE_Kestrel__Certificates__Default__Password: ${{ env.CERT_PASSWORD }}
-        run: |
-          set -euo pipefail
-          nohup dotnet run --no-build --configuration Release --project "${{ env.API_PROJECT_PATH }}" > api.log 2>&1 &
-          echo $! > api.pid
-          # Wait for the Swagger JSON endpoint to be available
-          for i in {1..60}; do
-            if curl -ksf "https://127.0.0.1:${{ env.API_PORT }}/swagger/v1/swagger.json" > /dev/null; then
-              echo "API is up"
-              break
-            fi
-            echo "Waiting for API... ($i)"
-            sleep 2
-          done
-          if ! curl -ksf "https://127.0.0.1:${{ env.API_PORT }}/swagger/v1/swagger.json" > /dev/null; then
-            echo "API failed to start or swagger endpoint unavailable" >&2
-            echo "===== API LOG (tail) ====="
-            tail -n 200 api.log || true
-            exit 1
-          fi
-
-      - name: Fetch and save OpenAPI spec
+      - name: Generate OpenAPI specification
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "${{ env.OUTPUT_DIR }}"
-          # Save pretty-printed JSON if jq exists; otherwise raw
+          
+          # Generate OpenAPI spec using Swashbuckle CLI
+          swagger tofile --output "${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}" \
+            "${{ env.API_DLL_PATH }}" v1
+          
+          # Pretty-print JSON if jq is available
           if command -v jq >/dev/null 2>&1; then
-            curl -ks "https://127.0.0.1:${{ env.API_PORT }}/swagger/v1/swagger.json" | jq . > "${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}"
-          else
-            curl -kso "${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}" "https://127.0.0.1:${{ env.API_PORT }}/swagger/v1/swagger.json"
+            jq . "${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}" > temp.json
+            mv temp.json "${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}"
           fi
-          echo "Saved to ${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}"
+          
+          echo "✅ Generated OpenAPI spec at ${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}"
+          
+          # Show basic info about generated spec
+          if command -v jq >/dev/null 2>&1; then
+            echo "📊 API Info:"
+            jq -r '.info | "Title: \(.title), Version: \(.version)"' "${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}" || true
+            echo "🔗 Endpoints: $(jq -r '.paths | keys | length' "${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}" || echo "unknown")"
+          fi
 
-      - name: Stop API
-        if: always()
+      - name: Validate generated specification
         shell: bash
         run: |
-          if [ -f api.pid ]; then
-            kill "$(cat api.pid)" || true
+          set -euo pipefail
+          
+          # Basic validation - check if file exists and is valid JSON
+          if [ ! -f "${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}" ]; then
+            echo "❌ OpenAPI spec file was not generated"
+            exit 1
+          fi
+          
+          # Validate JSON syntax
+          if command -v jq >/dev/null 2>&1; then
+            if ! jq empty "${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}"; then
+              echo "❌ Generated OpenAPI spec is not valid JSON"
+              exit 1
+            fi
+          
+            # Check for required OpenAPI fields
+            if ! jq -e '.openapi' "${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}" >/dev/null; then
+              echo "❌ Generated spec missing 'openapi' field"
+              exit 1
+            fi
+          
+            echo "✅ OpenAPI specification validation passed"
+          else
+            echo "⚠️ jq not available, skipping detailed validation"
           fi
 
       - name: Create Pull Request with updated spec
@@ -103,12 +102,33 @@ jobs:
           commit-message: "chore(openapi): update generated OpenAPI spec"
           title: "chore(openapi): update generated OpenAPI spec"
           body: |
-            This PR updates the OpenAPI specification generated from the .NET 9 API (FastEndpoints) located at `apps/fakeoverflow-api`.
-
-            - Generated from latest main commit `${{ github.sha }}`
-            - Endpoint: `/swagger/v1/swagger.json`
+            ## 🔄 OpenAPI Specification Update
+            
+            This PR contains an automatically generated update to the OpenAPI specification.
+            
+            ### 📋 Details
+            - **Generated from**: Latest main commit `${{ github.sha }}`
+            - **Source**: FastEndpoints .NET 9 API at `apps/fakeoverflow-api`
+            - **Method**: Swashbuckle CLI (`swagger tofile`)
+            - **Generated at**: ${{ steps.date.outputs.date }}
+            
+            ### 🛠️ Changes
+            - Updated `${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}`
+            
+            ### 🔍 Review Checklist
+            - [ ] Verify new endpoints are documented correctly
+            - [ ] Check for any breaking changes in existing endpoints
+            - [ ] Ensure response schemas are accurate
+            - [ ] Validate authentication/authorization requirements
+            
+            ---
+            *This PR was automatically generated by the OpenAPI specification workflow.*
           branch: chore/update-openapi-spec
           add-paths: |
             ${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_FILE }}
           signoff: false
           delete-branch: true
+          labels: |
+            automated
+            openapi
+            documentation

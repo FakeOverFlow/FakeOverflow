@@ -1,4 +1,4 @@
-name: Deploy with Tailscale SSH
+name: Deploy Backend API
 
 on:
   push:
@@ -16,7 +16,8 @@ jobs:
       - name: Setup Tailscale
         uses: tailscale/github-action@v3
         with:
-          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:github-actions
 
       - name: Setup SSH key
@@ -30,7 +31,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << 'EOF'
             set -e
-            echo "Connected successfully to Server"          
+            echo "Connected successfully to Server"
             cd /opt/fakeoverflow/
             sh deploy.sh
           

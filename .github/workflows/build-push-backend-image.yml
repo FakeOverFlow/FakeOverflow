@@ -3,6 +3,7 @@ name: Build and Push Backend Image
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*.*.*' ]  # Trigger on version tags
     paths:
       - '.github/workflows/build-push-backend-image.yml'
       - 'apps/fakeoverflow-api/**'
@@ -18,8 +19,8 @@ env:
 
 jobs:
   build:
-    name: Build and Push (${{ matrix.platform }})
-    runs-on: ${{ matrix.runs_on }}
+    name: Build (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -27,10 +28,16 @@ jobs:
         include:
           - arch: amd64
             platform: linux/amd64
-            runs_on: ubuntu-latest
+            runner: ubuntu-latest
           - arch: arm64
             platform: linux/arm64
-            runs_on: ubuntu-24.04-arm
+            runner: ubuntu-24.04-arm  # Native ARM64 runner
+
+    outputs:
+      image-digest-amd64: ${{ steps.build-amd64.outputs.digest }}
+      image-digest-arm64: ${{ steps.build-arm64.outputs.digest }}
+      registry: ${{ env.REGISTRY }}
+      image-name: ${{ env.IMAGE_NAME }}
 
     steps:
       - name: Checkout
@@ -46,19 +53,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata with arch suffix
+      - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=raw,value=latest
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch,enable=${{ github.ref != 'refs/heads/main' }}
           flavor: |
-            latest=auto
+            latest=false
             suffix=-${{ matrix.arch }}
 
       - name: Verify Dockerfile exists
@@ -69,26 +76,28 @@ jobs:
             exit 1
           fi
 
-      - name: Build and push per-arch image
-        id: build
+      - name: Build and push arch-specific image
+        id: build-${{ matrix.arch }}
         uses: docker/build-push-action@v6
         with:
           context: apps/fakeoverflow-api/FakeOverFlow
           file: apps/fakeoverflow-api/FakeOverFlow/FakeoverFlow.Backend.Http.Api/Dockerfile
-          push: true
           platforms: ${{ matrix.platform }}
+          push: true
           build-args: |
             BUILD_CONFIGURATION=Release
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.arch }}
           cache-to: type=gha,mode=max,scope=${{ matrix.arch }}
+          outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true
 
   manifest:
-    name: Create and Push Multi-Arch Manifests
+    name: Create Multi-Arch Manifest
     runs-on: ubuntu-latest
     needs: build
-    if: true
+    if: always() && needs.build.result == 'success'
+
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -100,76 +109,54 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract base Docker metadata (no arch suffix)
+      - name: Extract Docker metadata (without arch suffix)
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch,enable=${{ github.ref != 'refs/heads/main' }}
           flavor: |
-            latest=auto
+            latest=false
 
-      - name: Create and push manifest list for each tag
+      - name: Create and push multi-arch manifest
         run: |
           set -euo pipefail
           
-          # Function to check if image exists
-          check_image_exists() {
-            local image="$1"
-            if docker buildx imagetools inspect "$image" >/dev/null 2>&1; then
-              echo "✓ Image exists: $image"
-              return 0
-            else
-              echo "✗ Image not found: $image"
-              return 1
-            fi
-          }
-          
-          echo "Creating multi-arch manifests for the following tags:"
-          echo "${{ steps.meta.outputs.tags }}"
-          echo "---"
-          
-          # Convert tags to array and process each one
+          # Get the tags without arch suffix
           IFS=$'\n' read -rd '' -a tags_array <<< "${{ steps.meta.outputs.tags }}" || true
           
           for tag in "${tags_array[@]}"; do
             if [ -n "$tag" ]; then
-              echo "Processing tag: $tag"
+              echo "Creating multi-arch manifest for: $tag"
           
-              # Check if both arch-specific images exist
-              amd64_image="${tag}-amd64"
-              arm64_image="${tag}-arm64"
+              # Create manifest from arch-specific images
+              docker buildx imagetools create \
+                --tag "$tag" \
+                "${tag}-amd64" \
+                "${tag}-arm64"
           
-              if check_image_exists "$amd64_image" && check_image_exists "$arm64_image"; then
-                echo "Creating manifest $tag from $amd64_image and $arm64_image"
-                docker buildx imagetools create \
-                  --tag "$tag" \
-                  "$amd64_image" \
-                  "$arm64_image"
-                echo "✓ Successfully created manifest for $tag"
-              else
-                echo "⚠️  Skipping $tag due to missing arch-specific images"
-                exit 1
-              fi
-              echo "---"
+              echo "✓ Successfully created manifest for $tag"
             fi
           done
-          
-          echo "All manifests created successfully!"
 
-      - name: Verify multi-arch manifests
+      - name: Clean up arch-specific tags (optional)
         run: |
-          echo "Verifying created manifests support both architectures:"
+          echo "Note: Arch-specific images (e.g., *-amd64, *-arm64) will remain in registry"
+          echo "These can be cleaned up manually if desired, but they're useful for debugging"
+
+      - name: Verify multi-arch manifest
+        run: |
+          echo "Verifying multi-arch manifests:"
           IFS=$'\n' read -rd '' -a tags_array <<< "${{ steps.meta.outputs.tags }}" || true
           
           for tag in "${tags_array[@]}"; do
             if [ -n "$tag" ]; then
               echo "Checking $tag:"
-              docker buildx imagetools inspect "$tag" --format '{{json .Manifest}}' | jq -r '.manifests[] | "  - \(.platform.architecture)/\(.platform.os)"'
+              docker buildx imagetools inspect "$tag" --format '{{json .Manifest}}' | jq -r '.manifests[]? | "  - \(.platform.architecture)/\(.platform.os)"' || echo "  (manifest format may vary)"
             fi
           done

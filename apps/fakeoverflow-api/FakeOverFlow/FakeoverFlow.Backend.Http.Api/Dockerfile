@@ -23,4 +23,4 @@ RUN dotnet publish "FakeoverFlow.Backend.Http.Api.csproj" -c $BUILD_CONFIGURATIO
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "FakeoverFlow.Backend.Http.Api.dll"]
+ENTRYPOINT ["dotnet", "/app/FakeoverFlow.Backend.Http.Api.dll"]

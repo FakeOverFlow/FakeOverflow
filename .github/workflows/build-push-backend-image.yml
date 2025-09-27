@@ -33,11 +33,7 @@ jobs:
             platform: linux/arm64
             runner: ubuntu-24.04-arm  # Native ARM64 runner
 
-    outputs:
-      image-digest-amd64: ${{ steps.build-amd64.outputs.digest }}
-      image-digest-arm64: ${{ steps.build-arm64.outputs.digest }}
-      registry: ${{ env.REGISTRY }}
-      image-name: ${{ env.IMAGE_NAME }}
+    # Remove outputs section since we can't use matrix values here
 
     steps:
       - name: Checkout
@@ -90,7 +86,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.arch }}
           cache-to: type=gha,mode=max,scope=${{ matrix.arch }}
-          outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true
+
 
   manifest:
     name: Create Multi-Arch Manifest

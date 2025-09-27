@@ -7,7 +7,6 @@ services:
       - BUILD_CONFIGURATION=Release
 
     volumes:
-      - "/opt/fakeoverflow/data:/app/"
       - "/opt/fakeoverflow/config/appsettings.json:/app/appsettings.json"
     restart: unless-stopped
     logging:
@@ -15,3 +14,10 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+  cloudflared-tunnel:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    restart: unless-stopped
+    env_file:
+      - .env

@@ -1,0 +1,17 @@
+services:
+  backend:
+    image: ghcr.io/fakeoverflow/fakeoverflow-backend:latest
+    ports:
+      - "8080:80"
+    environment:
+      - BUILD_CONFIGURATION=Release
+
+    volumes:
+      - "/opt/fakeoverflow/data:/app/"
+      - "/opt/fakeoverflow/config/appsettings.json:/app/appsettings.json"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

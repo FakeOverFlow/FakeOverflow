@@ -30,13 +30,9 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << 'EOF'
             set -e
-            echo "Connected successfully to Server"
-          
-            # Navigate to your project directory
+            echo "Connected successfully to Server"          
             cd /opt/fakeoverflow/
-                    
-            # Run your deployment script
-            sh .deploy.sh
+            sh deploy.sh
           
             echo "Deployment completed successfully"
           EOF

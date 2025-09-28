@@ -1,5 +1,4 @@
 import {Component, inject, signal} from '@angular/core';
-import {Navbar} from '@shared/navbar/navbar';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {InputText} from 'primeng/inputtext';
 import {Password} from 'primeng/password';
@@ -14,7 +13,6 @@ import {HotToastService} from '@ngxpert/hot-toast';
 @Component({
   selector: 'app-login',
   imports: [
-    Navbar,
     FormsModule,
     InputText,
     ReactiveFormsModule,

@@ -147,7 +147,7 @@ public static class BootstrapExtensions
                     builder.AllowAnyMethod();
                     builder.AllowAnyHeader();
                     builder.AllowCredentials();
-                    builder.WithOrigins([frontendUrl]);
+                    builder.WithOrigins(frontendUrl.Split(","));
                 });
             });
         

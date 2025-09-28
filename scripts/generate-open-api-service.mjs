@@ -24,12 +24,19 @@ function validateSwaggerUrl(url) {
     return url.startsWith("http://") || url.startsWith("https://");
 }
 
-const rootFiles = ['package.json', 'tsconfig.json'];
-const installablePackages = [{
-    name: 'tslib',
-    version: '2.8.1',
-    dev: false
-}]
+const rootFiles = [];
+const installablePackages = [
+    {
+        name: 'tslib',
+        version: '2.8.1',
+        dev: false
+    },
+    {
+        name: 'typescript',
+        version: '5.9.2',
+        dev: true
+    }
+]
 
 // START LOGIC FROM HERE
 const API_URL = "https://api-fof.alenalex.me/swagger/v1/swagger.json";
@@ -48,7 +55,7 @@ const main = async () => {
 
     console.log("The swagger URL has been set to: " + swaggerUrl);
 
-    const outputDir = path.resolve(__dirname, "../packages/fakeoverflow-angular-services/src/");
+    const outputDir = path.resolve(__dirname, "../packages/fakeoverflow-angular-services/");
 
     try {
         console.log("Generating client with OpenAPI Generator CLI...");
@@ -88,6 +95,10 @@ const main = async () => {
             console.log("Executing:", command);
             execSync(command, { stdio: 'inherit' });
         })
+
+        execSync(`pnpm install`, { stdio: 'inherit' });
+
+        execSync(`pnpm --filter fakeoverflow-angular-services run build`, { stdio: 'inherit' });
 
     } catch (error) {
         console.error("❌ Failed to generate client:", error.message);

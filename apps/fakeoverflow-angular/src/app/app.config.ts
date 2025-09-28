@@ -13,7 +13,7 @@ import {provideHotToastConfig} from '@ngxpert/hot-toast';
 import {providePrimeNG} from 'primeng/config';
 import {initializeAuthentications, overrideLoggers} from '@utils/initializers.utils';
 import {environment} from '@environments/environment';
-import {provideApi} from '../../../../packages/fakeoverflow-angular-services/src';
+import { provideApi } from "fakeoverflow-angular-services";
 
 export const appConfig: ApplicationConfig = {
   providers: [

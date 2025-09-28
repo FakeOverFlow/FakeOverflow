@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using FakeoverFlow.Backend.Http.Api;
+using FakeoverFlow.Backend.Http.Api.Abstracts.Clients;
 using FakeoverFlow.Backend.Http.Api.Constants;
 using FakeoverFlow.Backend.Http.Api.Extensions;
 using FastEndpoints;

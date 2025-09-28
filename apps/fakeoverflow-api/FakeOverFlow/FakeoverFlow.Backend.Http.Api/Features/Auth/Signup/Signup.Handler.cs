@@ -21,6 +21,7 @@ public static partial class Signup
             Post("/signup");
             Group<AuthGroup>();
             Validator<Validator>();
+            AllowAnonymous();
         }
 
         public override async Task<Results<Created<Response>, ErrorResponse, ProblemDetails>> ExecuteAsync(Request req, CancellationToken ct)

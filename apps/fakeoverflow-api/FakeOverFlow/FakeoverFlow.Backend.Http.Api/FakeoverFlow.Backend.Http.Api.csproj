@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="AWSSDK.S3" Version="4.0.7.4" />
         <PackageReference Include="FastEndpoints" Version="7.0.1" />
         <PackageReference Include="FastEndpoints.Security" Version="7.0.1" />
         <PackageReference Include="FastEndpoints.Swagger" Version="7.0.1" />

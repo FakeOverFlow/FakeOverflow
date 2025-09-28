@@ -31,9 +31,46 @@ services:
       -c random_page_cost=1.1
       -c effective_io_concurrency=200
 
+  localstack:
+    container_name: localstack-s3
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+      - "4510-4559:4510-4559"
+    environment:
+      SERVICES: s3                    # Only enable S3 service (lightweight)
+      DEBUG: 0                        # Set to 1 for debug logs
+      PERSISTENCE: 1                  # Enable persistence across restarts
 
+      # S3 specific configuration
+      S3_SKIP_SIGNATURE_VALIDATION: 0 # Keep signature validation for realistic testing
+      S3_SKIP_KMS_KEY_VALIDATION: 1   # Skip KMS validation (not needed for basic S3)
+
+      # Network configuration
+      HOSTNAME_EXTERNAL: localstack-s3
+
+      # AWS credentials (can be anything for LocalStack)
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+
+      # Optional: Auto-create buckets on startup
+      S3_BUCKET_NOTIFICATION_DELAY: 0
+
+    volumes:
+      - localstack-data:/var/lib/localstack  # Persist data
+      - /var/run/docker.sock:/var/run/docker.sock  # Required for some features
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 volumes:
   fof_postgres_data:
+    driver: local
+  localstack-data:
     driver: local
 
 

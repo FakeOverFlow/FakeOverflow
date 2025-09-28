@@ -3,6 +3,7 @@ using System.Text;
 using FakeoverFlow.Backend.Abstraction.Context;
 using FakeoverFlow.Backend.Http.Api.Abstracts.Clients;
 using FakeoverFlow.Backend.Http.Api.Abstracts.Services;
+using FakeoverFlow.Backend.Http.Api.Clients;
 using FakeoverFlow.Backend.Http.Api.Constants;
 using FakeoverFlow.Backend.Http.Api.Context;
 using FakeoverFlow.Backend.Http.Api.Models.Accounts;
@@ -15,6 +16,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
@@ -32,6 +34,7 @@ public static class BootstrapExtensions
         builder.ConfigureCors();
         builder.Services.ConfigureContext();
         builder.Services.ConfigureDatabase(builder.Configuration);
+        builder.ConfigureS3();
         builder.ConfigureAuthentication();
         builder.ConfigureFastEndpoint();
         
@@ -154,6 +157,23 @@ public static class BootstrapExtensions
         Log.Logger.Information("Cors endpoints configured to {Endpoint}.", [frontendUrl]);
     }
 
+    private static void ConfigureS3(this WebApplicationBuilder builder)
+    {
+        builder.Services.Configure<StorageOptions>(builder.Configuration.GetSection(StorageOptions.SectionName));
+        builder.Services.AddSingleton<IStorageClient>(serviceProvider =>
+        {
+            var options = serviceProvider.GetRequiredService<IOptions<StorageOptions>>().Value;
+            Log.Logger.Information("Storage configured with {option}", options.Provider);       
+
+            return options.Provider.ToLowerInvariant() switch
+            {
+                "s3" => new S3StorageClient(serviceProvider.GetRequiredService<IOptions<StorageOptions>>()),
+                _ => throw new InvalidOperationException($"Unknown storage provider: {options.Provider}")
+            };
+        });
+        
+    }
+    
     private static void ConfigureAuthentication(this WebApplicationBuilder builder)
     {
         var jwtOptions = builder.Configuration.GetSection("JwtSettings").Get<JwtOptions>();

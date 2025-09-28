@@ -14,11 +14,12 @@ internal partial class Refresh
         IConfiguration configuration,
         IUserService userService,
         ILogger<Refresh> logger
-        ) : Endpoint<Request, Results<Ok<Response>, ErrorResponse, ProblemDetails>>
+        ) : EndpointWithoutRequest<Results<Ok<Response>, ErrorResponse, ProblemDetails>>
     {
-        public override async Task<Results<Ok<Response>, ErrorResponse, ProblemDetails>> ExecuteAsync(Request req, CancellationToken ct)
+        public override async Task<Results<Ok<Response>, ErrorResponse, ProblemDetails>> ExecuteAsync( CancellationToken ct)
         {
-            var reqAccessToken = req.AccessToken;
+            var reqAccessToken = HttpContext.Request.Headers["Authorization"];
+            var refreshTokenHeader = HttpContext.Request.Headers["X-RefreshToken"];
             // Get the user id from the token
             if (!HttpContext.User.Identity?.IsAuthenticated ?? false)
             {
@@ -53,6 +54,13 @@ internal partial class Refresh
             var oldRefreshToken  = await userService.GetRefreshTokenOf(userIdValue, jtiValue, checkExpiry: true, checkRevoked: true, cancellationToken: ct);
             if (oldRefreshToken.IsFailure)
                 return oldRefreshToken.Error!.ToFastEndpointError();
+
+            if (oldRefreshToken.Value!.Id != refreshTokenHeader)
+                return new ErrorResponse()
+                {
+                    Message = "Invalid refresh token",
+                    StatusCode = StatusCodes.Status401Unauthorized,
+                };
             
             var tokenId = Ulid.NewUlid().ToString();
             var jwtOptions = configuration.GetSection("JwtSettings").Get<JwtOptions>();

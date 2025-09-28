@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using FakeoverFlow.Backend.Http.Api;
+using FakeoverFlow.Backend.Http.Api.Constants;
 using FakeoverFlow.Backend.Http.Api.Extensions;
 using FastEndpoints;
 using FastEndpoints.Swagger;
@@ -17,6 +18,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 app.ConfigureProblemDetails();
+app.UseCors(AppConstants.CorsPolicy);
 app.UseHttpsRedirection();
 app.UseAuthentication()
     .UseAuthorization()

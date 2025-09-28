@@ -1,6 +1,7 @@
 name: Generate Migration SQL Scripts
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:

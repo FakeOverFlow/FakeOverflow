@@ -7,5 +7,6 @@ export * from './fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupResponse';
 export * from './fastEndpointsErrorResponse';
 export * from './fastEndpointsProblemDetails';
 export * from './fastEndpointsProblemDetailsError';
+export * from './microsoftAspNetCoreHttpHttpResultsNoContent';
 export * from './microsoftAspNetCoreHttpHttpResultsOkOfResponse';
 export * from './microsoftAspNetCoreHttpHttpResultsOkOfResponse2';

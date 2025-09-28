@@ -27,6 +27,8 @@ import { FastEndpointsErrorResponse } from '../model/fastEndpointsErrorResponse'
 // @ts-ignore
 import { FastEndpointsProblemDetails } from '../model/fastEndpointsProblemDetails';
 // @ts-ignore
+import { MicrosoftAspNetCoreHttpHttpResultsNoContent } from '../model/microsoftAspNetCoreHttpHttpResultsNoContent';
+// @ts-ignore
 import { MicrosoftAspNetCoreHttpHttpResultsOkOfResponse } from '../model/microsoftAspNetCoreHttpHttpResultsOkOfResponse';
 // @ts-ignore
 import { MicrosoftAspNetCoreHttpHttpResultsOkOfResponse2 } from '../model/microsoftAspNetCoreHttpHttpResultsOkOfResponse2';
@@ -100,6 +102,58 @@ export class AuthService extends BaseService {
             {
                 context: localVarHttpContext,
                 body: fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public logout(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<MicrosoftAspNetCoreHttpHttpResultsNoContent>;
+    public logout(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<MicrosoftAspNetCoreHttpHttpResultsNoContent>>;
+    public logout(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<MicrosoftAspNetCoreHttpHttpResultsNoContent>>;
+    public logout(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (JWTBearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('JWTBearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/auth/logout`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<MicrosoftAspNetCoreHttpHttpResultsNoContent>('delete', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,

@@ -14,14 +14,15 @@ using NpgsqlTypes;
 namespace FakeoverFlow.Backend.Http.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250928121204_refresh-token")]
-    partial class refreshtoken
+    [Migration("20250928130737_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("public")
                 .HasAnnotation("ProductVersion", "9.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -60,7 +61,7 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
 
                     b.HasIndex("Id", "UserId", "ExpiresOn");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", "public");
                 });
 
             modelBuilder.Entity("FakeoverFlow.Backend.Http.Api.Models.Accounts.UserAccount", b =>
@@ -152,7 +153,7 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("VectorText"), "GIN");
 
-                    b.ToTable("UserAccounts");
+                    b.ToTable("UserAccounts", "public");
                 });
 
             modelBuilder.Entity("FakeoverFlow.Backend.Http.Api.Models.Accounts.UserAccountVerification", b =>
@@ -171,7 +172,7 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("UserAccountVerifications");
+                    b.ToTable("UserAccountVerifications", "public");
                 });
 
             modelBuilder.Entity("FakeoverFlow.Backend.Http.Api.Models.Accounts.RefreshTokens", b =>
@@ -194,7 +195,7 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
 
                             b1.HasKey("UserAccountId");
 
-                            b1.ToTable("UserAccounts");
+                            b1.ToTable("UserAccounts", "public");
 
                             b1.ToJson("Settings");
 

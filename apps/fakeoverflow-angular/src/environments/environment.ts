@@ -1,5 +1,5 @@
 export const environment = {
-  apiBaseUrl: '',
+  apiBaseUrl: 'https://api-fof.alenalex.me',
   ignoreLogs: false,
   production: false,
   useHashBasedRouting: false,

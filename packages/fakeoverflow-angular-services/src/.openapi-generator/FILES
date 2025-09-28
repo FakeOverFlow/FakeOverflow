@@ -17,6 +17,7 @@ model/fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupResponse.ts
 model/fastEndpointsErrorResponse.ts
 model/fastEndpointsProblemDetails.ts
 model/fastEndpointsProblemDetailsError.ts
+model/microsoftAspNetCoreHttpHttpResultsNoContent.ts
 model/microsoftAspNetCoreHttpHttpResultsOkOfResponse.ts
 model/microsoftAspNetCoreHttpHttpResultsOkOfResponse2.ts
 model/models.ts

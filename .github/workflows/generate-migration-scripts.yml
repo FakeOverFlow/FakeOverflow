@@ -45,6 +45,14 @@ jobs:
       - name: Install EF Core tools
         run: dotnet tool install --global dotnet-ef --version 9.0.0
 
+      - name: Preview migrations
+        run: |
+          echo "Listing migrations dir:"
+          ls -lR ${{ env.MIGRATIONS_DIR }}
+          echo "Git diff:"
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }}
+
+
       - name: Generate SQL Scripts
         shell: bash
         run: |

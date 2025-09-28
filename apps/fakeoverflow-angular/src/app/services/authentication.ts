@@ -5,6 +5,12 @@ import {Optional} from '@utils/types';
 import {ConfigKeys} from '@constants/config-keys.enums';
 import {Router} from '@angular/router';
 import {HotToastService} from '@ngxpert/hot-toast';
+import {
+  FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginResponse,
+  FakeoverFlowBackendHttpApiFeaturesMeGetGetMeResponse, MeService
+} from "fakeoverflow-angular-services";
+import {HttpClient} from '@angular/common/http';
+import {environment} from '@environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +20,7 @@ export class Authentication {
   private readonly loggedInIdentitySubject = new BehaviorSubject<Optional<Identity>>(undefined);
   private readonly router = inject(Router)
   private readonly toastService= inject(HotToastService)
+  private readonly httpClient = inject(HttpClient)
 
   public initAuthentication() {
     console.trace('Initializing authenticated identity...');
@@ -26,6 +33,34 @@ export class Authentication {
     const identity : Identity = JSON.parse(identityRaw);
     this.loggedInIdentitySubject.next(identity);
     console.info("Identity initialized: ", identity.id)
+
+    this.getIdentity(identity.secrets.accessToken)
+      .subscribe({
+        next: (res) => {
+          this.setIdentity({
+            identity: res,
+            secrets: identity.secrets
+          }, {
+            redirectAfterLogin: false,
+          })
+        },
+        error: (err) => {
+          console.error("Error loading identity", err);
+          this.logout({
+            redirectToLogout: true,
+            toastMessage: 'Failed to load identity. Please log in again.'
+          });
+        }
+      })
+  }
+
+  public getIdentity(accessToken?: string) : Observable<FakeoverFlowBackendHttpApiFeaturesMeGetGetMeResponse>{
+    console.trace('Loading/Refreshing identity...');
+    return this.httpClient.get<FakeoverFlowBackendHttpApiFeaturesMeGetGetMeResponse>(`${environment.apiBaseUrl}/me`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
   }
 
   /**
@@ -104,15 +139,20 @@ export class Authentication {
   }
 
   /**
-   * Sets the identity of the current user and manages the authentication model, including optional redirection.
+   * Sets the user's identity after authentication and performs optional redirection.
    *
-   * @param {any} identity - The identity object containing user information such as id, name, avatar URL, access token, and refresh token.
-   * @param {Object} [options] - Optional parameters for configuring the method behavior.
-   * @param {boolean} [options.redirectAfterLogin=true] - Indicates whether to redirect the user after setting the identity.
-   * @param {'forward-route' | string} [options.redirectTo='forward-route'] - Specifies the route to redirect to after login.
-   * @return {void} This method does not return any value.
+   * @param {Object} res Object containing the user's identity and authentication secrets.
+   * @param {FakeoverFlowBackendHttpApiFeaturesMeGetGetMeResponse} res.identity User's identity data.
+   * @param {FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginResponse} res.secrets User's authentication secrets.
+   * @param {Object} [options] Optional settings for redirection.
+   * @param {boolean} [options.redirectAfterLogin=true] Whether to navigate to the specified route after setting the identity. Defaults to true.
+   * @param {'forward-route' | string} [options.redirectTo='home'] Route to navigate to. Defaults to 'home' or a forward route if available.
+   * @return {void} This method does not return a value.
    */
-  public setIdentity(identity: any, options? : {
+  public setIdentity(res: {
+    identity: FakeoverFlowBackendHttpApiFeaturesMeGetGetMeResponse,
+    secrets: FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginResponse
+  }, options? : {
     redirectAfterLogin?: boolean,
     redirectTo?: 'forward-route' | string
   }): void {
@@ -120,14 +160,13 @@ export class Authentication {
       redirectToLogout: false
     });
 
-    // TODO
     const authModel : Identity = {
-      id: identity.id,
-      name: identity.name,
-      avatarUrl: identity.avatarUrl,
+      id: res.identity.id!,
+      name: res.identity.userName!,
+      avatarUrl: res.identity.profilePicture,
       secrets: {
-        accessToken: identity.accessToken,
-        refreshToken: identity.refreshToken
+        accessToken: res.secrets.accessToken!,
+        refreshToken: res.secrets.refreshToken!
       }
     }
     localStorage.setItem(ConfigKeys.IDENTITY, JSON.stringify(authModel));

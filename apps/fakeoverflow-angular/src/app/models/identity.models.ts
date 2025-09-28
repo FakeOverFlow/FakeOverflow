@@ -1,7 +1,7 @@
 export interface Identity {
   id: string;
   name: string;
-  avatarUrl?: string;
+  avatarUrl?: string | null;
   secrets: Credentials;
 }
 

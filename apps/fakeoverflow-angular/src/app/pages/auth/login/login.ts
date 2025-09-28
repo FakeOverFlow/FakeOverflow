@@ -68,9 +68,37 @@ export class Login {
         })
       )
       .subscribe({
-        next: (res) => {
-          const response = res.value;
+        next: (response) => {
           console.log(response);
+          const accessToken = response.accessToken;
+          this.authenticationService.getIdentity(accessToken)
+            .pipe(
+              this.toastService.observe({
+                loading: 'Loading identity...',
+                success: 'Identity loaded successfully!',
+                error: 'Failed to load identity!'
+              })
+            )
+            .subscribe({
+              next: (responseMe) => {
+                this.isLoading.set(false);
+                if(!responseMe){
+                  this.toastService.error('Failed to load identity!');
+                  return;
+                }
+
+                console.log(responseMe);
+                this.authenticationService
+                  .setIdentity({
+                    identity: responseMe,
+                    secrets: response
+                  })
+              },
+              error: (err) => {
+                this.isLoading.set(false);
+                console.error(err);
+              }
+            })
         },
         error: (err) => {
           this.isLoading.set(false);

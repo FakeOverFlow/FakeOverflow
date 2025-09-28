@@ -16,4 +16,14 @@ export const routes: Routes = [
       }
     ]
   },
+  {
+    path: 'home',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/home/home/home').then(m => m.Home),
+        title: 'Home | FakeOverflow'
+      }
+    ]
+  }
 ];

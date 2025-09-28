@@ -19,6 +19,8 @@ import { Observable }                                        from 'rxjs';
 // @ts-ignore
 import { FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest } from '../model/fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest';
 // @ts-ignore
+import { FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginResponse } from '../model/fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginResponse';
+// @ts-ignore
 import { FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest } from '../model/fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest';
 // @ts-ignore
 import { FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupResponse } from '../model/fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupResponse';
@@ -30,8 +32,6 @@ import { FastEndpointsProblemDetails } from '../model/fastEndpointsProblemDetail
 import { MicrosoftAspNetCoreHttpHttpResultsNoContent } from '../model/microsoftAspNetCoreHttpHttpResultsNoContent';
 // @ts-ignore
 import { MicrosoftAspNetCoreHttpHttpResultsOkOfResponse } from '../model/microsoftAspNetCoreHttpHttpResultsOkOfResponse';
-// @ts-ignore
-import { MicrosoftAspNetCoreHttpHttpResultsOkOfResponse2 } from '../model/microsoftAspNetCoreHttpHttpResultsOkOfResponse2';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -54,10 +54,10 @@ export class AuthService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public login(fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest: FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<MicrosoftAspNetCoreHttpHttpResultsOkOfResponse2>;
-    public login(fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest: FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<MicrosoftAspNetCoreHttpHttpResultsOkOfResponse2>>;
-    public login(fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest: FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<MicrosoftAspNetCoreHttpHttpResultsOkOfResponse2>>;
-    public login(fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest: FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public login(fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest: FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginResponse>;
+    public login(fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest: FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginResponse>>;
+    public login(fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest: FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginResponse>>;
+    public login(fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest: FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest === null || fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest === undefined) {
             throw new Error('Required parameter fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest was null or undefined when calling login.');
         }
@@ -65,7 +65,8 @@ export class AuthService extends BaseService {
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/json'
+            'application/json',
+            'application/problem+json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -98,7 +99,7 @@ export class AuthService extends BaseService {
 
         let localVarPath = `/auth/login`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<MicrosoftAspNetCoreHttpHttpResultsOkOfResponse2>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginResponse>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest,
@@ -221,10 +222,10 @@ export class AuthService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public signup(fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest: FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupResponse>;
-    public signup(fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest: FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupResponse>>;
-    public signup(fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest: FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupResponse>>;
-    public signup(fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest: FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public signup(fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest: FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupResponse>;
+    public signup(fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest: FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupResponse>>;
+    public signup(fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest: FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupResponse>>;
+    public signup(fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest: FakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest === null || fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest === undefined) {
             throw new Error('Required parameter fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest was null or undefined when calling signup.');
         }
@@ -235,7 +236,8 @@ export class AuthService extends BaseService {
         localVarHeaders = this.configuration.addCredentialToHeaders('JWTBearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/json'
+            'application/json',
+            'application/problem+json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);

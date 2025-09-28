@@ -10,12 +10,18 @@
 import { FastEndpointsProblemDetailsError } from './fastEndpointsProblemDetailsError';
 
 
+/**
+ * RFC7807 compatible problem details/ error response class. this can be used by configuring startup like so: app.UseFastEndpoints(c => c.Errors.UseProblemDetails())
+ */
 export interface FastEndpointsProblemDetails { 
     type?: string;
     title?: string;
     status?: number;
     instance?: string;
     traceId?: string;
+    /**
+     * the details of the error
+     */
     detail?: string | null;
     errors?: Array<FastEndpointsProblemDetailsError>;
 }

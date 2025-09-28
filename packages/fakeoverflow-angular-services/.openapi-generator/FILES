@@ -4,6 +4,7 @@ api.base.service.ts
 api.module.ts
 api/api.ts
 api/auth.service.ts
+api/me.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
@@ -14,12 +15,12 @@ model/fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginResponse.ts
 model/fakeoverFlowBackendHttpApiFeaturesAuthRefreshRefreshResponse.ts
 model/fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest.ts
 model/fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupResponse.ts
+model/fakeoverFlowBackendHttpApiFeaturesMeGetGetMeResponse.ts
 model/fastEndpointsErrorResponse.ts
 model/fastEndpointsProblemDetails.ts
 model/fastEndpointsProblemDetailsError.ts
 model/microsoftAspNetCoreHttpHttpResultsNoContent.ts
 model/microsoftAspNetCoreHttpHttpResultsOkOfResponse.ts
-model/microsoftAspNetCoreHttpHttpResultsOkOfResponse2.ts
 model/models.ts
 ng-package.json
 package.json

@@ -8,6 +8,7 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
     /// <inheritdoc />
     public partial class add_refresh_token_support : Migration
     {
+        
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {

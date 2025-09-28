@@ -4,7 +4,7 @@ using NpgsqlTypes;
 
 namespace FakeoverFlow.Backend.Http.Api.Models.Accounts;
 
-public class UserAccount : IEntity, IPutAuditableEntity, ISoftDeleteEntity, IVectorSearchableEntity
+public class UserAccount : IGuidEntity, IPutAuditableEntity, ISoftDeleteEntity, IVectorSearchableEntity
 {
     public Guid Id { get; set; }
     public Guid CreatedBy { get; set; }

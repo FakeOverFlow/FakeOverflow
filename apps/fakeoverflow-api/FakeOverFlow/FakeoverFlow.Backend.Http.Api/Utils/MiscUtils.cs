@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 namespace FakeoverFlow.Backend.Http.Api.Utils;
 
 public static class MiscUtils 
@@ -20,5 +22,10 @@ public static class MiscUtils
             dictionary.Add(keyValue[0], keyValue[1]);
         }
         return dictionary;
+    }
+    
+    public static ClaimsPrincipal GetPrincipalFromContext(this HttpContext context)
+    {
+        return context.User;
     }
 }

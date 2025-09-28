@@ -1,7 +1,6 @@
 namespace FakeoverFlow.Backend.Abstraction.Models;
 
-public interface IEntity
+public interface IEntity<TId>
 {
-    public Guid Id { get; protected set; }
-    
+    public TId Id { get; set; }
 }

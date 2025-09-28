@@ -13,9 +13,12 @@ public class AppDbContext : DbContext
 
     // Tables
     public DbSet<UserAccount> UserAccounts { get; set; } = null!;
-    
     public DbSet<UserAccountVerification> UserAccountVerifications { get; set; } = null!;
     
+    public DbSet<RefreshTokens> RefreshTokens { get; set; } = null!;
+
+    #region Internals
+
     protected AppDbContext(IContextFactory contextFactory)
     {
         _contextFactory = contextFactory;
@@ -44,11 +47,11 @@ public class AppDbContext : DbContext
         return await base.SaveChangesAsync(cancellationToken);
     }
     
-    private async Task ApplyAudit()
+    private Task ApplyAudit()
     {
         var entries = ChangeTracker.Entries();
         var requestContext = _contextFactory.RequestContext;
-        if (!requestContext.IsAuthenticated) return;
+        if (!requestContext.IsAuthenticated) return Task.CompletedTask;
         
         foreach (var entry in entries)
         {
@@ -73,5 +76,9 @@ public class AppDbContext : DbContext
                 }
             }
         }
+
+        return Task.CompletedTask;
     }
+
+    #endregion
 }

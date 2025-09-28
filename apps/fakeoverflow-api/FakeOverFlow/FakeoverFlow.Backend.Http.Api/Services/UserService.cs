@@ -80,7 +80,7 @@ public class UserService(
             return await CreateUserVerificationAsync(userId, cancellationToken);
 
         if (verifications.IsDisabled || verifications.IsDeleted)
-            return Result<UserAccountVerification>.Failure(Errors.Errors.UserAccounts.AccountDisabled);
+            return Result<UserAccountVerification>.Failure(Errors.Errors.AuthenticationErrors.AccountDisabled);
         
         return Result<UserAccountVerification>.Success(new UserAccountVerification()
         {
@@ -126,7 +126,7 @@ public class UserService(
         {
             // If no account if its username/password login, then stop the exectution
             if(request.Type == Login.AuthenticationType.Credentials)
-                return Result<UserAccount>.Failure(Errors.Errors.UserAccounts.NotFound);
+                return Result<UserAccount>.Failure(Errors.Errors.AuthenticationErrors.NotFound);
 
             // If no account if its google login, then create a new account
             var userCreationResult = await CreateUserAsync(new Signup.Request()
@@ -142,7 +142,7 @@ public class UserService(
             if (!userCreationResult.IsSuccess)
             {
                 logger.LogError("Failed to create a new user account for google login due to {Error}", string.Join(", ", userCreationResult.Error!.Description));
-                return Result<UserAccount>.Failure(Errors.Errors.UserAccounts.FailedToCreateOAuthAccount);
+                return Result<UserAccount>.Failure(Errors.Errors.AuthenticationErrors.FailedToCreateOAuthAccount);
             }
 
             return userCreationResult;
@@ -151,19 +151,19 @@ public class UserService(
         if (account.IsDisabled || account.IsDeleted)
         {
             logger.LogTrace("User {UserId} is disabled", account.Id);
-            return Result<UserAccount>.Failure(Errors.Errors.UserAccounts.AccountDisabled);
+            return Result<UserAccount>.Failure(Errors.Errors.AuthenticationErrors.AccountDisabled);
         }
 
         if (account.Password is null)
         {
             logger.LogWarning("User is signed up using GoogleOAuth");
-            return Result<UserAccount>.Failure(Errors.Errors.UserAccounts.InvalidLoginMethod);
+            return Result<UserAccount>.Failure(Errors.Errors.AuthenticationErrors.InvalidLoginMethod);
         }
 
         if (string.IsNullOrWhiteSpace(request.Password))
         {
             logger.LogWarning("Password is empty");
-            return Result<UserAccount>.Failure(Errors.Errors.UserAccounts.InvalidLoginMethod);
+            return Result<UserAccount>.Failure(Errors.Errors.AuthenticationErrors.InvalidLoginMethod);
         }
 
         var passwordString = Encoding.UTF8.GetString(account.Password);
@@ -176,7 +176,7 @@ public class UserService(
         // dbContext.UserAccounts.FromSqlInterpolated(
         //     "UPDATE UserAccounts SET LastInvalidLoginDate = {now}, AttemptCount = AttemptCount + 1 WHERE Id = {userId}");
         
-        return Result<UserAccount>.Failure(Errors.Errors.UserAccounts.InvalidCredentials);
+        return Result<UserAccount>.Failure(Errors.Errors.AuthenticationErrors.InvalidCredentials);
     }
 
     private async Task<Result<UserAccountVerification>> CreateUserVerificationAsync(Guid userId, CancellationToken? cancellationToken = default)
@@ -203,4 +203,85 @@ public class UserService(
             return Result<UserAccountVerification>.Failure(Errors.Errors.UnknownError);
         }
     }
+
+    public async Task<Result<RefreshTokens>> CreateRefreshTokenForUserAsync(Guid userId, string jti, CancellationToken? cancellationToken = default)
+    {
+        logger.LogDebug("Trying to create a refresh token for user {UserId}", userId);
+        try
+        {
+            var token = new RefreshTokens()
+            {
+                Id = Ulid.NewUlid().ToString(),
+                JTI = jti,
+                UserId = userId,
+                CreatedOn = DateTimeOffset.UtcNow,
+                ExpiresOn = DateTimeOffset.UtcNow.AddDays(10),
+                RevokedOn = null,
+            };
+            
+            dbContext.RefreshTokens.Add(token);
+            await dbContext.SaveChangesAsync();
+            return Result<RefreshTokens>.Success(token);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error creating refresh token for user {UserId}", userId);
+            return Result<RefreshTokens>.Failure(Errors.Errors.UnknownError);
+        }
+    }
+    
+
+    public async Task DeleteRefreshTokenAsync(Guid userId, string jti, CancellationToken? cancellationToken = default)
+    {
+        try
+        {
+            await dbContext.RefreshTokens.Where(x => x.UserId == userId && x.JTI == jti).ExecuteDeleteAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error deleting refresh token for user {UserId}", userId);
+        }
+    }
+
+    public async Task<Result<RefreshTokens>> GetRefreshTokenOf(Guid userId, string jti, bool track = false, bool checkExpiry = true, bool checkRevoked = true,
+        bool revokeOnCall = false, CancellationToken? cancellationToken = default)
+    {
+        try
+        {
+            var queryable = dbContext.RefreshTokens.AsQueryable();
+            if (!track || revokeOnCall)
+            {
+                queryable = queryable.AsNoTracking();
+            }
+
+            if (checkExpiry)
+            {
+                queryable = queryable.Where(x => x.ExpiresOn > DateTimeOffset.UtcNow);
+            }
+
+            if (checkRevoked)
+            {
+                queryable = queryable.Where(x => x.RevokedOn == null);
+            }
+            
+            queryable = queryable.Include(x => x.Account);
+            var token = queryable.FirstOrDefault(x => x.UserId == userId && x.JTI == jti);
+            
+            if(token is null)
+                return Result<RefreshTokens>.Failure(Errors.Errors.AuthenticationErrors.InvalidToken);
+
+            if (revokeOnCall)
+            {
+                await dbContext.RefreshTokens.Where(x => x.Id == token.Id).ExecuteDeleteAsync();
+            }
+            
+            return Result<RefreshTokens>.Success(token);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error getting refresh token for user {UserId}", userId);
+            return Result<RefreshTokens>.Failure(Errors.Errors.UnknownError);
+        }
+    }
+    
 }

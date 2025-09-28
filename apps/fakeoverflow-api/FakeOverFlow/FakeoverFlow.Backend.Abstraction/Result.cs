@@ -6,6 +6,8 @@ public record Result
 {
     public bool IsSuccess { get; }
     public Error? Error { get; }
+    
+    public bool IsFailure => !IsSuccess;
 
     protected Result(bool isSuccess, Error? error)
     {

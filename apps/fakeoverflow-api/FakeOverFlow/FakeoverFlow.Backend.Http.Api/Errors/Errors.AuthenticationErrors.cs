@@ -4,7 +4,7 @@ namespace FakeoverFlow.Backend.Http.Api.Errors;
 
 public partial class Errors
 {
-    public static class UserAccounts
+    public static class AuthenticationErrors
     {
         /// <summary>
         /// Represents an error indicating that the user's account has been disabled.
@@ -65,6 +65,14 @@ public partial class Errors
         /// specifying that the credentials are invalid.
         /// </summary>
         public static readonly Error InvalidCredentials = new Error("INVALID_CREDENTIALS", ErrorType.BadRequest, "Invalid credentials");
+
+        /// <summary>
+        /// Represents an error indicating that the provided token is invalid.
+        /// This error has the identifier "INVALID_TOKEN", belongs to the
+        /// <see cref="ErrorType.BadRequest"/> category, and includes a description
+        /// specifying that the token is invalid.
+        /// </summary>
+        public static readonly Error InvalidToken = new Error("INVALID_TOKEN", ErrorType.BadRequest, "Invalid token");
     }
     
 }

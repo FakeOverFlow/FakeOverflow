@@ -6,9 +6,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FakeoverFlow.Backend.Http.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class add_refresh_token_support : Migration
+    public partial class refreshtoken : Migration
     {
-        
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {

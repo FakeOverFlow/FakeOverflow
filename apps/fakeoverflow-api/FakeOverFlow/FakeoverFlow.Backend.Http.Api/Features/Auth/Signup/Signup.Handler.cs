@@ -16,12 +16,6 @@ public static partial class Signup
             Description(x =>
             {
                 x.WithName("Signup");
-                x.Produces<Response>(201);
-                x.Produces<ProblemDetails>(400);
-                x.Produces<ProblemDetails>(401);
-                x.Produces<ProblemDetails>(404);
-                x.Produces<ProblemDetails>(409);
-                x.Produces<ProblemDetails>(500);
             });
 
             Post("/signup");

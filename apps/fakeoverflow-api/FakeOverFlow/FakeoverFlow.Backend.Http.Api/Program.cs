@@ -32,7 +32,7 @@ using (var scope = app.Services.CreateScope())
 {
     Log.Logger.Information("Initializing database seeding");   
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    context.Database.Migrate();
+    await context.Database.EnsureCreatedAsync();
     await context.SeedAsync(CancellationToken.None);
 }
 

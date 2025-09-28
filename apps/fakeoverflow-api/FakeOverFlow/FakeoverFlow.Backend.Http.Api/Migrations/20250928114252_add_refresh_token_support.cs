@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FakeoverFlow.Backend.Http.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class added_refresh_token : Migration
+    public partial class add_refresh_token_support : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -47,8 +47,7 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_UserId",
                 table: "RefreshTokens",
-                column: "UserId",
-                unique: true);
+                column: "UserId");
         }
 
         /// <inheritdoc />

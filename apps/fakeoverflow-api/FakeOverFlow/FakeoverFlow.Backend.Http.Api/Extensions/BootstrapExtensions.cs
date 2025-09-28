@@ -166,12 +166,12 @@ public static class BootstrapExtensions
         Log.Logger.Information("JwtSettings has been identified. {Audience}", jwtOptions.Audience);
         builder.Services.AddAuthenticationJwtBearer(sOptions =>
         {
-            sOptions.SigningKey = jwtOptions.SigningKey;
-            sOptions.SigningStyle = TokenSigningStyle.Symmetric;
+            
         }, bearerOptions =>
         {
             bearerOptions.TokenValidationParameters = new TokenValidationParameters()
             {
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SigningKey)),
                 ValidAudience = jwtOptions.Audience,
                 ValidIssuer = jwtOptions.Issuer,
                 ValidateAudience = true,

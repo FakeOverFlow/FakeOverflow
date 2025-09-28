@@ -50,8 +50,7 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.HasIndex("JTI", "UserId")
                         .IsUnique();
@@ -175,8 +174,8 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
             modelBuilder.Entity("FakeoverFlow.Backend.Http.Api.Models.Accounts.RefreshTokens", b =>
                 {
                     b.HasOne("FakeoverFlow.Backend.Http.Api.Models.Accounts.UserAccount", "Account")
-                        .WithOne()
-                        .HasForeignKey("FakeoverFlow.Backend.Http.Api.Models.Accounts.RefreshTokens", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

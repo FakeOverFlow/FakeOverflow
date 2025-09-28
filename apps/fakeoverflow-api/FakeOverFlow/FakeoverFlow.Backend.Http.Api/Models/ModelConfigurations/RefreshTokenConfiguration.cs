@@ -11,8 +11,8 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshTokens>
         builder.HasKey(x => x.Id);
         
         builder.HasOne(x => x.Account)
-            .WithOne()
-            .HasForeignKey<RefreshTokens>(x => x.UserId);
+            .WithMany()
+            .HasForeignKey(x => x.UserId);
         
         builder.Property(x => x.RevokedOn)
             .IsRequired(false);

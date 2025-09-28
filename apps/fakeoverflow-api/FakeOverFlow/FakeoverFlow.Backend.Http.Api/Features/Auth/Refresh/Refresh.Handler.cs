@@ -19,7 +19,7 @@ internal partial class Refresh
         public override async Task<Results<Ok<Response>, ErrorResponse, ProblemDetails>> ExecuteAsync( CancellationToken ct)
         {
             var reqAccessToken = HttpContext.Request.Headers["Authorization"];
-            var refreshTokenHeader = HttpContext.Request.Headers["X-RefreshToken"];
+            var refreshTokenHeader = HttpContext.Request.Headers["X-Refresh-Token"];
             // Get the user id from the token
             if (!HttpContext.User.Identity?.IsAuthenticated ?? false)
             {
@@ -42,7 +42,7 @@ internal partial class Refresh
 
             var jtiValue = jti.Value;
             var rawUserIdValue = userId.Value;
-            if (Guid.TryParse(rawUserIdValue, out var userIdValue))
+            if (!Guid.TryParse(rawUserIdValue, out var userIdValue))
             {
                 return new ErrorResponse()
                 {
@@ -51,7 +51,7 @@ internal partial class Refresh
                 };
             }
 
-            var oldRefreshToken  = await userService.GetRefreshTokenOf(userIdValue, jtiValue, checkExpiry: true, checkRevoked: true, cancellationToken: ct);
+            var oldRefreshToken  = await userService.GetRefreshTokenOf(userIdValue, jtiValue, checkExpiry: true, checkRevoked: true, revokeOnCall:true, cancellationToken: ct);
             if (oldRefreshToken.IsFailure)
                 return oldRefreshToken.Error!.ToFastEndpointError();
 
@@ -77,7 +77,9 @@ internal partial class Refresh
             
             
             var tokenExpiryOn = DateTime.UtcNow.AddMinutes(jwtOptions.ExpiryMinutes);
-            var token = JwtBearer.CreateToken(refreshToken.Value!.Account.JwtCreationOptions(jwtOptions, tokenExpiryOn, tokenId));
+            // Temp workaround for refresh token expiry, At the time of creation, new refresh token is created won't
+            // have the account (It will be null), so use the same account from the old refresh token
+            var token = JwtBearer.CreateToken(oldRefreshToken.Value!.Account.JwtCreationOptions(jwtOptions, tokenExpiryOn, tokenId));
 
             return TypedResults.Ok(new Response()
             {

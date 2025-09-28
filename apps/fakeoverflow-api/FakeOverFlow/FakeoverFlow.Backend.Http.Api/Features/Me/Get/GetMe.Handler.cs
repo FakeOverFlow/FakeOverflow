@@ -19,10 +19,6 @@ public static partial class GetMe
             Description(x =>
             {
                 x.WithName("me");
-                x.Produces<Response>(200);
-                x.Produces<ProblemDetails>(401);
-                x.Produces<ProblemDetails>(500);
-                x.Produces<ProblemDetails>(404);
             });
         }
 

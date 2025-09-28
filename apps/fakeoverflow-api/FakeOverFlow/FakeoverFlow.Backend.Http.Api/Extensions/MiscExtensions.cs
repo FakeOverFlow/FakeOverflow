@@ -19,7 +19,7 @@ public static class MiscExtensions
         {
             x.SigningKey = jwtOptions.SigningKey;
             x.ExpireAt = tokenExpiryOn;
-            x.User.Roles.Add(nameof(userAccount.Role));
+            x.User.Roles.Add(userAccount.Role.ToString());
             x.Audience = jwtOptions.Audience;
             x.Issuer = jwtOptions.Issuer;
             x.User.Claims.Add(new Claim(ClaimTypes.NameIdentifier, userAccount.Id.ToString()));

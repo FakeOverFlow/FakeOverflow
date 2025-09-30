@@ -14,7 +14,7 @@ using NpgsqlTypes;
 namespace FakeoverFlow.Backend.Http.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250928130737_Initial")]
+    [Migration("20250930114253_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -81,11 +81,6 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -95,11 +90,6 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
 
                     b.Property<byte[]>("Password")
                         .HasColumnType("bytea");
@@ -126,7 +116,7 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("tsvector")
                         .HasAnnotation("Npgsql:TsVectorConfig", "english")
-                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "FirstName", "LastName", "Email", "Username" });
+                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "Email", "Username" });
 
                     b.Property<DateTimeOffset?>("VerifiedOn")
                         .HasColumnType("timestamp with time zone");

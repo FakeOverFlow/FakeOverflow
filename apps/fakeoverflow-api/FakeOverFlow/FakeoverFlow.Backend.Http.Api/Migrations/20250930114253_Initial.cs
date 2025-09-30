@@ -32,9 +32,7 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     VectorText = table.Column<NpgsqlTsVector>(type: "tsvector", nullable: false)
                         .Annotation("Npgsql:TsVectorConfig", "english")
-                        .Annotation("Npgsql:TsVectorProperties", new[] { "FirstName", "LastName", "Email", "Username" }),
-                    FirstName = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    LastName = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                        .Annotation("Npgsql:TsVectorProperties", new[] { "Email", "Username" }),
                     Email = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Username = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Password = table.Column<byte[]>(type: "bytea", nullable: true),

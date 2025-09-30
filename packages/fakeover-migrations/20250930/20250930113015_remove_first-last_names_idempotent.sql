@@ -149,6 +149,13 @@ END $EF$;
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20250930113015_remove_first-last_names') THEN
+    ALTER TABLE public."UserAccounts" DROP COLUMN "VectorText";
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20250930113015_remove_first-last_names') THEN
     ALTER TABLE public."UserAccounts" DROP COLUMN "FirstName";
     END IF;
 END $EF$;
@@ -163,14 +170,14 @@ END $EF$;
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20250930113015_remove_first-last_names') THEN
-    ALTER TABLE public."UserAccounts" DROP COLUMN "VectorText";
+    ALTER TABLE public."UserAccounts" ADD "VectorText" tsvector GENERATED ALWAYS AS (to_tsvector('english', "Email" || ' ' || "Username")) STORED NOT NULL;
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20250930113015_remove_first-last_names') THEN
-    ALTER TABLE public."UserAccounts" ADD "VectorText" tsvector GENERATED ALWAYS AS (to_tsvector('english', "Email" || ' ' || "Username")) STORED NOT NULL;
+    CREATE INDEX "IX_UserAccounts_VectorText" ON public."UserAccounts" USING GIN ("VectorText");
     END IF;
 END $EF$;
 

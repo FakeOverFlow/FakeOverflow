@@ -21,18 +21,19 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
                 schema: "public",
                 table: "UserAccounts");
 
-            migrationBuilder.AlterColumn<NpgsqlTsVector>(
+            migrationBuilder.DropColumn(
                 name: "VectorText",
                 schema: "public",
-                table: "UserAccounts",
-                type: "tsvector",
-                nullable: false,
-                oldClrType: typeof(NpgsqlTsVector),
-                oldType: "tsvector")
+                table: "UserAccounts");
+
+            migrationBuilder.AddColumn<NpgsqlTsVector>(
+                    name: "VectorText",
+                    schema: "public",
+                    table: "UserAccounts",
+                    type: "tsvector",
+                    nullable: false)
                 .Annotation("Npgsql:TsVectorConfig", "english")
-                .Annotation("Npgsql:TsVectorProperties", new[] { "Email", "Username" })
-                .OldAnnotation("Npgsql:TsVectorConfig", "english")
-                .OldAnnotation("Npgsql:TsVectorProperties", new[] { "FirstName", "LastName", "Email", "Username" });
+                .Annotation("Npgsql:TsVectorProperties", new[] { "Email", "Username" });
         }
 
         /// <inheritdoc />

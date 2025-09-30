@@ -12,6 +12,11 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
+                name: "VectorText",
+                schema: "public",
+                table: "UserAccounts");
+
+            migrationBuilder.DropColumn(
                 name: "FirstName",
                 schema: "public",
                 table: "UserAccounts");
@@ -21,12 +26,7 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
                 schema: "public",
                 table: "UserAccounts");
 
-            migrationBuilder.DropColumn(
-                name: "VectorText",
-                schema: "public",
-                table: "UserAccounts");
-
-            migrationBuilder.AddColumn<NpgsqlTsVector>(
+            migrationBuilder.AddColumn<NpgsqlTypes.NpgsqlTsVector>(
                     name: "VectorText",
                     schema: "public",
                     table: "UserAccounts",
@@ -34,24 +34,24 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
                     nullable: false)
                 .Annotation("Npgsql:TsVectorConfig", "english")
                 .Annotation("Npgsql:TsVectorProperties", new[] { "Email", "Username" });
+
+            migrationBuilder.CreateIndex(
+                    name: "IX_UserAccounts_VectorText",
+                    schema: "public",
+                    table: "UserAccounts",
+                    column: "VectorText")
+                .Annotation("Npgsql:IndexMethod", "GIN");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<NpgsqlTsVector>(
+            migrationBuilder.DropColumn(
                 name: "VectorText",
                 schema: "public",
-                table: "UserAccounts",
-                type: "tsvector",
-                nullable: false,
-                oldClrType: typeof(NpgsqlTsVector),
-                oldType: "tsvector")
-                .Annotation("Npgsql:TsVectorConfig", "english")
-                .Annotation("Npgsql:TsVectorProperties", new[] { "FirstName", "LastName", "Email", "Username" })
-                .OldAnnotation("Npgsql:TsVectorConfig", "english")
-                .OldAnnotation("Npgsql:TsVectorProperties", new[] { "Email", "Username" });
+                table: "UserAccounts");
 
+            // Add back FirstName + LastName
             migrationBuilder.AddColumn<string>(
                 name: "FirstName",
                 schema: "public",
@@ -69,6 +69,23 @@ namespace FakeoverFlow.Backend.Http.Api.Migrations
                 maxLength: 20,
                 nullable: false,
                 defaultValue: "");
+
+            // Recreate VectorText using old definition
+            migrationBuilder.AddColumn<NpgsqlTypes.NpgsqlTsVector>(
+                    name: "VectorText",
+                    schema: "public",
+                    table: "UserAccounts",
+                    type: "tsvector",
+                    nullable: false)
+                .Annotation("Npgsql:TsVectorConfig", "english")
+                .Annotation("Npgsql:TsVectorProperties", new[] { "FirstName", "LastName", "Email", "Username" });
+
+            migrationBuilder.CreateIndex(
+                    name: "IX_UserAccounts_VectorText",
+                    schema: "public",
+                    table: "UserAccounts",
+                    column: "VectorText")
+                .Annotation("Npgsql:IndexMethod", "GIN");
         }
     }
 }

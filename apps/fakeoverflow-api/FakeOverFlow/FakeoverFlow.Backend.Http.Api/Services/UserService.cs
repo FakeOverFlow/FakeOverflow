@@ -133,8 +133,6 @@ public class UserService(
                 Email = string.Empty,
                 Password = null,
                 Username = request.UserName,
-                FirstName = string.Empty,
-                LastName = string.Empty,
             }, verifyEmail: true, cancellationToken: cancellationToken);
             
             // Stop execution if the user creation failed
@@ -152,6 +150,12 @@ public class UserService(
             logger.LogTrace("User {UserId} is disabled", account.Id);
             return Result<UserAccount>.Failure(Errors.Errors.AuthenticationErrors.AccountDisabled);
         }
+
+        if (account.VerifiedOn is null)
+        {
+            logger.LogTrace("User {UserId} is not verified", account.Id);
+            return Result<UserAccount>.Failure(Errors.Errors.AuthenticationErrors.AccountNotVerified);
+        } 
 
         if (account.Password is null)
         {

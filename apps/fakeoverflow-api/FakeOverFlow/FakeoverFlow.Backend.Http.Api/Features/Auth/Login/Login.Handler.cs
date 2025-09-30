@@ -52,7 +52,7 @@ public static partial class Login
             var tokenExpiryOn = DateTime.UtcNow.AddMinutes(jwtOptions.ExpiryMinutes);
             var token = JwtBearer.CreateToken(loginResponse.Value!.JwtCreationOptions(jwtOptions, tokenExpiryOn, tokenId));
             
-            var x = TypedResults.Ok(new Login.Response()
+            var x = TypedResults.Ok(new Response()
             {
                 AccessToken = token,
                 RefreshToken = refreshToken.Value!.Id,

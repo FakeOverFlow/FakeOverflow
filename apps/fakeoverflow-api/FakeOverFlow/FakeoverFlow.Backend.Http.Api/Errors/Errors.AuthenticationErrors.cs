@@ -14,6 +14,8 @@ public partial class Errors
         /// </summary>
         public static readonly Error AccountDisabled =
             new Error("ACCOUNT_DISABLED", ErrorType.Unauthorized, "Account is disabled.");
+        
+        public static readonly Error AccountNotVerified = new Error("ACCOUNT_NOT_VERIFIED", ErrorType.Unauthorized, "Account is not verified");
 
         /// <summary>
         /// Represents an error indicating that the provided email address is already in use.

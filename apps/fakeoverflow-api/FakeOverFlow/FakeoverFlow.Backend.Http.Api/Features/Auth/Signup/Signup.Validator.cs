@@ -15,20 +15,10 @@ public static partial class Signup
                 .EmailAddress()
                 .WithMessage("A valid email is required");
             
-            RuleFor(x => x.FirstName)
-                .NotEmpty()
-                .MaximumLength(20)
-                .WithMessage("First name must be less than 20 characters");
-            
-            RuleFor(x => x.LastName)
-                .NotEmpty()
-                .MaximumLength(20)
-                .WithMessage("Last name must be less than 20 characters");
-            
             RuleFor(x => x.Username)
                 .NotEmpty()
                 .MaximumLength(50)
-                .WithMessage("Username must be less than 20 characters");
+                .WithMessage("Username must be less than 50 characters");
             
             RuleFor(x => x.Password)
                 .MinimumLength(8)

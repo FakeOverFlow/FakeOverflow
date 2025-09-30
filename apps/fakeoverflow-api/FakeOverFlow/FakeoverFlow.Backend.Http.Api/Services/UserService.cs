@@ -1,6 +1,7 @@
 using System.Text;
 using FakeoverFlow.Backend.Abstraction;
 using FakeoverFlow.Backend.Http.Api.Abstracts.Services;
+using FakeoverFlow.Backend.Http.Api.Features.Auth.Available;
 using FakeoverFlow.Backend.Http.Api.Features.Auth.Login;
 using FakeoverFlow.Backend.Http.Api.Features.Auth.Signup;
 using FakeoverFlow.Backend.Http.Api.Models.Accounts;
@@ -283,5 +284,31 @@ public class UserService(
             return Result<RefreshTokens>.Failure(Errors.Errors.UnknownError);
         }
     }
-    
+
+    public async Task<Result<bool>> CheckExistsAsync(Available.Request request, CancellationToken? cancellationToken = default)
+    {
+        try
+        {
+            var userAccounts = dbContext.UserAccounts.AsQueryable();
+            userAccounts = userAccounts.AsNoTracking();
+
+            switch (request.Type)
+            {
+                case Available.AvailabilityType.Username:
+                    userAccounts = userAccounts.Where(x => x.Username == request.Value);
+                    break;
+                case Available.AvailabilityType.Email:
+                    userAccounts = userAccounts.Where(x => x.Email == request.Value);
+                    break;
+            }
+
+            var exists = await userAccounts.AnyAsync();
+            return Result<bool>.Success(exists);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error checking if user exists");
+            return Result<bool>.Failure(Errors.Errors.UnknownError);;
+        }
+    }
 }

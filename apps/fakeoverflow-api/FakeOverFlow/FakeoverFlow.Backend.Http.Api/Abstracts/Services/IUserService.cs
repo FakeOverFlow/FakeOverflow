@@ -1,4 +1,5 @@
 using FakeoverFlow.Backend.Abstraction;
+using FakeoverFlow.Backend.Http.Api.Features.Auth.Available;
 using FakeoverFlow.Backend.Http.Api.Features.Auth.Login;
 using FakeoverFlow.Backend.Http.Api.Features.Auth.Signup;
 using FakeoverFlow.Backend.Http.Api.Models.Accounts;
@@ -78,5 +79,14 @@ public interface IUserService
     public Task<Result<RefreshTokens>> GetRefreshTokenOf(Guid userId, string jti, bool track = false,
         bool checkExpiry = true,
         bool checkRevoked = true, bool revokeOnCall = false,
+        CancellationToken? cancellationToken = default);
+
+    /// <summary>
+    /// Checks the existence of a user-related attribute, such as a username, based on the provided request.
+    /// </summary>
+    /// <param name="request">The request object containing the type of attribute to check (e.g., username) and its value.</param>
+    /// <param name="cancellationToken">An optional cancellation token to cancel the operation if needed.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a result object indicating whether the attribute exists.</returns>
+    public Task<Result<bool>> CheckExistsAsync(Available.Request request,
         CancellationToken? cancellationToken = default);
 }

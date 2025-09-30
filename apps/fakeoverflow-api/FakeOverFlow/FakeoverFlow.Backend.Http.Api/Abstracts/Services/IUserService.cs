@@ -28,6 +28,14 @@ public interface IUserService
         CancellationToken? cancellationToken = default);
 
     /// <summary>
+    /// Verifies the account based on the provided verification ID.
+    /// </summary>
+    /// <param name="verifyId">The verification ID used to confirm the account.</param>
+    /// <param name="cancellationToken">An optional cancellation token to cancel the operation if needed.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the result indicating whether the account was successfully verified.</returns>
+    public Task<Result<bool>> VerifyAccountAsync(string verifyId, CancellationToken? cancellationToken = default);
+
+    /// <summary>
     /// Retrieves a user account by its unique identifier.
     /// </summary>
     /// <param name="userId">The unique identifier of the user to retrieve.</param>

@@ -88,6 +88,22 @@ public class UserService(
         });
     }
 
+    public async Task<Result<bool>> VerifyAccountAsync(string verifyId, CancellationToken? cancellationToken = default)
+    {
+        var userAccountVerification = await dbContext.UserAccountVerifications
+            .Where(x => x.VerificationToken == verifyId)
+            .Include(x => x.Account)
+            .FirstOrDefaultAsync();
+        
+        if(userAccountVerification is null)
+            return Result<bool>.Failure(Errors.Errors.AuthenticationErrors.InvalidToken);
+        
+        userAccountVerification.Account.VerifiedOn = DateTimeOffset.UtcNow;
+        dbContext.UserAccountVerifications.Remove(userAccountVerification);
+        await dbContext.SaveChangesAsync();
+        return Result<bool>.Success(true);
+    }
+
     public async Task<UserAccount?> GetUserByIdAsync(Guid userId, bool track = false, CancellationToken? cancellationToken = default)
     {
         var userAccounts = dbContext

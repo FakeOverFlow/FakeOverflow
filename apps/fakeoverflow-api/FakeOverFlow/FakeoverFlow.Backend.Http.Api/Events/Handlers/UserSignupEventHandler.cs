@@ -1,20 +1,52 @@
+using FakeoverFlow.Backend.Abstraction;
+using FakeoverFlow.Backend.Abstraction.Templates;
+using FakeoverFlow.Backend.Http.Api.Abstracts.Clients;
+using FakeoverFlow.Backend.Http.Api.Abstracts.Services;
 using FakeoverFlow.Backend.Http.Api.Events.Models;
 using FastEndpoints;
 
 namespace FakeoverFlow.Backend.Http.Api.Events.Handlers;
 
-public class UserSignupEventHandler : IEventHandler<UserSignupEvent>
+public class UserSignupEventHandler(
+    ILogger<UserSignupEventHandler> logger,
+    IEmailClient emailClient,
+    IUserService userService,
+    IConfiguration configuration   
+    ) : IEventHandler<UserSignupEvent>
 {
-    
-    private readonly ILogger<UserSignupEventHandler> _logger;
-
-    public UserSignupEventHandler(ILogger<UserSignupEventHandler> logger)
-    {
-        _logger = logger;
-    }
-
     public  async Task HandleAsync(UserSignupEvent eventModel, CancellationToken ct)
     {
+        logger.LogInformation("UserSignupEvent handle started");
+        var userAccount = await userService.GetOrCreateUserVerificationAsync(eventModel.UserId);
+        if (userAccount.IsFailure || userAccount.Value is null)
+        {
+            logger.LogWarning("UserSignupEvent handle failed, user not found");
+            return;
+        }
+        var value = userAccount.Value!;
         
+        if(value.Account.VerifiedOn is not null)
+        {
+            logger.LogWarning("UserSignupEvent handle failed, user already verified");
+            return;
+        }
+        
+        var baseDomain = configuration.GetValue<string>("Frontend:BaseDomain") ?? string.Empty;
+        var verificationLink = $"{baseDomain}/auth/verify/{value.VerificationToken}";
+        var userName = value.Account.Username;
+        Dictionary<string, string> placeholders = new()
+        {
+            { SignupVerificationEmailTemplate.UserNameKey, userName },
+            { SignupVerificationEmailTemplate.VerificationLinkKey, verificationLink }
+        };
+        
+        var emailSendResponse = await emailClient.SendEmailAsync(EmailTemplates.SignupVerification, [value.Account.Email], null, null, placeholders);
+        if(!emailSendResponse)
+        {
+            logger.LogWarning("UserSignupEvent handle failed, email send failed");
+            return;
+        }
+
+        logger.LogInformation("UserSignupEvent handle completed");
     }
 }

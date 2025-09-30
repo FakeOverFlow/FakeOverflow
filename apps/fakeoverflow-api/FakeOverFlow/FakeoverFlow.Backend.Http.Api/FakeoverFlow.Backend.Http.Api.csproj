@@ -33,7 +33,6 @@
 
     <ItemGroup>
       <Folder Include="Enums\" />
-      <Folder Include="Features\Auth\Verify\" />
     </ItemGroup>
 
 </Project>

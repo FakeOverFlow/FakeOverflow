@@ -17,6 +17,8 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
+import { FakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest } from '../model/fakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest';
+// @ts-ignore
 import { FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest } from '../model/fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest';
 // @ts-ignore
 import { FakeoverFlowBackendHttpApiFeaturesAuthLoginLoginResponse } from '../model/fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginResponse';
@@ -47,6 +49,69 @@ export class AuthService extends BaseService {
 
     constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string|string[], @Optional() configuration?: Configuration) {
         super(basePath, configuration);
+    }
+
+    /**
+     * @param fakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public available(fakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest: FakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public available(fakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest: FakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public available(fakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest: FakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public available(fakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest: FakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (fakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest === null || fakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest === undefined) {
+            throw new Error('Required parameter fakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest was null or undefined when calling available.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/problem+json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/auth/available`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: fakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
     }
 
     /**
@@ -231,9 +296,6 @@ export class AuthService extends BaseService {
         }
 
         let localVarHeaders = this.defaultHeaders;
-
-        // authentication (JWTBearerAuth) required
-        localVarHeaders = this.configuration.addCredentialToHeaders('JWTBearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
             'application/json',

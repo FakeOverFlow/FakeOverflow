@@ -1,4 +1,4 @@
-import {Component, inject, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {InputText} from 'primeng/inputtext';
 import {Password} from 'primeng/password';
@@ -26,7 +26,7 @@ import {HotToastService} from '@ngxpert/hot-toast';
   standalone: true,
   styleUrl: './login.scss'
 })
-export class Login {
+export class Login implements OnInit{
 
   private readonly formBuilder = inject(FormBuilder);
   protected readonly loginForm = this.formBuilder.group({
@@ -38,6 +38,12 @@ export class Login {
   private readonly authenticationService = inject(Authentication);
   private readonly authService = inject(AuthService);
   private readonly toastService: HotToastService = inject(HotToastService);
+
+  ngOnInit(): void {
+    this.authenticationService.logout({
+      redirectToLogout: false,
+    })
+  }
 
   loginWithGoogle() {
 
@@ -69,7 +75,6 @@ export class Login {
       )
       .subscribe({
         next: (response) => {
-          console.log(response);
           const accessToken = response.accessToken;
           this.authenticationService.getIdentity(accessToken)
             .pipe(

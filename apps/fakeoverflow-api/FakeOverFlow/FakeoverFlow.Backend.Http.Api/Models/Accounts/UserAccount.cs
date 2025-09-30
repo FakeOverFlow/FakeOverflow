@@ -13,8 +13,6 @@ public class UserAccount : IGuidEntity, IPutAuditableEntity, ISoftDeleteEntity, 
     public DateTimeOffset UpdatedOn { get; set; }
     public bool IsDeleted { get; set; }
     public NpgsqlTsVector VectorText { get; set; } = null!;
-    public string FirstName { get; set; } = null!;
-    public string LastName { get; set; } =  null!;
     public string Email { get; set; } = null!;
     public string Username { get; set; } = null!;
     public byte[]? Password { get; set; } = null;

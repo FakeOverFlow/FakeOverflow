@@ -59,10 +59,10 @@ public static class SeedingExtension
         Func<UserAccount, Task> addFunc)
     {
         await SeedUserAccount(findFunc, addFunc, userAccounts, hasher, config, 
-            SeedingConstants.AdminUserId, "admin@fakeoverflow.github.io", "admin",  "ADMIN", "Account",config["Secrets:AdminPassword"]);
+            SeedingConstants.AdminUserId, "admin@fakeoverflow.github.io", "admin",config["Secrets:AdminPassword"]);
 
         await SeedUserAccount(findFunc, addFunc, userAccounts, hasher, config, 
-            SeedingConstants.ModeratorUserId, "mod@fakeoverflow.github.io", "mod", "MOD", "Account",config["Secrets:ModeratorPassword"]);
+            SeedingConstants.ModeratorUserId, "mod@fakeoverflow.github.io", "mod",config["Secrets:ModeratorPassword"]);
     }
 
     private static async Task SeedUserAccount(
@@ -74,8 +74,6 @@ public static class SeedingExtension
         Guid userId,
         string email,
         string username,
-        string firstName,
-        string lastName,
         string? password)
     {
         var existing = await findFunc(userId);
@@ -95,8 +93,6 @@ public static class SeedingExtension
             Id = userId,
             Email = email,
             Username = username,
-            FirstName = firstName,
-            LastName = lastName,
             Password = bytes,
             VerifiedOn = DateTimeOffset.UtcNow,
             CreatedOn = DateTimeOffset.UtcNow,

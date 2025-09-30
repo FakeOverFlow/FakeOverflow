@@ -37,6 +37,9 @@ export class Authentication {
     this.getIdentity(identity.secrets.accessToken)
       .subscribe({
         next: (res) => {
+          if(!this.isAuthenticated)
+            return;
+
           this.setIdentity({
             identity: res,
             secrets: identity.secrets

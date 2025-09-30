@@ -1,3 +1,5 @@
+export * from './fakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableAvailabilityType';
+export * from './fakeoverFlowBackendHttpApiFeaturesAuthAvailableAvailableRequest';
 export * from './fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginAuthenticationType';
 export * from './fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginRequest';
 export * from './fakeoverFlowBackendHttpApiFeaturesAuthLoginLoginResponse';

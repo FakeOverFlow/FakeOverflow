@@ -21,14 +21,6 @@ public class UserAccountConfiguration : IEntityTypeConfiguration<UserAccount>
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(x => x.FirstName)
-            .IsRequired()
-            .HasMaxLength(20);
-        
-        builder.Property(x => x.LastName)
-            .IsRequired()
-            .HasMaxLength(20);
-        
         builder.Property(x => x.Username)
             .IsRequired()
             .HasMaxLength(50);
@@ -47,8 +39,6 @@ public class UserAccountConfiguration : IEntityTypeConfiguration<UserAccount>
                 AppConstants.DbVectorTextLanguage,
                 p => new
                 {
-                    p.FirstName,
-                    p.LastName,
                     p.Email,
                     p.Username
                 })

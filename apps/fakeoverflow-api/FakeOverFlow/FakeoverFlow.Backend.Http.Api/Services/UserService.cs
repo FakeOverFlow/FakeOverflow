@@ -30,8 +30,6 @@ public class UserService(
             {
                 Id = id,
                 Email = request.Email,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
                 CreatedBy = id,
                 CreatedOn = DateTimeOffset.UtcNow,
                 ProfileImageUrl = null,
@@ -71,7 +69,7 @@ public class UserService(
             .Include(x => x.Account)
             .Select(x => new
             {
-                x.VerificationToken, x.Account.Email, x.Account.FirstName, x.Account.LastName, x.Account.Username,
+                x.VerificationToken, x.Account.Email, x.Account.Username,
                 x.Account.IsDisabled, x.Account.IsDeleted
             })
             .AsNoTracking()

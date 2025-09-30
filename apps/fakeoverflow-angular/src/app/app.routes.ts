@@ -25,5 +25,10 @@ export const routes: Routes = [
         title: 'Home | FakeOverflow'
       }
     ]
+  },
+  {
+    path: '',
+    redirectTo: 'home',
+    pathMatch: 'full'
   }
 ];

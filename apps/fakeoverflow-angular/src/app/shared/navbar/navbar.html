@@ -17,12 +17,9 @@
 
       <div class="flex items-center">
         <div class="flex-shrink-0">
-          <svg class="h-8 w-auto" viewBox="0 0 169 36" fill="none">
-            <text x="38" y="24" class="fill-gray-900 dark:fill-gray-100"
-                  style="font-family: Arial, sans-serif; font-size: 20px; font-weight: bold;">Fake</text>
-            <text x="115" y="24" class="fill-gray-600 dark:fill-gray-400"
-                  style="font-family: Arial, sans-serif; font-size: 20px;">overflow</text>
-          </svg>
+          <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-orange-500">
+            <app-logo [logoSize]="32" [logoColor]="'white'"></app-logo>
+          </div>
         </div>
       </div>
 
@@ -64,15 +61,17 @@
             @if (identity.avatarUrl) {
               <img [src]="identity.avatarUrl" alt="avatar"
                    class="h-6 w-6 rounded-full mr-2" />
+            } @else {
+              <avvvatars class="mr-2" [value]="identity.name"></avvvatars>
             }
             <span>{{ identity.name }}</span>
           </a>
         } @else {
-          <button [routerLink]="['/auth/login']"
+          <button (click)="routeToLoginPage()"
             class="hidden sm:inline-flex items-center px-4 py-2 border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 text-sm font-medium rounded hover:bg-blue-50 dark:hover:bg-blue-900/20">
             Log in
           </button>
-          <button [routerLink]="['/auth/sign-up']"
+          <button (click)="routeToSignupPage()"
             class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded text-white bg-blue-600 hover:bg-blue-700">
             Sign up
           </button>
@@ -93,7 +92,7 @@
             {{ identity.name }}
           </a>
         } @else {
-          <button class="w-full text-left px-3 py-2 text-base font-medium text-blue-600 dark:text-blue-400">
+          <button (click)="routeToLoginPage()" class="w-full text-left px-3 py-2 text-base font-medium text-blue-600 dark:text-blue-400">
             Log in
           </button>
         }

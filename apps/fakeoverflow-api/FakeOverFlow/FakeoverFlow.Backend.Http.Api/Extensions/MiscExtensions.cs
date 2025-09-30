@@ -23,15 +23,8 @@ public static class MiscExtensions
             x.Audience = jwtOptions.Audience;
             x.Issuer = jwtOptions.Issuer;
             x.User.Claims.Add(new Claim(ClaimTypes.NameIdentifier, userAccount.Id.ToString()));
-            ;
             x.User.Claims.Add(new Claim(ClaimTypes.Name, userAccount.Username));
-            ;
             x.User.Claims.Add(new Claim(ClaimTypes.Email, userAccount.Email));
-            ;
-            x.User.Claims.Add(new Claim(ClaimTypes.GivenName, userAccount.FirstName));
-            ;
-            x.User.Claims.Add(new Claim(ClaimTypes.Surname, userAccount.LastName));
-            ;
             x.User.Claims.Add(new Claim("jti", jti));
         };
     }

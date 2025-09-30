@@ -9,25 +9,10 @@
  */
 
 
-/**
- * the error details object
- */
 export interface FastEndpointsProblemDetailsError { 
-    /**
-     * the name of the error or property of the dto that caused the error
-     */
     name?: string;
-    /**
-     * the reason for the error
-     */
     reason?: string;
-    /**
-     * the code of the error
-     */
     code?: string | null;
-    /**
-     * the severity of the error
-     */
     severity?: string | null;
 }
 

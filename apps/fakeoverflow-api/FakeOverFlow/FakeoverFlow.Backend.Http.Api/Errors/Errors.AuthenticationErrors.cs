@@ -34,6 +34,14 @@ public partial class Errors
         public static readonly Error UsernameInUse = new Error("USERNAME_IN_USE", ErrorType.Conflict, "Username is already in use");
 
         /// <summary>
+        /// Represents an error indicating that either the username or the email is already in use.
+        /// This error is identified by the code "USERNAME_OR_EMAIL_IN_USER",
+        /// belongs to the <see cref="ErrorType.Conflict"/> category, and
+        /// provides a description specifying the conflict.
+        /// </summary>
+        public static readonly Error UsernameOrEmailInUse = new Error("USERNAME_OR_EMAIL_IN_USER", ErrorType.Conflict, "Username or email is already in use");
+        
+        /// <summary>
         /// Represents an error indicating that the requested user account was not found.
         /// This error has the identifier "ACCOUNT_NOT_FOUND", belongs to the
         /// <see cref="ErrorType.NotFound"/> category, and includes a description

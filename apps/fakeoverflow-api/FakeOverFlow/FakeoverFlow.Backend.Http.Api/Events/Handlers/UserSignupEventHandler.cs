@@ -9,14 +9,17 @@ namespace FakeoverFlow.Backend.Http.Api.Events.Handlers;
 
 public class UserSignupEventHandler(
     ILogger<UserSignupEventHandler> logger,
-    IEmailClient emailClient,
-    IUserService userService,
-    IConfiguration configuration   
+    IServiceScopeFactory serviceScopeFactory   
     ) : IEventHandler<UserSignupEvent>
 {
     public  async Task HandleAsync(UserSignupEvent eventModel, CancellationToken ct)
     {
         logger.LogInformation("UserSignupEvent handle started");
+        using var scope =  serviceScopeFactory.CreateScope();
+        var userService = scope.Resolve<IUserService>();
+        var emailClient = scope.Resolve<IEmailClient>();
+        var configuration = scope.Resolve<IConfiguration>();
+        
         var userAccount = await userService.GetOrCreateUserVerificationAsync(eventModel.UserId);
         if (userAccount.IsFailure || userAccount.Value is null)
         {

@@ -27,15 +27,17 @@ public static partial class Signup
         public override async Task<Results<Created<Response>, ErrorResponse, ProblemDetails>> ExecuteAsync(Request req, CancellationToken ct)
         {
             var userCreateRst = await userService.CreateUserAsync(req, cancellationToken: ct);
-            if(userCreateRst.IsSuccess)
+            if (userCreateRst.IsSuccess)
+            {
+                await PublishAsync(new UserSignupEvent(userCreateRst.Value!.Id, userCreateRst.Value.Email),
+                    Mode.WaitForNone, cancellation: ct);
                 return TypedResults.Created("/me", new Response()
                 {
                     UserId = userCreateRst.Value!.Id,
                     Email = userCreateRst.Value.Email,
                 });
-
-            await PublishAsync(new UserSignupEvent(userCreateRst.Value!.Id, userCreateRst.Value.Email),
-                Mode.WaitForNone, cancellation: ct);
+            }
+            
             return userCreateRst.Error!.ToFastEndpointError();
         }
     }

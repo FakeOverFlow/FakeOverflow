@@ -7,6 +7,7 @@ using FakeoverFlow.Backend.Http.Api.Features.Auth.Signup;
 using FakeoverFlow.Backend.Http.Api.Models.Accounts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace FakeoverFlow.Backend.Http.Api.Services;
 
@@ -51,8 +52,27 @@ public class UserService(
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Failed to create the user");
+            if(e.InnerException is null)
+            {
+                logger.LogError(e, "Failed to create the user");
+                return Result<UserAccount>.Failure(Errors.Errors.UnknownError);
+            }
+
+            if (e.InnerException is PostgresException postgresException)
+            {
+                switch (postgresException.ConstraintName)
+                {
+                    case "IX_UserAccounts_Email":
+                        return Result<UserAccount>.Failure(Errors.Errors.AuthenticationErrors.EmailInUse);
+                    case "IX_UserAccounts_Username":
+                        return Result<UserAccount>.Failure(Errors.Errors.AuthenticationErrors.UsernameInUse);
+                    default:
+                        logger.LogError(e, "Failed to create the user");
+                        break;
+                }
+            }
             return Result<UserAccount>.Failure(Errors.Errors.UnknownError);
+
         }
     }
 
@@ -67,18 +87,13 @@ public class UserService(
         logger.LogDebug("Trying to get or create a user verification record for user {UserId}", userId);
         var verifications = await dbContext.UserAccountVerifications.Where(x => x.UserId == userId)
             .Include(x => x.Account)
-            .Select(x => new
-            {
-                x.VerificationToken, x.Account.Email, x.Account.Username,
-                x.Account.IsDisabled, x.Account.IsDeleted
-            })
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (verifications is null)
             return await CreateUserVerificationAsync(userId, cancellationToken);
 
-        if (verifications.IsDisabled || verifications.IsDeleted)
+        if (verifications.Account.IsDisabled || verifications.Account.IsDeleted)
             return Result<UserAccountVerification>.Failure(Errors.Errors.AuthenticationErrors.AccountDisabled);
         
         return Result<UserAccountVerification>.Success(new UserAccountVerification()
@@ -214,6 +229,7 @@ public class UserService(
                 verification.VerificationToken);
             await dbContext.SaveChangesAsync();
             
+            verification.Account = await GetUserByIdAsync(userId, cancellationToken: cancellationToken) ?? throw new Exception("User not found");
             return Result<UserAccountVerification>.Success(verification);
         }
         catch (Exception e)

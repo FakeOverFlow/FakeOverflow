@@ -83,6 +83,8 @@ public partial class Errors
         /// specifying that the token is invalid.
         /// </summary>
         public static readonly Error InvalidToken = new Error("INVALID_TOKEN", ErrorType.BadRequest, "Invalid token");
+        
+        public static readonly Error AlreadyVerified = new Error("ALREADY_VERIFIED", ErrorType.BadRequest, "Already verified");
     }
     
 }

@@ -113,6 +113,9 @@ public class UserService(
         if(userAccountVerification is null)
             return Result<bool>.Failure(Errors.Errors.AuthenticationErrors.InvalidToken);
         
+        if(userAccountVerification.Account.VerifiedOn is not null)
+            return Result<bool>.Failure(Errors.Errors.AuthenticationErrors.AlreadyVerified);
+        
         userAccountVerification.Account.VerifiedOn = DateTimeOffset.UtcNow;
         dbContext.UserAccountVerifications.Remove(userAccountVerification);
         await dbContext.SaveChangesAsync();

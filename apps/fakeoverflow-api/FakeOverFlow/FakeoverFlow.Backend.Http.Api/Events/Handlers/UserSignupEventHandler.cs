@@ -35,7 +35,7 @@ public class UserSignupEventHandler(
         }
         
         var baseDomain = configuration.GetValue<string>("Frontend:FrontendBaseUrl") ?? string.Empty;
-        var verificationLink = $"{baseDomain}/auth/verify/{value.VerificationToken.ToLower()}";
+        var verificationLink = $"{baseDomain}/auth/verify/{value.VerificationToken}";
         var userName = value.Account.Username;
         logger.LogInformation("Verification Link: {VerificationLink}", verificationLink);
         logger.LogInformation("User Name: {UserName}", userName);

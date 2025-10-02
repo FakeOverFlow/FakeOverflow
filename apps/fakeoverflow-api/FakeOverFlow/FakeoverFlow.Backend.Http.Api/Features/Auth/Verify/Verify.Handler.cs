@@ -17,6 +17,7 @@ public static partial class Verify
             {
                 logger.LogCritical("This should not happen, but failed to get the id from the route");
                 HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.CompleteAsync();
                 return;
             }
             
@@ -25,6 +26,7 @@ public static partial class Verify
             {
                 logger.LogCritical("This should not happen, but failed to get the id from the route");
                 HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.CompleteAsync();
                 return;
             }
             var result = await userService.VerifyAccountAsync(tokenId);
@@ -32,10 +34,12 @@ public static partial class Verify
             {
                 logger.LogWarning("Verify failed due to {VerifyFailedReason}", result.Error!.Detail);
                 HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.CompleteAsync();
                 return;
             }
             
             HttpContext.Response.StatusCode = StatusCodes.Status200OK;
+            await HttpContext.Response.CompleteAsync();
             return;
         }
 

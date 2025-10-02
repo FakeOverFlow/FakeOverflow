@@ -27,7 +27,8 @@
       "@guards/*": ["src/app/angular/guards/*"],
       "@interceptors/*": ["src/app/angular/interceptors/*"],
       "@pipes/*": ["src/app/angular/pipes/*"],
-      "@models/*": ["src/app/models/*"]
+      "@models/*": ["src/app/models/*"],
+      "@api-services/*": ["../../../../packages/fakeoverflow-angular-services"]
     }
   },
   "angularCompilerOptions": {

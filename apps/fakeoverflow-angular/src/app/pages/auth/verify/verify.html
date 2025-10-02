@@ -1,0 +1,75 @@
+<div class="flex items-center justify-center min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+  <div class="w-full max-w-md">
+    @if (isGeneralPage) {
+      <div class="bg-white border border-gray-200 rounded-lg shadow-md p-6 md:p-8">
+        <div class="text-center">
+          <svg class="mx-auto h-12 w-12 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+          </svg>
+          <h1 class="mt-4 text-2xl font-bold text-gray-800">Verify your email address</h1>
+          <p class="mt-2 text-gray-600">
+            We've sent a verification link to your email address. Please check your inbox and click the link to complete your registration.
+          </p>
+          <p class="mt-4 text-sm text-gray-500">
+            Didn't receive the email? <a href="#" class="font-medium text-blue-600 hover:underline">Resend verification link</a>.
+          </p>
+        </div>
+      </div>
+    } @else {
+      @switch (verificationStatus) {
+        @case ('verifying') {
+          <div class="bg-white border border-gray-200 rounded-lg shadow-md p-6 md:p-8">
+            <div class="text-center">
+              <svg class="animate-spin mx-auto h-12 w-12 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <h1 class="mt-4 text-2xl font-bold text-gray-800">Verifying your email...</h1>
+              <p class="mt-2 text-gray-600">
+                Please wait while we confirm your email address. This should only take a moment.
+              </p>
+            </div>
+          </div>
+        }
+
+        @case ('success') {
+          <div class="bg-white border border-gray-200 rounded-lg shadow-md p-6 md:p-8">
+            <div class="text-center">
+              <svg class="mx-auto h-12 w-12 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h1 class="mt-4 text-2xl font-bold text-gray-800">Email Verified!</h1>
+              <p class="mt-2 text-gray-600">
+                Your email has been successfully verified. You can now log in to your account. You will be redirected to the login page in a few seconds.
+              </p>
+              <div class="mt-6">
+                <a href="/login" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  Go to Login
+                </a>
+              </div>
+            </div>
+          </div>
+        }
+
+        @case ('failed') {
+          <div class="bg-white border border-gray-200 rounded-lg shadow-md p-6 md:p-8">
+            <div class="text-center">
+              <svg class="mx-auto h-12 w-12 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              </svg>
+              <h1 class="mt-4 text-2xl font-bold text-gray-800">Verification Failed</h1>
+              <p class="mt-2 text-gray-600">
+                The verification link is either invalid or has expired. Please request a new verification link.
+              </p>
+              <div class="mt-6">
+                <a href="#" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  Resend verification link
+                </a>
+              </div>
+            </div>
+          </div>
+        }
+      }
+    }
+  </div>
+</div>

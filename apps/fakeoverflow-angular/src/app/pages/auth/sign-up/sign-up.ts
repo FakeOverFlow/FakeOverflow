@@ -5,11 +5,12 @@ import {Logo} from '@shared/logo/logo';
 import {Password} from 'primeng/password';
 import {Checkbox} from 'primeng/checkbox';
 import {Button, ButtonDirective, ButtonIcon} from 'primeng/button';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {InputGroup} from 'primeng/inputgroup';
 import {Common} from '@services/common';
 import {debounce, debounceTime, filter} from 'rxjs';
 import {AuthService} from '../../../../../../../packages/fakeoverflow-angular-services/dist';
+import {HotToastService} from '@ngxpert/hot-toast';
 @Component({
   selector: 'app-sign-up',
   imports: [
@@ -34,6 +35,8 @@ export class SignUp implements OnInit{
     private fb: FormBuilder,
     private readonly common: Common,
     private readonly authService: AuthService,
+    private readonly toastService : HotToastService,
+    private readonly router: Router
     ) {
     this.signupForm = this.fb.group({
       displayName: ['', [Validators.required, Validators.minLength(3)]],
@@ -62,7 +65,7 @@ export class SignUp implements OnInit{
         debounceTime(1000)
       )
       .subscribe((x) => {
-
+        this.searchForAvailability('email', x);
       })
   }
 
@@ -97,27 +100,40 @@ export class SignUp implements OnInit{
   }
 
   onSignup() {
-    if (this.signupForm.valid) {
-      this.isLoading.set(true);
-
-      // Get form values
-      const formData = this.signupForm.value;
-
-      // Remove confirmPassword from the data sent to API
-      const { confirmPassword, ...signupData } = formData;
-
-      // Simulate API call
-      console.log('Signup attempt:', signupData);
-
-      // Reset loading state after API call
-      // You'll replace this with your actual API call
-      setTimeout(() => {
-        this.isLoading.set(false);
-      }, 2000);
-    } else {
-      // Mark all fields as touched to show validation errors
-      this.signupForm.markAllAsTouched();
+    if(this.signupForm.invalid){
+      console.trace('Form is invalid')
+      return;
     }
+
+    this.authService.signup({
+      username: this.displayName?.value,
+      password: this.signupForm.get('password')?.value,
+      email: this.email?.value,
+    })
+      .pipe(
+        this.toastService.observe({
+          loading: 'Signing up...',
+          error: 'Sign up failed!'
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          if(!response.userId)
+          {
+            this.toastService.error('Failed to signup');
+            console.error('Failed to signup');
+            return;
+          }
+
+          this.router.navigate(['/auth/verify'])
+            .catch(console.error)
+        },
+        error: (err) => {
+          console.error(err);
+          if(err.status === 409){
+          }
+        }
+      })
   }
 
   signupWithGoogle() {
@@ -137,6 +153,7 @@ export class SignUp implements OnInit{
       value: value
     }).subscribe({
       next: (response) => {
+
       },
       error: (err) => {
         if(err.status === 409){

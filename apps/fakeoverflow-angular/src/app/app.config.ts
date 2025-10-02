@@ -13,10 +13,11 @@ import {provideHotToastConfig} from '@ngxpert/hot-toast';
 import {providePrimeNG} from 'primeng/config';
 import {initializeAuthentications, overrideLoggers} from '@utils/initializers.utils';
 import {environment} from '@environments/environment';
-import { provideApi } from "fakeoverflow-angular-services";
+import {provideApi} from '../../../../packages/fakeoverflow-angular-services';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideApi(environment.apiBaseUrl),
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     environment.useHashBasedRouting ?
@@ -40,7 +41,6 @@ export const appConfig: ApplicationConfig = {
 
       ])
     ),
-    provideApi(environment.apiBaseUrl),
     provideHotToastConfig({
       position: 'top-right',
       duration: 3000,

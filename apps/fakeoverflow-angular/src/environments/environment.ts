@@ -1,5 +1,5 @@
 export const environment = {
-  apiBaseUrl: 'https://api-fof.alenalex.me',
+  apiBaseUrl: 'http://localhost:5017',
   ignoreLogs: false,
   production: false,
   useHashBasedRouting: false,

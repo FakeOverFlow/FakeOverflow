@@ -35,8 +35,10 @@ public class UserSignupEventHandler(
         }
         
         var baseDomain = configuration.GetValue<string>("Frontend:BaseDomain") ?? string.Empty;
-        var verificationLink = $"{baseDomain}/auth/verify/{value.VerificationToken}";
+        var verificationLink = $"{baseDomain}/auth/verify/{value.VerificationToken.ToLower()}";
         var userName = value.Account.Username;
+        logger.LogInformation("Verification Link: {VerificationLink}", verificationLink);
+        logger.LogInformation("User Name: {UserName}", userName);
         Dictionary<string, string> placeholders = new()
         {
             { SignupVerificationEmailTemplate.UserNameKey, userName },

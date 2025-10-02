@@ -50,15 +50,17 @@ public static class BootstrapExtensions
 
     private static void SetupClients(this WebApplicationBuilder builder)
     {
-        var connectionString = builder.Configuration.GetConnectionString("SmtpConnectionString");
-        if (string.IsNullOrWhiteSpace(connectionString))
+        var smtpConnectionString = builder.Configuration.GetConnectionString("SmtpConnectionString");
+        if (string.IsNullOrWhiteSpace(smtpConnectionString))
         {
             builder.Services.AddSingleton<IEmailClient, NullEmailClient>();
             Log.Logger.Information("Disabled SMTP client configuration.");
-            return;
         }
-
-        
+        else
+        {
+            builder.Services.AddSingleton<IEmailClient, EmailClient>();
+            Log.Logger.Information("SMTP client configured.");       
+        }
     }
     
     public static ILoggerFactory SetupLoggers(this WebApplicationBuilder builder)

@@ -19,7 +19,17 @@ public static class MiscUtils
         foreach (var keyValuePair in keyValuePairs)
         {
             var keyValue = keyValuePair.Split(keyValueSeperator);
-            dictionary.Add(keyValue[0], keyValue[1]);
+            if (keyValue.Length <= 1)
+            {
+                dictionary.Add(keyValuePair, string.Empty);
+            } else if (keyValue.Length == 2)
+            {
+                dictionary.Add(keyValue[0], keyValue[1]);   
+            }
+            else
+            {
+                dictionary.Add(keyValue[0], string.Join(keyValueSeperator, keyValue.Skip(1))); 
+            }
         }
         return dictionary;
     }

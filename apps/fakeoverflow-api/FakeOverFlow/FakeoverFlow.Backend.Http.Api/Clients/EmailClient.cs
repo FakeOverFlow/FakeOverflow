@@ -16,11 +16,10 @@ public class EmailClient : IEmailClient
     private readonly string _username;
     private readonly string _password;
     private readonly string _from;
-    private readonly IConfiguration _configuration;
 
-    public EmailClient(string connectionString, IConfiguration configuration)
+    public EmailClient(IConfiguration configuration)
     {
-        _configuration = configuration;
+        var connectionString = configuration.GetConnectionString("SmtpConnectionString")!;
         var clientConnection = connectionString.SplitAndParseFromString();
         _host = clientConnection["host"];
         _port = clientConnection["port"] ?? "587";
@@ -62,6 +61,8 @@ public class EmailClient : IEmailClient
             }
         }
         
+        mimeMessage.From.Add(MailboxAddress.Parse(_from));
+        
         mimeMessage.Subject = message.asSubject(placeholders);
         var bodyBuilder = new BodyBuilder
         {
@@ -70,7 +71,7 @@ public class EmailClient : IEmailClient
         mimeMessage.Body = bodyBuilder.ToMessageBody();
 
         using var client = new SmtpClient();
-        await client.ConnectAsync(_host, int.Parse(_port), true);
+        await client.ConnectAsync(_host, int.Parse(_port), false);
         await client.AuthenticateAsync(_username, _password);
         await client.SendAsync(mimeMessage);
         await client.DisconnectAsync(true);

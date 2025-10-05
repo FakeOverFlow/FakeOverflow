@@ -1,5 +1,6 @@
 using System.Text;
 using FakeoverFlow.Backend.Http.Api.Models.Accounts;
+using FakeoverFlow.Backend.Http.Api.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -59,10 +60,10 @@ public static class SeedingExtension
         Func<UserAccount, Task> addFunc)
     {
         await SeedUserAccount(findFunc, addFunc, userAccounts, hasher, config, 
-            SeedingConstants.AdminUserId, "admin@fakeoverflow.github.io", "admin",config["Secrets:AdminPassword"]);
+            SeedingConstants.AdminUserId, UserRoles.Admin,"admin@fakeoverflow.github.io", "admin",config["Secrets:AdminPassword"]);
 
         await SeedUserAccount(findFunc, addFunc, userAccounts, hasher, config, 
-            SeedingConstants.ModeratorUserId, "mod@fakeoverflow.github.io", "mod",config["Secrets:ModeratorPassword"]);
+            SeedingConstants.ModeratorUserId, UserRoles.Moderator ,"mod@fakeoverflow.github.io", "mod",config["Secrets:ModeratorPassword"]);
     }
 
     private static async Task SeedUserAccount(
@@ -72,9 +73,11 @@ public static class SeedingExtension
         IPasswordHasher<UserAccount> hasher,
         IConfiguration config,
         Guid userId,
+        UserRoles role,
         string email,
         string username,
-        string? password)
+        string? password
+        )
     {
         var existing = await findFunc(userId);
         if (existing != null)
@@ -94,6 +97,7 @@ public static class SeedingExtension
             Email = email,
             Username = username,
             Password = bytes,
+            Role = role,
             VerifiedOn = DateTimeOffset.UtcNow,
             CreatedOn = DateTimeOffset.UtcNow,
             UpdatedOn = DateTimeOffset.UtcNow,

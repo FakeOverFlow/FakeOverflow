@@ -9,8 +9,8 @@ import {Router, RouterLink} from '@angular/router';
 import {InputGroup} from 'primeng/inputgroup';
 import {Common} from '@services/common';
 import {debounce, debounceTime, filter} from 'rxjs';
-import {AuthService} from '../../../../../../../packages/fakeoverflow-angular-services/dist';
 import {HotToastService} from '@ngxpert/hot-toast';
+import {AuthService} from 'fakeoverflow-angular-services';
 @Component({
   selector: 'app-sign-up',
   imports: [

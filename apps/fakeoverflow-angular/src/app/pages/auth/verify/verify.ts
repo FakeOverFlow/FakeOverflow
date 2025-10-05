@@ -2,8 +2,8 @@ import {Component, inject, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Optional} from '@utils/types';
 import {Authentication} from '@services/authentication';
-import {AuthService} from '../../../../../../../packages/fakeoverflow-angular-services/dist';
 import {HotToastService} from '@ngxpert/hot-toast';
+import {AuthService} from 'fakeoverflow-angular-services';
 
 @Component({
   selector: 'app-verify',

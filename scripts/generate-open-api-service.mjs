@@ -1,4 +1,4 @@
-const readline = await import('readline');
+import readline from 'readline';
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -24,6 +24,50 @@ function validateSwaggerUrl(url) {
     return url.startsWith("http://") || url.startsWith("https://");
 }
 
+/**
+ * Updates the generated package.json to be compatible with the pnpm monorepo.
+ * It adds 'main', 'module', 'types', 'exports', and 'files' fields.
+ * @param {string} packageDir The directory of the generated package.
+ */
+const updatePackageJson = async (packageDir) => {
+    console.log('📄 Patching package.json for monorepo compatibility...');
+
+    const packageJsonPath = path.join(packageDir, 'package.json');
+
+    if (!fs.existsSync(packageJsonPath)) {
+        console.error('❌ package.json not found in the output directory. Skipping patch.');
+        return;
+    }
+
+    // Read and parse the existing package.json
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+    const packageName = packageJson.name; // Get the package name (e.g., 'fakeoverflow-angular-services')
+
+    if (!packageName) {
+        console.error('❌ Could not determine package name from package.json. Skipping patch.');
+        return;
+    }
+
+    // Add the necessary fields for monorepo tooling
+    packageJson.main = `./dist/fesm2022/${packageName}.mjs`;
+    packageJson.module = `./dist/fesm2022/${packageName}.mjs`;
+    packageJson.types = `./dist/index.d.ts`;
+    packageJson.files = ["dist"];
+    packageJson.exports = {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "esm2022": `./dist/esm2022/${packageName}.mjs`,
+            "es2022": `./dist/fesm2022/${packageName}.mjs`,
+            "default": `./dist/fesm2022/${packageName}.mjs`
+        }
+    };
+
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+
+    console.log('✅ package.json patched successfully!');
+};
+
+
 const rootFiles = [];
 const installablePackages = [
     {
@@ -36,7 +80,7 @@ const installablePackages = [
         version: '5.9.2',
         dev: true
     }
-]
+];
 
 // START LOGIC FROM HERE
 const API_URL = "https://api-fof.alenalex.me/swagger/v1/swagger.json";
@@ -58,7 +102,7 @@ const main = async () => {
     const outputDir = path.resolve(__dirname, "../packages/fakeoverflow-angular-services/");
 
     try {
-        console.log("Generating client with OpenAPI Generator CLI...");
+        console.log("🔥 Generating client with OpenAPI Generator CLI...");
 
         // Create output directory
         fs.mkdirSync(outputDir, { recursive: true });
@@ -78,8 +122,14 @@ const main = async () => {
         console.log("✅ Client generated successfully!");
         console.log(`📁 Output directory: ${outputDir}`);
 
+        // ===================================================================
+        // NEW STEP: Patch the package.json to make it monorepo compatible
+        // ===================================================================
+        await updatePackageJson(outputDir);
+
+
         rootFiles.forEach(file => {
-           const filePath = path.join(outputDir, file);
+            const filePath = path.join(outputDir, file);
             if (!fs.existsSync(filePath)) {
                 console.warn(`${filePath} does not exist. Please check the output directory.`);
             }
@@ -90,15 +140,20 @@ const main = async () => {
             fs.unlinkSync(filePath);
         });
 
+        console.log('📦 Installing dependencies for the new service...');
         installablePackages.forEach(pkg => {
             const command = `pnpm install --filter fakeoverflow-angular-services ${pkg.name}@${pkg.version} ${pkg.dev ? '--save-dev' : ''}`;
             console.log("Executing:", command);
             execSync(command, { stdio: 'inherit' });
-        })
+        });
 
+        console.log('📦 Installing root dependencies...');
         execSync(`pnpm install`, { stdio: 'inherit' });
 
+        console.log('🚀 Building the new service package...');
         execSync(`pnpm --filter fakeoverflow-angular-services run build`, { stdio: 'inherit' });
+
+        console.log('🎉 All done! Your new Angular service is ready to be used.');
 
     } catch (error) {
         console.error("❌ Failed to generate client:", error.message);

@@ -144,6 +144,11 @@ public static class BootstrapExtensions
             return;
         }
 
+        var domains = frontendUrl
+            .Split(",")
+            .Select(domain => domain.Trim())
+            .ToArray();
+
         builder.Services
             .AddCors(x =>
             {
@@ -152,11 +157,13 @@ public static class BootstrapExtensions
                     builder.AllowAnyMethod();
                     builder.AllowAnyHeader();
                     builder.AllowCredentials();
-                    builder.WithOrigins(frontendUrl.Split(","));
+                    builder.WithOrigins(
+                        domains
+                    );
                 });
             });
         
-        Log.Logger.Information("Cors endpoints configured to {Endpoint}.", [frontendUrl]);
+        Log.Logger.Information("Cors endpoints configured to {Endpoint}.", [domains]);
     }
 
     private static void ConfigureS3(this WebApplicationBuilder builder)

@@ -8,7 +8,7 @@
     "build:angular": "pnpm --filter fakeoverflow-angular build",
     "build:angular:prod": "pnpm --filter fakeoverflow-angular build --configuration=production",
     "build:angular:dev": "pnpm --filter fakeoverflow-angular build --configuration=development",
-    "serve:angular": "pnpm --filter fakeoverflow-angular start"
+    "serve:angular": "pnpm --filter fakeoverflow-angular-services build && pnpm --filter fakeoverflow-angular start"
   },
   "keywords": [],
   "author": "Alen Alex,Shreyas Vijay, Jobit Jose, Shaun Mascarenhas",

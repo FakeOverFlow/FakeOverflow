@@ -1,3 +1,4 @@
+
 .container { 
   max-width: 1100px; 
   margin-inline: auto; 
@@ -25,19 +26,29 @@
   color: #fff; 
   border-color: #0b74ff; 
   font-size: 16px; 
-  padding: 12px 16px;}
+  padding: 12px 16px;
+  border-radius: 5px;
+}
+
+.btn--primary:hover { 
+  background: #76acfe; 
+  border-color: #5e94e5; 
+  color: #fff; 
+  text-decoration: none; 
+}  
 
 
 
 .head-container { 
-  display: grid;
-    padding: 30px 0; }
+  display: flex;
+    align-items: center;
+  justify-content: space-between;
+    padding: 50px 300px 50px 300px; }
 
 
 
 .ask-question { 
-  position: relative;
-  left: 1000px;
+  margin: 0%;
 
 }
 
@@ -45,22 +56,26 @@
 .section-title { 
   margin: 0; 
   font-size: 20px;
+  font-style: italic;
 }
 
 
 .cards { 
   display: flex; 
   gap: 18px; 
-  flex-direction: column; 
+  flex-direction: column
 }
 
 .card { 
-  position: relative;
-  left: 100px;
+  align-items: center;
   border: 1px solid #e7e7e9; 
   border-radius: 12px; 
   padding: 12px; background: #fff; 
-  max-width: 900px; }
+  max-width: 1000px; }
+
+.card:hover { 
+  border-color: #0b74ff; 
+  cursor: pointer; }  
 
 .card-data {
   display: flex; 

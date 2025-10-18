@@ -12,7 +12,7 @@ import {Logo} from '@shared/logo/logo';
   imports: [
     AsyncPipe,
     AvvvatarsComponent,
-    Logo
+    Logo, RouterLink
   ],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss'

@@ -14,16 +14,16 @@
           </svg>
         </button>
       </div>
+      
+    <a routerLink="/home" class="flex items-center gap-2 hover:opacity-90 transition">
+  <div class="text-orange-500 font-bold text-xl tracking-tight select-none">FakeOverflow</div>
+  <div class="flex-shrink-0">
+    <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-orange-500">
+      <app-logo [logoSize]="32" [logoColor]="'white'"></app-logo>
+    </div>
+  </div>
+</a>
 
-      <div class="flex items-center gap-2">
-           <div class="text-orange-500 font-bold text-xl tracking-tight select-none">FakeOverflow</div>
-        <div class="flex-shrink-0">
-          <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-orange-500">
-            <app-logo [logoSize]="32" [logoColor]="'white'"></app-logo>
-          </div>
-       
-        </div>
-      </div>
       <!--
       <div class="hidden md:block">
         <div class="ml-10 flex items-baseline space-x-8">
@@ -42,7 +42,7 @@
             </svg>
           </div>
           <input type="search" placeholder="Search..."
-                 class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm" />
+                class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm" />
         </div>
       </div>
 
@@ -59,10 +59,10 @@
 
         @if (identity$ | async; as identity) {
           <a href="/profile"
-             class="flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:text-orange-500">
+            class="flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:text-orange-500">
             @if (identity.avatarUrl) {
               <img [src]="identity.avatarUrl" alt="avatar"
-                   class="h-6 w-6 rounded-full mr-2" />
+                  class="h-6 w-6 rounded-full mr-2" />
             } @else {
               <avvvatars class="mr-2" [value]="identity.name"></avvvatars>
             }

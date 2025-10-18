@@ -5,6 +5,7 @@ import {FullPageSpinner} from '@shared/full-page-spinner/full-page-spinner';
 import {Authentication} from '@services/authentication';
 
 @Component({
+  standalone: true,
   selector: 'app-root',
   imports: [RouterOutlet, FullPageSpinner],
   templateUrl: './app.html',

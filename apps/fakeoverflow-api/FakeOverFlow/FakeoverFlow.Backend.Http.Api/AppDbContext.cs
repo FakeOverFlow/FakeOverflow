@@ -1,21 +1,24 @@
 using FakeoverFlow.Backend.Abstraction.Context;
 using FakeoverFlow.Backend.Abstraction.Models;
-using FakeoverFlow.Backend.Http.Api.Models;
 using FakeoverFlow.Backend.Http.Api.Models.Accounts;
+using FakeoverFlow.Backend.Http.Api.Models.Posts;
 using Microsoft.EntityFrameworkCore;
 
 namespace FakeoverFlow.Backend.Http.Api;
 
 public class AppDbContext : DbContext
 {
-    
     private readonly IContextFactory _contextFactory;
 
     // Tables
     public DbSet<UserAccount> UserAccounts { get; set; } = null!;
     public DbSet<UserAccountVerification> UserAccountVerifications { get; set; } = null!;
-    
+
     public DbSet<RefreshTokens> RefreshTokens { get; set; } = null!;
+
+    public DbSet<Posts> Posts { get; set; } = null!;
+
+    public DbSet<PostContent> PostContent { get; set; } = null!;
 
     #region Internals
 
@@ -47,13 +50,13 @@ public class AppDbContext : DbContext
         await ApplyAudit();
         return await base.SaveChangesAsync(cancellationToken);
     }
-    
+
     private Task ApplyAudit()
     {
         var entries = ChangeTracker.Entries();
         var requestContext = _contextFactory.RequestContext;
         if (!requestContext.IsAuthenticated) return Task.CompletedTask;
-        
+
         foreach (var entry in entries)
         {
             if (entry.Entity is IPostAuditableEntity createdEntity && entry.State == EntityState.Added)

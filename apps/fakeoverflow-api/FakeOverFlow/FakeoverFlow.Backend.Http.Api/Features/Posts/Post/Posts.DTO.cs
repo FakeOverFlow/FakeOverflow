@@ -1,4 +1,4 @@
-namespace FakeoverFlow.Backend.Http.Api.Features.Posts;
+namespace FakeoverFlow.Backend.Http.Api.Features.Posts.Post;
 
 public static partial class Posts
 {

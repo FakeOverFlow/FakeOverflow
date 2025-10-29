@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using PostsModel = FakeoverFlow.Backend.Http.Api.Models.Posts.Posts;
 using PostContentModel = FakeoverFlow.Backend.Http.Api.Models.Posts.PostContent;
 
-namespace FakeoverFlow.Backend.Http.Api.Features.Posts;
+namespace FakeoverFlow.Backend.Http.Api.Features.Posts.Post;
 
 public static partial class Posts
 {
@@ -17,8 +17,9 @@ public static partial class Posts
         {
             Description(x => x.WithName("CreatePost"));
 
-            Post("/posts");
+            Post("");
             AllowAnonymous();
+            Group<PostGroup>();
         }
 
         public override async Task<Results<Ok<Response>, BadRequest<InvalidResponse>, ProblemHttpResult>> ExecuteAsync(

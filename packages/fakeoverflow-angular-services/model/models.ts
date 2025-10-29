@@ -7,6 +7,8 @@ export * from './fakeoverFlowBackendHttpApiFeaturesAuthRefreshRefreshResponse';
 export * from './fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest';
 export * from './fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupResponse';
 export * from './fakeoverFlowBackendHttpApiFeaturesMeGetGetMeResponse';
+export * from './fakeoverFlowBackendHttpApiFeaturesPostsCreatePostsPostsRequest';
+export * from './fakeoverFlowBackendHttpApiFeaturesPostsCreatePostsPostsResponse';
 export * from './fastEndpointsErrorResponse';
 export * from './fastEndpointsProblemDetails';
 export * from './fastEndpointsProblemDetailsError';

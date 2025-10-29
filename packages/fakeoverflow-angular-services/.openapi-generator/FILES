@@ -5,6 +5,7 @@ api.module.ts
 api/api.ts
 api/auth.service.ts
 api/me.service.ts
+api/post.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
@@ -18,6 +19,8 @@ model/fakeoverFlowBackendHttpApiFeaturesAuthRefreshRefreshResponse.ts
 model/fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupRequest.ts
 model/fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupResponse.ts
 model/fakeoverFlowBackendHttpApiFeaturesMeGetGetMeResponse.ts
+model/fakeoverFlowBackendHttpApiFeaturesPostsCreatePostsPostsRequest.ts
+model/fakeoverFlowBackendHttpApiFeaturesPostsCreatePostsPostsResponse.ts
 model/fastEndpointsErrorResponse.ts
 model/fastEndpointsProblemDetails.ts
 model/fastEndpointsProblemDetailsError.ts

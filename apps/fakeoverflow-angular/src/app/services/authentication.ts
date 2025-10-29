@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {Identity} from '@models/identity.models';
+import {Credentials, Identity} from '@models/identity.models';
 import {Optional} from '@utils/types';
 import {ConfigKeys} from '@constants/config-keys.enums';
 import {Router} from '@angular/router';
@@ -215,5 +215,22 @@ export class Authentication {
    */
   private getForwardRoutePath() : string | undefined {
     return localStorage.getItem(ConfigKeys.FORWARD_ROUTE_PATH) ?? undefined;
+  }
+
+  /**
+   * Updates the stored secrets for the current user identity.
+   *
+   * @param {Credentials} secrets - The new secrets to be updated for the current user's identity.
+   * @return {void} Does not return any value.
+   */
+  updateSecrets(secrets: Credentials) {
+    const value = this.currentIdentityAsValue;
+    if(!value){
+      this.logout({redirectToLogout: false, toastMessage: 'Failed to update secrets. Please log in again.'})
+      return;
+    }
+
+    value.secrets = secrets;
+    localStorage.setItem(ConfigKeys.IDENTITY, JSON.stringify(value));
   }
 }

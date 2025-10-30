@@ -1,0 +1,30 @@
+<app-navbar></app-navbar>
+<div class="min-h-screen bg-gray-50">
+  <div class="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Ask question</h1>
+
+    <form #f="ngForm" (ngSubmit)="submit(f)" novalidate class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+        <input name="title" ngModel required minlength="10" class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Be specific">
+        <div class="mt-1 text-sm text-red-600" *ngIf="f.controls['title']?.touched && f.controls['title']?.invalid">Enter at least 10 characters</div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Body</label>
+        <textarea name="body" ngModel required minlength="20" rows="8" class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Describe your question"></textarea>
+        <div class="mt-1 text-sm text-red-600" *ngIf="f.controls['title']?.touched && f.controls['title']?.invalid">Enter at least 20 characters</div>
+      </div>
+<!--
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+        <input name="tags" ngModel class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. politics, trending, tech">
+      </div>
+    -->
+      <div class="flex items-center justify-between">
+        <button type="submit" [disabled]="f.invalid || loading" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg disabled:opacity-50">Post your question</button>
+        <div *ngIf="submitted" class="text-sm text-green-700">Submitted</div>
+      </div>
+    </form>
+  </div>
+</div>

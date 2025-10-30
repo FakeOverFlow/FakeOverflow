@@ -26,19 +26,13 @@ export const routes: Routes = [
       }
     ]
   },
-  {
-    path: 'home',
-    children: [
-      {
-        path: '',
-        loadComponent: () => import('./pages/home/home/home').then(m => m.Home),
-        title: 'Home | FakeOverflow'
-      }
-    ]
-  },
-  {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full'
-  }
+  { path: 'home', loadComponent: () => import('./pages/home/home/home').then(m => m.Home), },
+  { path: 'post', loadComponent: () => import('./pages/home/home/CreatePost/post').then(m => m.PostComponent) },
+  { path: 'update', loadComponent: () => import('./pages/home/home/UpdatePost/update').then(m => m.UpdateComponent) },
+   { path: 'detail', loadComponent: () => import('./pages/home/home/PostDetails/details').then(m => m.DetailsComponent) },
+    { path: 'personalhome', loadComponent: () => import('./pages/home/home/PersonalQuestionsHome/personalHome').then(m => m.PersonalHome) },
+
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '**', redirectTo: 'home' }
+
 ];

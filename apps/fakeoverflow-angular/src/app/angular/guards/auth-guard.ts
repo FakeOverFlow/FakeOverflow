@@ -13,6 +13,7 @@ export const authGuard: CanActivateFn = (route, state) => {
     if(!isPublic) {
       return router.parseUrl('/auth/login');
     }
-  } 
+  }
+
   return true;
 };

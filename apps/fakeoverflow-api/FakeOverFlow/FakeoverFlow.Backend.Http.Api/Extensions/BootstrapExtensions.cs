@@ -46,6 +46,7 @@ public static class BootstrapExtensions
     {
         builder.Services.AddScoped<IPasswordHasher<UserAccount>, PasswordHasher<UserAccount>>();
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IPostService, PostService>();
     }
 
     private static void SetupClients(this WebApplicationBuilder builder)

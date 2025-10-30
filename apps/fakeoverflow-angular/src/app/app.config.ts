@@ -14,6 +14,8 @@ import {providePrimeNG} from 'primeng/config';
 import {initializeAuthentications, overrideLoggers} from '@utils/initializers.utils';
 import {environment} from '@environments/environment';
 import {provideApi} from 'fakeoverflow-angular-services';
+import { accessTokenInterceptor } from '@interceptors/access-token-interceptor';
+import { refreshTokenInterceptor } from '@interceptors/refresh-token-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -38,7 +40,8 @@ export const appConfig: ApplicationConfig = {
     }),
     provideHttpClient(
       withInterceptors([
-
+        accessTokenInterceptor,
+        refreshTokenInterceptor
       ])
     ),
     provideHotToastConfig({

@@ -7,9 +7,9 @@ import { RouterLink } from '@angular/router';
   imports: [
     Navbar, RouterLink
   ],
-  templateUrl: './home.html',
-  styleUrl: './home.scss'
+  templateUrl: './personalHome.html',
+  styleUrl: './PersonalHome.scss'
 })
-export class Home {
+export class PersonalHome {
 
 }

@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '@guards/auth-guard';
-import { DetailsComponent } from './pages/home/home/PostDetails/details';
 export const routes: Routes = [
   {
     path: 'auth',
@@ -28,7 +27,7 @@ export const routes: Routes = [
     ]
   },
   { path: 'home', loadComponent: () => import('./pages/home/home/home').then(m => m.Home), },
-  { 
+  {
     path: 'post',
     children: [
       {
@@ -36,14 +35,18 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/home/home/create-post/post').then(m => m.PostComponent),
         canActivate: [authGuard],
         title: 'Create Post | FakeOverflow'
+      },
+      {
+        path: ":id",
+        loadComponent: () => import('./pages/home/home/details/details').then(m => m.DetailsComponent),
+        title: 'Post | FakeOverflow'
       }
-    ]     
+    ]
   },
   { path: 'update', loadComponent: () => import('./pages/home/home/UpdatePost/update').then(m => m.UpdateComponent) },
-   { path: 'detail', loadComponent: () => import('./pages/home/home/PostDetails/details').then(m => m.DetailsComponent) },
+   { path: 'detail', loadComponent: () => import('@pages/home/home/details/details').then(m => m.DetailsComponent) },
     { path: 'personalhome', loadComponent: () => import('./pages/home/home/PersonalQuestionsHome/personalHome').then(m => m.PersonalHome) },
 
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', redirectTo: 'home' },
-{ path: 'post/:id', component: DetailsComponent }
 ];

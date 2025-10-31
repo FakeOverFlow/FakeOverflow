@@ -1,0 +1,46 @@
+<div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+  <h2 class="text-2xl font-semibold text-gray-900 mb-4">Answers</h2>
+
+  <div *ngIf="loading" class="text-gray-600 py-4">Loading answers...</div>
+  <div *ngIf="errorMessage" class="text-red-600 py-4">{{ errorMessage }}</div>
+
+  <!-- List of answers -->
+  <div *ngIf="!loading && answers?.length > 0" class="space-y-6">
+    <div
+      *ngFor="let answer of answers"
+      class="border border-gray-200 rounded-lg shadow-sm p-4"
+    >
+      <div class="flex items-start space-x-4">
+        <!-- Voting -->
+        <div class="flex flex-col items-center text-gray-500">
+          <button pButton icon="pi pi-chevron-up" class="p-button-text"></button>
+          <span class="text-sm font-medium">0</span>
+          <button pButton icon="pi pi-chevron-down" class="p-button-text"></button>
+        </div>
+
+        <!-- Answer Body -->
+        <div class="flex-1">
+          <p class="text-gray-800 whitespace-pre-line leading-relaxed mb-3">
+            {{ answer.content }}
+          </p>
+
+          <div class="flex items-center text-sm text-gray-500">
+            <img
+              *ngIf="answer.createdOn?.user?.profilePicture"
+              [src]="answer.createdOn.user.profilePicture"
+              alt="Profile"
+              class="w-6 h-6 rounded-full"
+            />
+            <span class="ml-2">{{ answer.createdOn?.user?.name }}</span>
+            <span class="ml-1">· {{ answer.createdOn?.activityOn | date: 'medium' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No answers -->
+  <div *ngIf="!loading && (!answers || answers.length === 0)" class="text-gray-500 py-4">
+    No answers yet. Be the first to respond!
+  </div>
+</div>

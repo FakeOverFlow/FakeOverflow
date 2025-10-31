@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '@guards/auth-guard';
-
+import { DetailsComponent } from './pages/home/home/PostDetails/details';
 export const routes: Routes = [
   {
     path: 'auth',
@@ -44,6 +44,6 @@ export const routes: Routes = [
     { path: 'personalhome', loadComponent: () => import('./pages/home/home/PersonalQuestionsHome/personalHome').then(m => m.PersonalHome) },
 
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: '**', redirectTo: 'home' }
-
+  { path: '**', redirectTo: 'home' },
+{ path: 'post/:id', component: DetailsComponent }
 ];

@@ -1,0 +1,32 @@
+<div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+  <div class="flex items-start space-x-4">
+    <!-- Voting -->
+    <div class="flex flex-col items-center text-gray-500">
+      <button pButton icon="pi pi-chevron-up" class="p-button-text"></button>
+      <span class="text-sm font-medium">{{ post().votes }}</span>
+      <button pButton icon="pi pi-chevron-down" class="p-button-text"></button>
+    </div>
+
+    <!-- Question Content -->
+    <div class="flex-1">
+      <p class="text-gray-800 whitespace-pre-line leading-relaxed mb-4">
+        {{ post().content }}
+      </p>
+
+      <!-- Tags -->
+      <div class="flex flex-wrap gap-2">
+        <span
+          *ngFor="let tag of post().tags"
+          class="bg-blue-50 text-blue-700 text-sm px-3 py-1 rounded-full border border-blue-200"
+        >
+          {{ tag }}
+        </span>
+      </div>
+
+      <!-- Updated Info -->
+      <div class="mt-4 text-xs text-gray-500">
+        Last updated on {{ post().updatedOn?.activityOn | date: 'medium' }}
+      </div>
+    </div>
+  </div>
+</div>

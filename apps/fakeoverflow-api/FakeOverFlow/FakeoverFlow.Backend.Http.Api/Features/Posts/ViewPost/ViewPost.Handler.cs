@@ -46,7 +46,7 @@ public static partial class ViewPost
                 Title = postResultValue.post.Title,
                 Tags = [],
                 Views = postResultValue.post.Views,
-                Votes = postResultValue.post.Votes,
+                Votes = postResultValue.question.Votes,
                 CreatedOn = new UserActivity()
                 {
                     User = new UserDetails()

@@ -22,6 +22,11 @@ public class PostContentConfiguration : IEntityTypeConfiguration<PostContent>
             .OnDelete(DeleteBehavior.Restrict);
         
         builder.HasOne(pc => pc.Post)
+            .WithMany(p => p.Contents)
+            .HasForeignKey(pc => pc.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasOne(pc => pc.Post)
             .WithMany()
             .HasForeignKey(pc => pc.PostId)
             .OnDelete(DeleteBehavior.Cascade);
@@ -42,5 +47,10 @@ public class PostContentConfiguration : IEntityTypeConfiguration<PostContent>
                 })
             .HasIndex(p => p.VectorText)
             .HasMethod("GIN");
+        
+        builder.HasMany(pc => pc.VotesBy)
+            .WithOne(v => v.PostContent)
+            .HasForeignKey(v => v.ContentId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

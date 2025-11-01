@@ -3,6 +3,7 @@ using FakeoverFlow.Backend.Abstraction.Context;
 using FakeoverFlow.Backend.Http.Api.Abstracts.Services;
 using FakeoverFlow.Backend.Http.Api.Models.Enums;
 using FakeoverFlow.Backend.Http.Api.Models.Posts;
+using FakeoverFlow.Backend.Http.Api.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace FakeoverFlow.Backend.Http.Api.Services;
@@ -19,12 +20,13 @@ public class PostService(
         var ctx = contextFactory.RequestContext;
         var now = DateTimeOffset.UtcNow;
         var userId = ctx.UserId;
+        
+        // Create Base Models
         var post = new Models.Posts.Posts()
         {
             Id = Ulid.NewUlid().ToString(),
             Title = req.Title,
             Views = 0,
-            Votes = 0,
             CreatedBy = userId,
             CreatedOn = now,
             UpdatedBy = userId,
@@ -39,13 +41,22 @@ public class PostService(
             CreatedBy = userId,
             CreatedOn = now,
             UpdatedBy = userId,
-            UpdatedOn = now
+            UpdatedOn = now,
+            Votes = 0,
+            ContentType = ContentType.Questions,
         };
+
+        // Handle Tags
+        var tags = await GetOrCreateTagsAsync(req.Tags, ct);
+        await dbContext.AddRangeAsync(tags.Select(x => new PostTags()
+        {
+            PostId = post.Id,
+            TagId = x.Id,
+        }).ToList(), ct);
 
         await dbContext.Posts.AddAsync(post, ct);
         await dbContext.PostContent.AddAsync(content, ct);
         await dbContext.SaveChangesAsync(ct);
-        
         return post;
     }
 
@@ -98,6 +109,36 @@ public class PostService(
         return Result<(Posts post, PostContent? question, List<PostContent>? answers)>.Success((posts, question, answers));
     }
 
+    private async Task<List<Tag>> GetOrCreateTagsAsync(List<string> tags, CancellationToken ct = default)
+    {
+        var normalizedTags = tags
+            .Select(x => x.Trim().ToLower())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .ToList();
+    
+        var existingTags = await dbContext.Tag
+            .Where(t => normalizedTags.Contains(t.Value))
+            .ToListAsync(ct);
+    
+        var existingValues = existingTags.Select(t => t.Value).ToHashSet();
+        var missingValues = normalizedTags.Where(v => !existingValues.Contains(v)).ToList();
+
+        if (missingValues.Count <= 0) return existingTags;
+        var newTags = missingValues.Select(v => new Tag
+        {
+            Value = v,
+            Description = "",
+            Color = TagColorPalette.GetRandomColor()
+        }).ToList();
+        
+        dbContext.Tag.AddRange(newTags);
+        await dbContext.SaveChangesAsync(ct);
+        
+        existingTags.AddRange(newTags);
+        return existingTags;
+    }
+    
     public async Task<bool> IncreaseViewCountAsync(string id, CancellationToken ct = default)
     {
         var result = await dbContext.Database.ExecuteSqlInterpolatedAsync($"""

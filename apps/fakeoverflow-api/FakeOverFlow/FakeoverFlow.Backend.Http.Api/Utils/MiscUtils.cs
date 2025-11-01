@@ -34,6 +34,8 @@ public static class MiscUtils
         return dictionary;
     }
     
+    
+    
     public static ClaimsPrincipal GetPrincipalFromContext(this HttpContext context)
     {
         return context.User;

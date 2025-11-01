@@ -21,4 +21,7 @@ public class PostContent : IGuidEntity, IPostAuditableEntity, IPutAuditableEntit
     public Posts Post { get; set; } = null!;
     public NpgsqlTsVector VectorText { get; set; } = null!;
 
+    public long Votes { get; set; } = 0;
+    
+    public ICollection<ContentVotes> VotesBy { get; set; } = new List<ContentVotes>();
 }

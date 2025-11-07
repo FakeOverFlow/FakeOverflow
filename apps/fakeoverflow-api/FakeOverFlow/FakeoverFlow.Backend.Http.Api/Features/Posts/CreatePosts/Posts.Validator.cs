@@ -18,6 +18,10 @@ public static partial class Posts
                 .NotEmpty()
                 .MaximumLength(10000)
                 .WithMessage("Content must be less than 10000 characters");
+
+            RuleFor(x => x.Tags)
+                .Must(x => x.Count <= 10)
+                .WithMessage("You can only add up to 10 tags");
         }
     }
 }

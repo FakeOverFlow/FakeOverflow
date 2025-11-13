@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import {Navbar} from '@shared/navbar/navbar';
 
 @Component({
   selector: 'app-post',
   standalone: true,
-  imports: [Navbar, CommonModule, FormsModule],
+  imports: [Navbar, CommonModule, FormsModule, RouterLink],
   templateUrl: './post.html',
   styleUrl: './post.scss'
 })

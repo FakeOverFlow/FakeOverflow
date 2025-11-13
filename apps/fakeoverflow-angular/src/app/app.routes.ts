@@ -30,7 +30,7 @@ export const routes: Routes = [
   { path: 'post', loadComponent: () => import('./pages/home/home/CreatePost/post').then(m => m.PostComponent) },
   { path: 'update', loadComponent: () => import('./pages/home/home/UpdatePost/update').then(m => m.UpdateComponent) },
    { path: 'detail', loadComponent: () => import('./pages/home/home/PostDetails/details').then(m => m.DetailsComponent) },
-    { path: 'personalhome', loadComponent: () => import('./pages/home/home/PersonalQuestionsHome/personalHome').then(m => m.PersonalHome) },
+    { path: 'my-questions', loadComponent: () => import('./pages/home/home/MyQuestions/myQuestions').then(m => m.MyQuestions) },
 
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', redirectTo: 'home' }

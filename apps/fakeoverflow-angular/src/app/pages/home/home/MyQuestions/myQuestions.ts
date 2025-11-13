@@ -3,13 +3,13 @@ import {Navbar} from '@shared/navbar/navbar';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-my-questions',
   imports: [
     Navbar, RouterLink
   ],
-  templateUrl: './personalHome.html',
-  styleUrl: './PersonalHome.scss'
+  templateUrl: './myQuestions.html',
+  styleUrl: './myQuestions.scss'
 })
-export class PersonalHome {
+export class MyQuestions {
 
 }

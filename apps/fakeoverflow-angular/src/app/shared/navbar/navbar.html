@@ -50,7 +50,7 @@
         </button>
 
         @if (identity$ | async; as identity) {
-          <a href="/profile"
+          <a routerLink="/profile"
             class="flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:text-orange-500">
             @if (identity.avatarUrl) {
               <img [src]="identity.avatarUrl" alt="avatar"
@@ -82,7 +82,7 @@
       <a href="#" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 block px-3 py-2 text-base font-medium">For Teams</a>
       <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
         @if (identity$ | async; as identity) {
-          <a href="/profile" class="block px-3 py-2 text-base font-medium text-blue-600 dark:text-blue-400">
+          <a routerLink="/profile" class="block px-3 py-2 text-base font-medium text-blue-600 dark:text-blue-400">
             {{ identity.name }}
           </a>
         } @else {

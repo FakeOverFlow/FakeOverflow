@@ -31,6 +31,7 @@ export const routes: Routes = [
   { path: 'update', loadComponent: () => import('./pages/home/home/UpdatePost/update').then(m => m.UpdateComponent) },
    { path: 'detail', loadComponent: () => import('./pages/home/home/PostDetails/details').then(m => m.DetailsComponent) },
     { path: 'my-questions', loadComponent: () => import('./pages/home/home/MyQuestions/myQuestions').then(m => m.MyQuestions) },
+  { path: 'profile', loadComponent: () => import('./pages/home/home/Profile/profile').then(m => m.Profile) },
 
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', redirectTo: 'home' }

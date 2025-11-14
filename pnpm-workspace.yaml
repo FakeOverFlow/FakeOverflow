@@ -4,6 +4,7 @@ packages:
   - scripts/*
 
 onlyBuiltDependencies:
+  - '@openapitools/openapi-generator-cli'
   - '@parcel/watcher'
   - '@tailwindcss/oxide'
   - esbuild

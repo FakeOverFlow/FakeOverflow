@@ -64,4 +64,7 @@ public interface IPostService
     /// A task representing the asynchronous operation. The task result is a boolean indicating whether the operation succeeded.
     /// </returns>
     public Task<bool> IncreaseViewCountAsync(string id, CancellationToken ct = default);
+
+    Task<Result<(IEnumerable<(Models.Posts.Posts post, PostContent? content)> items, long totalCount)>>
+        ListPostsAsync(int page, int pageSize, CancellationToken ct = default);
 }

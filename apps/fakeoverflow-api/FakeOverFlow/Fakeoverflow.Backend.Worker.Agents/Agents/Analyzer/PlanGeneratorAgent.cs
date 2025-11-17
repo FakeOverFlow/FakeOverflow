@@ -6,7 +6,7 @@ namespace Fakeoverflow.Backend.Worker.Agents.Agents.Analyzer;
 
 public class PlanGeneratorAgent
 {
-    public const string ModelName = Constants.Models.ReasoningModel;
+    public const string ModelName = Constants.Models.BaseModel;
 
     private const string Instructions = """
                                         You are the Plan Generator Agent.

@@ -21,6 +21,6 @@ public class AnalyzerState
 
     public Dictionary<Guid, WebSummarizerState> WebSummaryResult = new();
     
-    
+    public FinalVerdictAgent.FinalVerdictAgentResponse FinalVerdict { get; set; }
 }
 

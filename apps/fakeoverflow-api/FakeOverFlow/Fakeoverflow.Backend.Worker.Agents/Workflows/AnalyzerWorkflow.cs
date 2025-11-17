@@ -1,4 +1,5 @@
 using Fakeoverflow.Backend.Worker.Agents.Abstraction;
+using Fakeoverflow.Backend.Worker.Agents.Agents.Analyzer;
 using Fakeoverflow.Backend.Worker.Agents.Executors.Aanalyzer;
 using Fakeoverflow.Backend.Worker.Agents.Models;
 using Fakeoverflow.Backend.Worker.Agents.Models.Analyzer;
@@ -26,6 +27,7 @@ public class AnalyzerWorkflow : IWorkflow<AnalyzerRequest, AnalyzerState>
         var metadataExtractorExecutor = new MetadataExtractorExecutor(_analyzerAgents.MetadataExtractor);
         var planGeneratorExecutor = new PlanGeneratorExecutor(_analyzerAgents.PlannerAgent);
         var planExecutor = new PlanExecutor(_webSummarizerWorkflow);
+        var finalAgent = new FinalVerdictExecutor(_analyzerAgents.FinalVerdictAgent);
         var workflowBuilder = new WorkflowBuilder(claimExtractorExecutor);
         workflowBuilder.AddEdge(
             source: claimExtractorExecutor,
@@ -42,8 +44,12 @@ public class AnalyzerWorkflow : IWorkflow<AnalyzerRequest, AnalyzerState>
             target: planExecutor
         );
 
+
+        workflowBuilder.AddEdge(
+            source: planExecutor,
+            target: finalAgent);
         
-        workflowBuilder.WithOutputFrom(planExecutor);
+        workflowBuilder.WithOutputFrom(finalAgent);
         return workflowBuilder.Build();
     }
     

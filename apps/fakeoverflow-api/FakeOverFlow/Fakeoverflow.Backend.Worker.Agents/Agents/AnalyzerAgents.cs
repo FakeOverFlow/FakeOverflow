@@ -16,6 +16,14 @@ public class AnalyzerAgents
         ClaimExtractor = CreateClaimExtractionAgent();
         MetadataExtractor = CreateClaimMetadataExtractionAgent();
         PlannerAgent = CreatePlannerAgent();
+        FinalVerdictAgent = CreateFinalVerdictAgent();
+    }
+
+    private AIAgent CreateFinalVerdictAgent()
+    {
+        return _reasoningClient
+            .GetChatClient(Analyzer.FinalVerdictAgent.ModelName)
+            .CreateAIAgent(Analyzer.FinalVerdictAgent.Options);
     }
 
     private AIAgent CreatePlannerAgent()
@@ -46,5 +54,7 @@ public class AnalyzerAgents
     
     public AIAgent PlannerAgent { get; }
     
-    public AIAgent WebSummarizerAgent { get; set; }
+    public AIAgent WebSummarizerAgent { get; set; } = null!;
+
+    public AIAgent FinalVerdictAgent { get; set; }
 }

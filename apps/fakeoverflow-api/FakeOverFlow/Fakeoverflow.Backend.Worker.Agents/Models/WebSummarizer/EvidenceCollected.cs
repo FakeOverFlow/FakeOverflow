@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Fakeoverflow.Backend.Worker.Agents.Models.WebSummarizer;
 
 public class EvidenceCollected
@@ -16,6 +18,17 @@ public class EvidenceCollected
         Inconclusive,
     }
 
+    public override string ToString()
+    {
+        StringBuilder builder = new();
+        builder.AppendLine($"Claim: {Claim}");
+        builder.AppendLine($"Support: {Support}");
+        builder.AppendLine($"Reasoning: {Reasoning}");
+        builder.AppendLine($"Sources: {string.Join(", ", Sources)}");
+        
+        return builder.ToString();
+    }
+
     public class EvidenceSource
     {
         public string Url { get; set; }
@@ -32,6 +45,11 @@ public class EvidenceCollected
             High,
             Medium,
             Low,
+        }
+        
+        public override string ToString()
+        {
+            return $"Url: {Url}, Title: {Title}, Snippet: {Snippet}, PublishDate: {PublishDate}, Credibility: {Credibility}";
         }
     }
 }

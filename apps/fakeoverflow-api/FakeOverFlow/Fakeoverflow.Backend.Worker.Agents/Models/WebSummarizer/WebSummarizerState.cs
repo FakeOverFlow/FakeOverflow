@@ -1,3 +1,4 @@
+using System.Text;
 using Fakeoverflow.Backend.Worker.Agents.Agents.Summarizer;
 
 namespace Fakeoverflow.Backend.Worker.Agents.Models.WebSummarizer;
@@ -52,5 +53,43 @@ public class WebSummarizerState
         InProgress,
         Completed,
         InsufficentEvidence,
+    }
+
+    public string AsPlanResponseString()
+    {
+        StringBuilder builder = new();
+        builder.AppendLine("Queries Generated: ");
+        builder.AppendLine(string.Join($"{Environment.NewLine}  -", QueriesGenerated));
+        
+        builder.AppendLine(Environment.NewLine);
+        builder.AppendLine("Evidence Collected: ");
+        builder.AppendLine(string.Join($"{Environment.NewLine}  -", EvidenceCollected));
+
+        builder.AppendLine(Environment.NewLine);
+        builder.AppendLine("Knowledge Gaps: ");
+        builder.AppendLine(string.Join($"{Environment.NewLine}  -", KnowledgeGaps));
+        
+        builder.AppendLine(Environment.NewLine);
+        builder.AppendLine("Final Verdict: ");
+        builder.Append(FinalVerdict);
+        
+        builder.AppendLine(Environment.NewLine);
+        builder.AppendLine("Reasoning: ");
+        builder.Append(Reasoning);
+        
+        builder.AppendLine(Environment.NewLine);
+        builder.AppendLine("Citations: ");
+        builder.AppendLine(string.Join($"{Environment.NewLine}  -", Citations));
+        
+        builder.AppendLine(Environment.NewLine);
+        builder.AppendLine("Validation Criteria: ");
+        builder.AppendLine(string.Join($"{Environment.NewLine}  -", ValidationCriteria));
+        
+        builder.AppendLine(Environment.NewLine);
+        builder.AppendLine("Current Time: ");
+        builder.Append(CurrentTime);
+        
+        
+        return builder.ToString();
     }
 }

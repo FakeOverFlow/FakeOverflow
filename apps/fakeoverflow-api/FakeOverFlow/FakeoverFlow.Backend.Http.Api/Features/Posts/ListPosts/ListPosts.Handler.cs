@@ -41,6 +41,16 @@ public static partial class ListPosts
             int page = 1;
             int pageSize = 20;
 
+            var tags = new List<string>();
+            if (q.TryGetValue("tags", out var tagValues))
+            {
+                tags = tagValues
+                    .SelectMany(v => v.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    .Select(t => t.Trim().ToLower())
+                    .Distinct()
+                    .ToList();
+            }
+
             if (q.TryGetValue("page", out var pv) && int.TryParse(pv.FirstOrDefault(), out var p))
                 page = p;
 
@@ -55,7 +65,7 @@ public static partial class ListPosts
 
             ThrowIfAnyErrors();
 
-            var listResult = await _postService.ListPostsAsync(page, pageSize, ct);
+            var listResult = await _postService.ListPostsAsync(page, pageSize, tags, ct);
 
             if (listResult.IsFailure)
                 return listResult.Error!.ToFastEndpointError();
@@ -73,12 +83,11 @@ public static partial class ListPosts
                     {
                         PostId = post.Id ?? string.Empty,
                         Title = post.Title ?? string.Empty,
-                        // content lives in PostContent
+
                         Content = content?.Content ?? string.Empty,
-                        // PostContent currently doesn't contain Tags in your model -> leave empty list
-                        Tags = new List<string>(),
+                        //Tags = post.Tags,
                         Views = post.Views,
-                        Votes = post.Votes
+                        //Votes = post.Votes
                     };
                 }).ToList(),
 

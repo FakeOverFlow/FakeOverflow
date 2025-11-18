@@ -66,5 +66,5 @@ public interface IPostService
     public Task<bool> IncreaseViewCountAsync(string id, CancellationToken ct = default);
 
     Task<Result<(IEnumerable<(Models.Posts.Posts post, PostContent? content)> items, long totalCount)>>
-        ListPostsAsync(int page, int pageSize, CancellationToken ct = default);
+        ListPostsAsync(int page, int pageSize, IEnumerable<string> tags, CancellationToken ct = default);
 }

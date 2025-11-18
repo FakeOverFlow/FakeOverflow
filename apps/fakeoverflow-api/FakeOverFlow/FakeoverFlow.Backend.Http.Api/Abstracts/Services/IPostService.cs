@@ -65,6 +65,8 @@ public interface IPostService
     /// </returns>
     public Task<bool> IncreaseViewCountAsync(string id, CancellationToken ct = default);
 
+    Task<Result<(IEnumerable<(Models.Posts.Posts post, PostContent? content)> items, long totalCount)>>
+        ListPostsAsync(int page, int pageSize, IEnumerable<string> tags, CancellationToken ct = default);
     /// <summary>
     /// Retrieves a paginated list of tags along with their respective post counts based on the specified query parameters.
     /// </summary>

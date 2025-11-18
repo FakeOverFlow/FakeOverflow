@@ -122,6 +122,53 @@ public class PostService(
         return result > 0;
     }
 
+    public async Task<Result<(IEnumerable<(Posts post, PostContent? content)> items, long totalCount)>>
+        ListPostsAsync(int page, int pageSize, IEnumerable<string> tags, CancellationToken ct = default)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 20;
+
+        var normalizedTags = tags?
+            .Where(t => !string.IsNullOrWhiteSpace(t))
+            .Select(t => t.Trim().ToLower())
+            .Distinct()
+            .ToList() ?? new List<string>();
+
+        var postsQuery = dbContext.Posts
+            .AsNoTracking()
+            .Include(p => p.Contents)
+            .Include(p => p.Tags)
+            .ThenInclude(pt => pt.Tag)
+            .OrderByDescending(p => p.CreatedOn)
+            .AsQueryable();
+
+        /*
+        if (normalizedTags.Any())
+        {
+            postsQuery = postsQuery.Where(p =>
+                p.Tags.Any(pt => normalizedTags.Contains(pt.Tag.Name.ToLower())));
+        }
+        */
+
+        var totalCount = await postsQuery.LongCountAsync(ct);
+
+        var pagedPosts = await postsQuery
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(ct);
+
+        var items = pagedPosts.Select(p =>
+        {
+            var content = p.Contents
+                .FirstOrDefault(c => c.ContentType == ContentType.Questions);
+
+            return (post: p, content: content);
+        }).ToList();
+
+        return Result<(IEnumerable<(Posts post, PostContent? content)> items, long totalCount)>
+            .Success((items, totalCount));
+    }
+
     private async Task<List<Tag>> GetOrCreateTagsAsync(List<string> tags, CancellationToken ct = default)
     {
         var normalizedTags = tags

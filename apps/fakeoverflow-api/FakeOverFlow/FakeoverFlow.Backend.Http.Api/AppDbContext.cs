@@ -20,6 +20,12 @@ public class AppDbContext : DbContext
 
     public DbSet<PostContent> PostContent { get; set; } = null!;
 
+    public DbSet<PostTags> PostTags { get; set; } = null!;
+
+    public DbSet<Tag> Tag { get; set; } = null!;
+
+    public DbSet<ContentVotes> Votes { get; set; } = null!;
+
     #region Internals
 
     protected AppDbContext(IContextFactory contextFactory)

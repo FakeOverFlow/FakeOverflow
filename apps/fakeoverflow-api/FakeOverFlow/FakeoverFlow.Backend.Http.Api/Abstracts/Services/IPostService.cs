@@ -64,4 +64,18 @@ public interface IPostService
     /// A task representing the asynchronous operation. The task result is a boolean indicating whether the operation succeeded.
     /// </returns>
     public Task<bool> IncreaseViewCountAsync(string id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Retrieves a paginated list of tags along with their respective post counts based on the specified query parameters.
+    /// </summary>
+    /// <param name="page">The zero-based page index to retrieve.</param>
+    /// <param name="pageSize">The number of tags to retrieve per page.</param>
+    /// <param name="searchTerm">An optional search term to filter tags by their value.</param>
+    /// <param name="ct">A cancellation token used to manage task cancellation.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The task result contains a tuple where the first value is a list of tags,
+    /// and the second is a dictionary mapping tag IDs to their respective post counts.
+    /// </returns>
+    public Task<(List<Tag> Tags, Dictionary<int, int> TagCounts)> GetTagsWithCountsAsync(int page = 0,
+        int pageSize = 10, string? searchTerm = null, CancellationToken ct = default);
 }

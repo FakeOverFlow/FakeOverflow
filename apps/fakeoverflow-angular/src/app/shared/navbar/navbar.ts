@@ -1,4 +1,4 @@
-import {Component, inject, signal} from '@angular/core';
+import {Component, inject, signal, HostListener} from '@angular/core';
 import {Authentication} from '@services/authentication';
 import {AsyncPipe} from '@angular/common';
 import {Common} from '@services/common';
@@ -19,6 +19,7 @@ import {Logo} from '@shared/logo/logo';
 })
 export class Navbar {
   isMobileMenuOpen = false;
+  isProfileMenuOpen = false;
   private readonly authentication = inject(Authentication);
   private readonly commonService = inject(Common);
   private readonly router = inject(Router);
@@ -30,12 +31,32 @@ export class Navbar {
 
   }
 
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.relative')) {
+      this.isProfileMenuOpen = false;
+    }
+  }
+
   toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 
+  toggleProfileMenu(): void {
+    this.isProfileMenuOpen = !this.isProfileMenuOpen;
+  }
+
   toggleTheme(): void {
     this.commonService.toggleDarkMode();
+  }
+
+  logout(): void {
+    this.isProfileMenuOpen = false;
+    this.authentication.logout({
+      redirectToLogout: true,
+      toastMessage: 'You have been logged out successfully'
+    });
   }
 
   routeToLoginPage() {

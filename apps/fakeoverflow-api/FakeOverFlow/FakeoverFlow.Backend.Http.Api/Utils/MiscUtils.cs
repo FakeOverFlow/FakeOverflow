@@ -2,7 +2,7 @@ using System.Security.Claims;
 
 namespace FakeoverFlow.Backend.Http.Api.Utils;
 
-public static class MiscUtils 
+public static class MiscUtils
 {
     /// <summary>
     /// Splits a string into key-value pairs based on the specified delimiters and parses it into a dictionary.
@@ -22,18 +22,21 @@ public static class MiscUtils
             if (keyValue.Length <= 1)
             {
                 dictionary.Add(keyValuePair, string.Empty);
-            } else if (keyValue.Length == 2)
+            }
+            else if (keyValue.Length == 2)
             {
-                dictionary.Add(keyValue[0], keyValue[1]);   
+                dictionary.Add(keyValue[0], keyValue[1]);
             }
             else
             {
-                dictionary.Add(keyValue[0], string.Join(keyValueSeperator, keyValue.Skip(1))); 
+                dictionary.Add(keyValue[0], string.Join(keyValueSeperator, keyValue.Skip(1)));
             }
         }
+
         return dictionary;
     }
-    
+
+
     public static ClaimsPrincipal GetPrincipalFromContext(this HttpContext context)
     {
         return context.User;

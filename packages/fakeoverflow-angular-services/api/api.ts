@@ -4,4 +4,6 @@ export * from './me.service';
 import { MeService } from './me.service';
 export * from './post.service';
 import { PostService } from './post.service';
-export const APIS = [AuthService, MeService, PostService];
+export * from './tags.service';
+import { TagsService } from './tags.service';
+export const APIS = [AuthService, MeService, PostService, TagsService];

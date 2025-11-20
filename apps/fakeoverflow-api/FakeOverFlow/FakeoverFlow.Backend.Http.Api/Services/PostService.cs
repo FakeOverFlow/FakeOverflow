@@ -136,6 +136,7 @@ public class PostService(
 
         var postsQuery = dbContext.Posts
             .AsNoTracking()
+            .Include(p => p.CreatedByAccount)
             .Include(p => p.Contents)
             .Include(p => p.Tags)
             .ThenInclude(pt => pt.Tag)
@@ -157,13 +158,16 @@ public class PostService(
             .Take(pageSize)
             .ToListAsync(ct);
 
-        var items = pagedPosts.Select(p =>
-        {
-            var content = p.Contents
-                .FirstOrDefault(c => c.ContentType == ContentType.Questions);
+        var pageId = pagedPosts.Select(x => x.Id).ToList();
 
-            return (post: p, content: content);
-        }).ToList();
+        var contents = dbContext.PostContent.AsNoTracking()
+            .Where(x => pageId.Contains(x.PostId) && x.ContentType == ContentType.Questions)
+            .ToList();
+
+        var items = pagedPosts.Select(x =>
+        {
+            return (x, contents.FirstOrDefault(c => c.PostId == x.Id));
+        });
 
         return Result<(IEnumerable<(Posts post, PostContent? content)> items, long totalCount)>
             .Success((items, totalCount));

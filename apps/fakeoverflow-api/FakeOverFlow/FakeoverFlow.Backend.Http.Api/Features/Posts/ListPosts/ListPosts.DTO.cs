@@ -23,5 +23,11 @@ public static partial class ListPosts
         public long Views { get; set; }
 
         public long Votes { get; set; }
+        
+        public Guid UserId { get; set; }
+        
+        public string UserName { get; set; } = string.Empty;
+        
+        public DateTimeOffset CreatedOn { get; set; }
     }
 }

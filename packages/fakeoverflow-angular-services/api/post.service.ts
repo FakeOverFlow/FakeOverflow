@@ -21,6 +21,8 @@ import { FakeoverFlowBackendHttpApiFeaturesPostsCreatePostsPostsRequest } from '
 // @ts-ignore
 import { FakeoverFlowBackendHttpApiFeaturesPostsCreatePostsPostsResponse } from '../model/fakeoverFlowBackendHttpApiFeaturesPostsCreatePostsPostsResponse';
 // @ts-ignore
+import { FakeoverFlowBackendHttpApiFeaturesPostsListPostsListPostsResponse } from '../model/fakeoverFlowBackendHttpApiFeaturesPostsListPostsListPostsResponse';
+// @ts-ignore
 import { FakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostResponse } from '../model/fakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostResponse';
 // @ts-ignore
 import { FastEndpointsErrorResponse } from '../model/fastEndpointsErrorResponse';
@@ -151,6 +153,56 @@ export class PostService extends BaseService {
         let localVarPath = `/post/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<FakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostResponse>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public listPosts(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<FakeoverFlowBackendHttpApiFeaturesPostsListPostsListPostsResponse>;
+    public listPosts(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FakeoverFlowBackendHttpApiFeaturesPostsListPostsListPostsResponse>>;
+    public listPosts(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FakeoverFlowBackendHttpApiFeaturesPostsListPostsListPostsResponse>>;
+    public listPosts(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json',
+            'application/problem+json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/post`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<FakeoverFlowBackendHttpApiFeaturesPostsListPostsListPostsResponse>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

@@ -16,5 +16,8 @@ export interface FakeoverFlowBackendHttpApiFeaturesPostsListPostsListPostsPostSu
     tags?: Array<string>;
     views?: number;
     votes?: number;
+    userId?: string;
+    userName?: string;
+    createdOn?: string;
 }
 

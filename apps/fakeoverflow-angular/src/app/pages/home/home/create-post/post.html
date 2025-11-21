@@ -14,7 +14,7 @@
           <div class="absolute inset-0 bg-gradient-to-r from-[#3a5b9d]/5 via-transparent to-[#3a5b9d]/5"></div>
           <div class="relative">
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Ask a Question</h1>
-            <p class="text-sm text-gray-600">Get help from our community of developers</p>
+            <p class="text-sm text-gray-600">Get help from our community</p>
           </div>
         </div>
         <form [formGroup]="formGroup" (ngSubmit)="submit()" novalidate class="bg-white/80 backdrop-blur-sm rounded-lg shadow-md border border-gray-200 p-6 space-y-6">
@@ -28,7 +28,7 @@
               formControlName="title"
               name="title"
               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3a5b9d] focus:border-transparent transition-all"
-              placeholder="e.g., How do I implement authentication in Angular 18?">
+              placeholder="rumor: Apple is planning an IFlight app?">
             <div class="mt-1.5 text-sm text-red-600" *ngIf="formGroup.controls['title']?.touched && formGroup.controls['title']?.invalid">
               <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -47,11 +47,8 @@
               formControlName="content"
               rows="10"
               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3a5b9d] focus:border-transparent transition-all resize-y"
-              placeholder="Describe your problem in detail. Include what you've tried and what you expected to happen..."></textarea>
+              placeholder="Describe the fact you want to talk with the community"></textarea>
             <div class="mt-1.5 text-sm text-red-600" *ngIf="formGroup.controls['content']?.touched && formGroup.controls['content']?.invalid">
-              <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-              </svg>
               Enter at least 20 characters
             </div>
           </div>

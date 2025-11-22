@@ -50,16 +50,48 @@
         </button>
 
         @if (identity$ | async; as identity) {
-          <a href="/profile"
-            class="flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:text-orange-500">
-            @if (identity.avatarUrl) {
-              <img [src]="identity.avatarUrl" alt="avatar"
-                  class="h-6 w-6 rounded-full mr-2" />
-            } @else {
-              <avvvatars class="mr-2" [value]="identity.name"></avvvatars>
+          <div class="relative">
+            <button
+              (click)="toggleProfileMenu()"
+              class="flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:text-orange-500">
+              @if (identity.avatarUrl) {
+                <img [src]="identity.avatarUrl" alt="avatar"
+                    class="h-6 w-6 rounded-full mr-2" />
+              } @else {
+                <avvvatars class="mr-2" [value]="identity.name"></avvvatars>
+              }
+              <span>{{ identity.name }}</span>
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+
+            @if (isProfileMenuOpen) {
+              <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                <div class="py-1">
+                  <a href="/profile"
+                    class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <div class="flex items-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                      </svg>
+                      Profile
+                    </div>
+                  </a>
+                  <button
+                    (click)="logout()"
+                    class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <div class="flex items-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                      </svg>
+                      Logout
+                    </div>
+                  </button>
+                </div>
+              </div>
             }
-            <span>{{ identity.name }}</span>
-          </a>
+          </div>
         } @else {
           <button (click)="routeToLoginPage()"
             class="hidden sm:inline-flex items-center px-4 py-2 border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 text-sm font-medium rounded hover:bg-blue-50 dark:hover:bg-blue-900/20">
@@ -82,9 +114,22 @@
       <a href="#" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 block px-3 py-2 text-base font-medium">For Teams</a>
       <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
         @if (identity$ | async; as identity) {
-          <a href="/profile" class="block px-3 py-2 text-base font-medium text-blue-600 dark:text-blue-400">
-            {{ identity.name }}
+          <a href="/profile" class="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+              {{ identity.name }}
+            </div>
           </a>
+          <button (click)="logout()" class="w-full text-left px-3 py-2 text-base font-medium text-red-600 dark:text-red-400">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+              </svg>
+              Logout
+            </div>
+          </button>
         } @else {
           <button (click)="routeToLoginPage()" class="w-full text-left px-3 py-2 text-base font-medium text-blue-600 dark:text-blue-400">
             Log in

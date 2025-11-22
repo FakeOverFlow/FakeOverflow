@@ -1,0 +1,85 @@
+<app-navbar></app-navbar>
+@if (post()){
+  <div class="min-h-screen bg-gray-50">
+    <div class="max-w-[100rem] mx-auto flex flex-col lg:flex-row gap-8 px-6 lg:px-10 py-10">
+      <div class="flex-1 space-y-6">
+        <div class="mb-5">
+          <app-view-question-title-bar [post]="post()!"></app-view-question-title-bar>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <app-view-question-question-box [post]="post()!"></app-view-question-question-box>
+        </div>
+        <div>
+          <app-view-question-ai-box></app-view-question-ai-box>
+        </div>
+        @if (loadingAnswer()){
+          <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 flex items-center justify-center">
+            <div class="flex items-center gap-3 text-gray-600">
+              <svg class="animate-spin h-6 w-6 text-gray-400" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
+                <path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity="0.75"/>
+              </svg>
+              <span>Loading answers...</span>
+            </div>
+          </div>
+        } @else if (answers().length === 0) {
+          <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+
+            <!-- Empty state message -->
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+              No one has answered this question yet
+            </h2>
+
+            @if (!authenticationService.isAuthenticated){
+              <p class="text-gray-600 mb-6">
+                Be the first to reply — but you must be logged in to post an answer.
+              </p>
+
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 15a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" fill="#2563eb"/>
+                    <path d="M17 8V7a5 5 0 10-10 0v1H6a1 1 0 00-1 1v8a2 2 0 002 2h10a2 2 0 002-2v-8a1 1 0 00-1-1h-1z"
+                          stroke="#2563eb" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+
+                <div class="flex-1">
+                  <h3 class="text-lg font-semibold text-gray-900">Please login to reply</h3>
+                  <p class="text-gray-600 text-sm">Sign in to leave the first answer on this post.</p>
+
+                  <div class="mt-4 flex gap-3">
+                    <a [routerLink]="['/', 'auth', 'login']" class="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">
+                      Login
+                    </a>
+                    <a [routerLink]="['/', 'auth', 'sign-up']" class="px-4 py-2 rounded-lg border border-blue-300 text-blue-600 font-semibold hover:bg-blue-50">
+                      Sign up
+                    </a>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-6">{{answers().length}} Answers</h2>
+            @for (ans of answers(); track ans.id; let last = $last){
+              <app-view-question-answer-box [answer]="ans" [isLast]="$last"></app-view-question-answer-box>
+            }
+          </div>
+        }
+        @if (authenticationService.isAuthenticated){
+          <app-view-question-create-answer [post]="post()!" (postCreated)="loadAnswers()"></app-view-question-create-answer>
+        } @else if(answers().length !== 0) {
+          <app-view-question-login-to-answer></app-view-question-login-to-answer>
+        }
+      </div>
+      <aside class="w-full lg:w-80 flex-shrink-0">
+        <div class="lg:sticky lg:top-6 space-y-6">
+          <app-community-stats></app-community-stats>
+          <app-trending-tags></app-trending-tags>
+        </div>
+      </aside>
+    </div>
+  </div>
+}

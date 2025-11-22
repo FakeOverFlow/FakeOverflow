@@ -1,4 +1,5 @@
 using FakeoverFlow.Backend.Abstraction;
+using FakeoverFlow.Backend.Http.Api.Features.Posts.Contents.CreateContent;
 using FakeoverFlow.Backend.Http.Api.Models.Posts;
 using Posts = FakeoverFlow.Backend.Http.Api.Features.Posts.CreatePosts.Posts;
 
@@ -64,4 +65,47 @@ public interface IPostService
     /// A task representing the asynchronous operation. The task result is a boolean indicating whether the operation succeeded.
     /// </returns>
     public Task<bool> IncreaseViewCountAsync(string id, CancellationToken ct = default);
+
+    Task<Result<(IEnumerable<(Models.Posts.Posts post, PostContent? content)> items, long totalCount)>>
+        ListPostsAsync(int page, int pageSize, IEnumerable<string> tags, CancellationToken ct = default);
+
+    /// <summary>
+    /// Retrieves a paginated list of tags along with their respective post counts based on the specified query parameters.
+    /// </summary>
+    /// <param name="page">The zero-based page index to retrieve.</param>
+    /// <param name="pageSize">The number of tags to retrieve per page.</param>
+    /// <param name="searchTerm">An optional search term to filter tags by their value.</param>
+    /// <param name="ct">A cancellation token used to manage task cancellation.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The task result contains a tuple where the first value is a list of tags,
+    /// and the second is a dictionary mapping tag IDs to their respective post counts.
+    /// </returns>
+    public Task<(List<Tag> Tags, Dictionary<int, int> TagCounts)> GetTagsWithCountsAsync(int page = 0,
+        int pageSize = 10, string? searchTerm = null, CancellationToken ct = default);
+
+    /// <summary>
+    /// Creates a new content entry associated with a specific post based on the provided request data.
+    /// </summary>
+    /// <param name="request">
+    /// The data needed to create the content, including the content text and associated post ID.
+    /// </param>
+    /// <param name="ct">A cancellation token to manage task cancellation, if necessary.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The task result contains the created post content.
+    /// </returns>
+    public Task<PostContent> CreatePostContentAsync(CreateContent.Request request, CancellationToken ct = default);
+
+    /// <summary>
+    /// Retrieves the list of post contents associated with a specific post ID that are marked as answers.
+    /// </summary>
+    /// <param name="postId">
+    /// The unique identifier of the post whose contents are to be retrieved.
+    /// </param>
+    /// <param name="ct">
+    /// A cancellation token used to manage task cancellation.
+    /// </param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The task result contains a list of post contents associated with the specified post ID.
+    /// </returns>
+    public Task<List<PostContent>> GetPostContentByPostIdAsync(string postId, CancellationToken ct = default);
 }

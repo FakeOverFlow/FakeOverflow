@@ -6,6 +6,7 @@ api/api.ts
 api/auth.service.ts
 api/me.service.ts
 api/post.service.ts
+api/tags.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
@@ -21,9 +22,13 @@ model/fakeoverFlowBackendHttpApiFeaturesAuthSignupSignupResponse.ts
 model/fakeoverFlowBackendHttpApiFeaturesMeGetGetMeResponse.ts
 model/fakeoverFlowBackendHttpApiFeaturesPostsCreatePostsPostsRequest.ts
 model/fakeoverFlowBackendHttpApiFeaturesPostsCreatePostsPostsResponse.ts
+model/fakeoverFlowBackendHttpApiFeaturesPostsListPostsListPostsPostSummary.ts
+model/fakeoverFlowBackendHttpApiFeaturesPostsListPostsListPostsResponse.ts
 model/fakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostResponse.ts
 model/fakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostUserActivity.ts
 model/fakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostUserDetails.ts
+model/fakeoverFlowBackendHttpApiFeaturesTagsListTagsListTagsResponse.ts
+model/fakeoverFlowBackendHttpApiFeaturesTagsListTagsListTagsTags.ts
 model/fastEndpointsErrorResponse.ts
 model/fastEndpointsProblemDetails.ts
 model/fastEndpointsProblemDetailsError.ts

@@ -2,7 +2,7 @@ using FastEndpoints;
 
 namespace FakeoverFlow.Backend.Http.Api.Features.Posts;
 
-public class PostGroup : Group
+public sealed class PostGroup : Group
 {
     public PostGroup()
     {

@@ -88,6 +88,9 @@ public static partial class ListPosts
                         //Tags = post.Tags,
                         Views = post.Views,
                         //Votes = post.Votes
+                        CreatedOn = post.CreatedOn,
+                        UserId = post.CreatedByAccount.Id,
+                        UserName = post.CreatedByAccount.Username
                     };
                 }).ToList(),
 

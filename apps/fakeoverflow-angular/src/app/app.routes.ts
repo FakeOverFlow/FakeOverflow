@@ -46,6 +46,7 @@ export const routes: Routes = [
   { path: 'update', loadComponent: () => import('./pages/home/home/UpdatePost/update').then(m => m.UpdateComponent) },
    { path: 'detail', loadComponent: () => import('@pages/home/home/details/details').then(m => m.DetailsComponent) },
     { path: 'personalhome', loadComponent: () => import('./pages/home/home/PersonalQuestionsHome/personalHome').then(m => m.PersonalHome) },
+  { path: 'view-question', loadComponent: () => import('./pages/home/home/view-question/view-question').then(m => m.ViewQuestion), title: 'View Question | FakeOverflow' },
 
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', redirectTo: 'home' },

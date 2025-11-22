@@ -1,0 +1,336 @@
+<app-navbar></app-navbar>
+
+<div class="min-h-screen bg-gray-50">
+  <div class="max-w-[100rem] mx-auto flex flex-col lg:flex-row gap-8 px-6 lg:px-10 py-10">
+
+    <!-- Main Content -->
+    <div class="flex-1 space-y-6">
+
+      <!-- Question Title -->
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+        <h1 class="text-3xl font-semibold text-gray-900 mb-4">Question Title Goes Here</h1>
+        <div class="flex items-center gap-4 text-sm text-gray-600">
+          <span>Asked <span class="font-medium">2 days ago</span></span>
+          <span>Modified <span class="font-medium">1 day ago</span></span>
+          <span>Viewed <span class="font-medium">245 times</span></span>
+        </div>
+      </div>
+
+      <!-- Question Content -->
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+        <div class="flex items-start space-x-4">
+          <!-- Voting Section -->
+          <div class="flex flex-col items-center text-gray-500 gap-2">
+            <button class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+              <svg class="w-8 h-8 text-gray-600 hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+              </svg>
+            </button>
+            <span class="text-2xl font-semibold text-gray-700">12</span>
+            <button class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+              <svg class="w-8 h-8 text-gray-600 hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Question Body -->
+          <div class="flex-1">
+            <p class="text-gray-800 whitespace-pre-line leading-relaxed mb-4">
+              Stock markets across the globe rallied after signals from the U.S. Federal Reserve suggested a possible interest rate cut in December. The Dow Jones Industrial Average rose 1.2%, while the S&P 500 and Nasdaq Composite gained 1.5% and 1.8%, respectively.
+
+              This comes after several months of volatility as investors weighed concerns about inflation and economic growth. The Fed's indication of a more dovish stance has been welcomed by market participants who see it as a sign of confidence in the economy's resilience.
+            </p>
+
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">Markets</span>
+              <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">Finance</span>
+              <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">Technology</span>
+            </div>
+
+            <!-- Author Info -->
+            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+              <div class="flex gap-2">
+                <button class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 transition-colors">Share</button>
+                <button class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 transition-colors">Edit</button>
+                <button class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 transition-colors">Follow</button>
+              </div>
+              <div class="flex items-center gap-2 bg-[#e1ecf4] rounded-lg p-3">
+                <div class="w-8 h-8 bg-[#3a5b9d] rounded-sm flex items-center justify-center text-white font-semibold text-sm">JD</div>
+                <div class="text-xs">
+                  <div class="text-gray-600">asked 2 days ago</div>
+                  <div class="font-medium text-[#3a5b9d]">John Doe</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Results Section -->
+      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg shadow-sm p-6">
+        <div class="flex items-start gap-3 mb-4">
+          <div class="p-2 bg-blue-600 rounded-lg">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">AI-Generated Insights</h2>
+            <p class="text-sm text-gray-600 mb-4">Here's what our AI analysis found about this question:</p>
+          </div>
+        </div>
+
+        <div class="bg-white border border-blue-200 rounded-lg p-4 mb-4">
+          <div class="text-gray-800 leading-relaxed space-y-3">
+            <p>Based on the question about market movements and Federal Reserve rate cuts, here are the key insights:</p>
+            <ul class="list-disc list-inside space-y-2 ml-2">
+              <li>Interest rate cuts typically stimulate economic growth by making borrowing cheaper</li>
+              <li>Stock markets often respond positively to anticipated rate cuts</li>
+              <li>The Federal Reserve uses interest rates as a tool to manage inflation and economic growth</li>
+              <li>Market volatility is common during periods of monetary policy changes</li>
+            </ul>
+            <p class="text-sm text-gray-600 italic mt-4">This analysis is generated by AI and should be verified with authoritative sources.</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs text-gray-600">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>AI responses may contain inaccuracies. Always verify important information.</span>
+        </div>
+      </div>
+
+      <!-- Answers Section -->
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-6">3 Answers</h2>
+
+        <!-- Answer Item -->
+        <div class="border-b border-gray-200 pb-6 mb-6">
+          <div class="flex items-start space-x-4">
+            <!-- Voting -->
+            <div class="flex flex-col items-center text-gray-500 gap-2">
+              <button class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <svg class="w-8 h-8 text-gray-600 hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                </svg>
+              </button>
+              <span class="text-2xl font-semibold text-gray-700">8</span>
+              <button class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <svg class="w-8 h-8 text-gray-600 hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              <button class="p-2 hover:bg-green-100 rounded-full transition-colors" title="Accept Answer">
+                <svg class="w-8 h-8 text-gray-400 hover:text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Answer Body -->
+            <div class="flex-1">
+              <p class="text-gray-800 whitespace-pre-line leading-relaxed mb-4">
+                The Federal Reserve's monetary policy decisions have a significant impact on global markets. When the Fed signals a rate cut, it generally means they believe the economy can handle lower borrowing costs, which encourages investment and spending.
+              </p>
+
+              <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                <div class="flex gap-2">
+                  <button class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 transition-colors">Share</button>
+                  <button class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 transition-colors">Edit</button>
+                  <button class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 transition-colors">Follow</button>
+                </div>
+                <div class="flex items-center gap-2 bg-[#e1ecf4] rounded-lg p-3">
+                  <div class="w-8 h-8 bg-[#3a5b9d] rounded-sm flex items-center justify-center text-white font-semibold text-sm">AS</div>
+                  <div class="text-xs">
+                    <div class="text-gray-600">answered 1 day ago</div>
+                    <div class="font-medium text-[#3a5b9d]">Alice Smith</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Another Answer Item -->
+        <div class="border-b border-gray-200 pb-6 mb-6">
+          <div class="flex items-start space-x-4">
+            <!-- Voting -->
+            <div class="flex flex-col items-center text-gray-500 gap-2">
+              <button class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <svg class="w-8 h-8 text-gray-600 hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                </svg>
+              </button>
+              <span class="text-2xl font-semibold text-gray-700">5</span>
+              <button class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <svg class="w-8 h-8 text-gray-600 hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              <button class="p-2 hover:bg-green-100 rounded-full transition-colors" title="Accept Answer">
+                <svg class="w-8 h-8 text-gray-400 hover:text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Answer Body -->
+            <div class="flex-1">
+              <p class="text-gray-800 whitespace-pre-line leading-relaxed mb-4">
+                It's worth noting that market reactions to Fed announcements can be volatile in the short term. Investors should consider their long-term strategies rather than making hasty decisions based on immediate market movements.
+              </p>
+
+              <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                <div class="flex gap-2">
+                  <button class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 transition-colors">Share</button>
+                  <button class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 transition-colors">Edit</button>
+                  <button class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 transition-colors">Follow</button>
+                </div>
+                <div class="flex items-center gap-2 bg-[#e1ecf4] rounded-lg p-3">
+                  <div class="w-8 h-8 bg-[#3a5b9d] rounded-sm flex items-center justify-center text-white font-semibold text-sm">BJ</div>
+                  <div class="text-xs">
+                    <div class="text-gray-600">answered 12 hours ago</div>
+                    <div class="font-medium text-[#3a5b9d]">Bob Johnson</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Your Answer Section -->
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">Your Answer</h2>
+
+        <form class="space-y-4">
+          <div>
+            <textarea
+              rows="8"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Write your answer here... Be specific and provide details to help others understand your response."
+            ></textarea>
+            <div class="mt-2 text-xs text-gray-500">
+              Minimum 30 characters
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+            <div class="flex gap-2 text-sm text-gray-600">
+              <button type="button" class="px-3 py-1.5 hover:text-blue-600 transition-colors flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 10a4 4 0 01-8 0"/>
+                </svg>
+                Attach File
+              </button>
+              <button type="button" class="px-3 py-1.5 hover:text-blue-600 transition-colors flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                </svg>
+                Format
+              </button>
+            </div>
+            <button
+              type="submit"
+              class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-sm hover:shadow-md"
+            >
+              Post Your Answer
+            </button>
+          </div>
+        </form>
+
+        <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h3 class="text-sm font-semibold text-gray-900 mb-2">Tips for writing a great answer:</h3>
+          <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+            <li>Read the question carefully and understand what is being asked</li>
+            <li>Provide a clear and concise answer with relevant details</li>
+            <li>Support your answer with examples or references when possible</li>
+            <li>Be respectful and constructive in your response</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="hidden lg:block w-[300px] shrink-0 space-y-6">
+
+      <!-- Community Stats -->
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-5">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-100 pb-2">
+          Community Stats
+        </h2>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Questions</span>
+            <span class="text-sm font-semibold text-gray-900">1,234</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Answers</span>
+            <span class="text-sm font-semibold text-gray-900">4,567</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Users</span>
+            <span class="text-sm font-semibold text-gray-900">890</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related Questions -->
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-5">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-100 pb-2">
+          Related Questions
+        </h2>
+        <ul class="space-y-3 text-sm">
+          <li>
+            <a href="#" class="text-blue-600 hover:text-blue-700 hover:underline">
+              What are interest rate cuts?
+            </a>
+          </li>
+          <li>
+            <a href="#" class="text-blue-600 hover:text-blue-700 hover:underline">
+              Impact of Fed decisions on markets
+            </a>
+          </li>
+          <li>
+            <a href="#" class="text-blue-600 hover:text-blue-700 hover:underline">
+              AI in financial news detection
+            </a>
+          </li>
+          <li>
+            <a href="#" class="text-blue-600 hover:text-blue-700 hover:underline">
+              Understanding market volatility
+            </a>
+          </li>
+          <li>
+            <a href="#" class="text-blue-600 hover:text-blue-700 hover:underline">
+              How to invest during rate changes
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Trending Tags -->
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-5">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-100 pb-2">
+          Trending Tags
+        </h2>
+        <div class="flex flex-wrap gap-2">
+          <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">Markets</span>
+          <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">Finance</span>
+          <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">AI</span>
+          <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">Technology</span>
+          <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">Economics</span>
+          <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">Investment</span>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+</div>

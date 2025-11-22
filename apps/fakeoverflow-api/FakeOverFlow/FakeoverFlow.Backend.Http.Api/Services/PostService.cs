@@ -1,6 +1,7 @@
 using FakeoverFlow.Backend.Abstraction;
 using FakeoverFlow.Backend.Abstraction.Context;
 using FakeoverFlow.Backend.Http.Api.Abstracts.Services;
+using FakeoverFlow.Backend.Http.Api.Features.Posts.Contents.CreateContent;
 using FakeoverFlow.Backend.Http.Api.Models.Enums;
 using FakeoverFlow.Backend.Http.Api.Models.Posts;
 using FakeoverFlow.Backend.Http.Api.Utils;
@@ -143,13 +144,14 @@ public class PostService(
             .OrderByDescending(p => p.CreatedOn)
             .AsQueryable();
 
-        /*
         if (normalizedTags.Any())
         {
+            var tsQuery = EF.Functions.ToTsQuery(string.Join(" | ", normalizedTags));
+
             postsQuery = postsQuery.Where(p =>
-                p.Tags.Any(pt => normalizedTags.Contains(pt.Tag.Name.ToLower())));
+                p.Tags.Any(pt => pt.Tag.VectorText.Matches(tsQuery))
+            );
         }
-        */
 
         var totalCount = await postsQuery.LongCountAsync(ct);
 
@@ -231,5 +233,40 @@ public class PostService(
             .ToList();
         
         return (result.Select(x => x.Tag).ToList(), result.ToDictionary(x => x.Tag.Id, x => x.Count));
+    }
+
+    public async Task<PostContent> CreatePostContentAsync(CreateContent.Request request, CancellationToken ct = default)
+    {
+        request.PostId = request.PostId.ToUpper();
+        var requestContext = contextFactory.RequestContext;
+        var now = DateTimeOffset.UtcNow;
+        var postContent = new PostContent()
+        {
+            Id = Guid.CreateVersion7(),
+            Content = request.Content,
+            PostId = request.PostId,
+            ContentType = ContentType.Answers,
+            CreatedBy = requestContext.UserId,
+            CreatedOn = now,
+            UpdatedBy = requestContext.UserId,
+            UpdatedOn = now,
+            Votes = 0,
+        };
+        
+        dbContext.PostContent.Add(postContent);
+        await dbContext.SaveChangesAsync(ct);
+        return postContent;
+    }
+
+    public async Task<List<PostContent>> GetPostContentByPostIdAsync(string postId, CancellationToken ct = default)
+    {
+        postId = postId.ToUpper();
+        return await dbContext.PostContent
+            .AsNoTracking()
+            .Where(x => x.PostId == postId && x.ContentType == ContentType.Answers)
+            .Include(x => x.CreatedByAccount)
+            .OrderByDescending(x => x.Votes)
+            .ThenByDescending(x => x.CreatedOn)
+            .ToListAsync(ct);
     }
 }

@@ -1,0 +1,39 @@
+<div [class.border-b]="!isLast()" class="border-gray-200 pb-6 mb-6">
+  <div class="flex items-start space-x-4">
+    <div class="flex flex-col items-center text-gray-500 gap-2">
+      <button class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+        <svg class="w-8 h-8 text-gray-600 hover:text-[#3a5b9d]" fill="none" stroke="currentColor"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+        </svg>
+      </button>
+      <span class="text-2xl font-semibold text-gray-700">0</span>
+      <button class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+        <svg class="w-8 h-8 text-gray-600 hover:text-[#3a5b9d]" fill="none" stroke="currentColor"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+    </div>
+    <div class="flex-1">
+      <p class="text-gray-800 whitespace-pre-line leading-relaxed mb-4">
+        {{answer().content}}
+      </p>
+      <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+        <div class="flex gap-2">
+          <button
+            class="px-3 py-1.5 text-sm text-gray-600 hover:text-[#3a5b9d] transition-colors">Share</button>
+          <button class="px-3 py-1.5 text-sm text-gray-600 hover:text-[#3a5b9d] transition-colors">Edit</button>
+        </div>
+        <div class="flex items-center gap-2 bg-[#e1ecf4] rounded-lg p-3">
+          <div
+            class="w-8 h-8 bg-[#3a5b9d] rounded-sm flex items-center justify-center text-white font-semibold text-sm">{{(answer()?.createdOn?.username || 'UK') | userNameExtractor}}</div>
+          <div class="text-xs">
+            <div class="text-gray-600">answered {{answer().createdOn?.activityOn | relativeTime}}</div>
+            <div class="font-medium text-[#3a5b9d]">{{answer()?.createdOn?.username || 'UK'}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+  <a routerLink="/home"
+     class="inline-flex items-center gap-2 text-[#3a5b9d] hover:text-[#2d4879] font-medium text-sm mb-4 transition-colors group">
+    <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor"
+         viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+    Back to Home
+  </a>
+  <h1 class="text-3xl font-semibold text-gray-900 mb-4">{{post().title}}</h1>
+  <div class="flex items-center gap-4 text-sm text-gray-600">
+    <span>Asked <span class="font-medium">{{post().createdOn?.activityOn | relativeTime}}</span></span>
+    <span>Viewed <span class="font-medium">{{post().views}} times</span></span>
+    <span>Voted <span class="font-medium">{{post().votes}} votes</span></span>
+  </div>
+</div>

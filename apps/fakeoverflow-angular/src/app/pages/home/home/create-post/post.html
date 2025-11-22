@@ -1,152 +1,93 @@
 <app-navbar></app-navbar>
-
 <div class="min-h-screen bg-gray-50">
   <div class="max-w-[100rem] mx-auto flex flex-col lg:flex-row gap-8 px-6 lg:px-10 py-10">
-
-    <!-- Main Content -->
     <div class="flex-1 space-y-6">
-
-      <!-- Header Section -->
       <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
-        <a routerLink="/home" class="inline-flex items-center gap-2 text-[#3a5b9d] hover:text-[#2d4879] font-medium text-sm mb-4 transition-colors group">
-          <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        <a routerLink="/home"
+          class="inline-flex items-center gap-2 text-[#3a5b9d] hover:text-[#2d4879] font-medium text-sm mb-4 transition-colors group">
+          <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
           Back to Home
         </a>
         <h1 class="text-3xl font-semibold text-gray-900 mb-2">Ask a Question</h1>
         <p class="text-sm text-gray-600">Get help from our community of developers and experts</p>
       </div>
-
-      <!-- Form Section -->
       <form [formGroup]="formGroup" (ngSubmit)="submit()" novalidate class="space-y-6">
-
-        <!-- Title Field -->
         <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
           <label class="block text-lg font-semibold text-gray-900 mb-3">
             Title
             <span class="text-red-500">*</span>
           </label>
           <p class="text-sm text-gray-600 mb-4">Be specific and imagine you're asking a question to another person</p>
-          <input
-            formControlName="title"
-            name="title"
+          <input formControlName="title" name="title"
             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-base"
             placeholder="e.g., How do I implement authentication in Angular 18?">
-          <div class="mt-2 text-sm text-red-600 flex items-start gap-2" *ngIf="formGroup.controls['title']?.touched && formGroup.controls['title']?.invalid">
+          <div class="mt-2 text-sm text-red-600 flex items-start gap-2"
+            *ngIf="formGroup.controls['title']?.touched && formGroup.controls['title']?.invalid">
             <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              <path fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clip-rule="evenodd" />
             </svg>
             <span>Enter at least 10 characters</span>
           </div>
         </div>
-
-        <!-- Body Field -->
         <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
           <label class="block text-lg font-semibold text-gray-900 mb-3">
             Body
             <span class="text-red-500">*</span>
           </label>
-          <p class="text-sm text-gray-600 mb-4">Include all the information someone would need to answer your question</p>
-          <textarea
-            name="body"
-            formControlName="content"
-            rows="12"
+          <p class="text-sm text-gray-600 mb-4">Include all the information someone would need to answer your question
+          </p>
+          <textarea name="body" formControlName="content" rows="12"
             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-y text-base"
             placeholder="Describe your problem in detail. Include what you've tried and what you expected to happen..."></textarea>
-          <div class="mt-2 text-sm text-red-600 flex items-start gap-2" *ngIf="formGroup.controls['content']?.touched && formGroup.controls['content']?.invalid">
+          <div class="mt-2 text-sm text-red-600 flex items-start gap-2"
+            *ngIf="formGroup.controls['content']?.touched && formGroup.controls['content']?.invalid">
             <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              <path fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clip-rule="evenodd" />
             </svg>
             <span>Enter at least 20 characters</span>
           </div>
-
-          <!-- Formatting Toolbar -->
           <div class="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100">
-            <button type="button" class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors flex items-center gap-1">
+            <button type="button"
+              class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors flex items-center gap-1">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 10a4 4 0 01-8 0"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 10a4 4 0 01-8 0" />
               </svg>
               Attach File
             </button>
-            <button type="button" class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors flex items-center gap-1">
+            <button type="button"
+              class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors flex items-center gap-1">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
               </svg>
               Format
             </button>
-            <button type="button" class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors flex items-center gap-1">
+            <button type="button"
+              class="px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors flex items-center gap-1">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
               </svg>
               Code
             </button>
           </div>
         </div>
-
-        <!-- AI Writing Assistant Section -->
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg shadow-sm p-6">
-          <div class="flex items-start gap-3 mb-4">
-            <div class="p-2 bg-blue-600 rounded-lg">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-              </svg>
-            </div>
-            <div class="flex-1">
-              <h2 class="text-xl font-semibold text-gray-900 mb-2">AI Writing Assistant</h2>
-              <p class="text-sm text-gray-600 mb-4">Get AI-powered suggestions to improve your question</p>
-            </div>
-          </div>
-
-          <div class="bg-white border border-blue-200 rounded-lg p-4 mb-4">
-            <h3 class="text-sm font-semibold text-gray-900 mb-3">Tips for a great question:</h3>
-            <ul class="text-sm text-gray-700 space-y-2">
-              <li class="flex items-start gap-2">
-                <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                </svg>
-                <span>Summarize the problem in the title</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                </svg>
-                <span>Describe what you've tried and what went wrong</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                </svg>
-                <span>Include relevant code, error messages, and logs</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                </svg>
-                <span>Show the expected vs actual results</span>
-              </li>
-            </ul>
-          </div>
-
-          <button type="button" class="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-            Get AI Suggestions
-          </button>
-        </div>
-
-        <!-- Tags Field (Optional) -->
         <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
           <label class="block text-lg font-semibold text-gray-900 mb-3">
             Tags
             <span class="text-gray-500 text-sm font-normal ml-2">(Optional)</span>
           </label>
           <p class="text-sm text-gray-600 mb-4">Add up to 5 tags to describe what your question is about</p>
-          <input
-            type="text"
+          <input type="text"
             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-base"
             placeholder="e.g., angular, authentication, typescript">
           <div class="mt-3 flex flex-wrap gap-2">
@@ -154,7 +95,9 @@
               angular
               <button type="button" class="hover:text-red-600">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                  <path fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd" />
                 </svg>
               </button>
             </span>
@@ -162,140 +105,54 @@
               authentication
               <button type="button" class="hover:text-red-600">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                  <path fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd" />
                 </svg>
               </button>
             </span>
           </div>
         </div>
-
-        <!-- Submit Section -->
         <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-              <button
-                type="submit"
-                [disabled]="formGroup.invalid || loading"
+              <button type="submit" [disabled]="formGroup.invalid || loading"
                 class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
                 <svg *ngIf="!loading" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
                 <svg *ngIf="loading" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                  </path>
                 </svg>
                 {{loading ? 'Posting...' : 'Post Your Question'}}
               </button>
-              <a routerLink="/home" class="px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-200">
+              <a routerLink="/home"
+                class="px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-200">
                 Cancel
               </a>
             </div>
-            <div *ngIf="submitted" class="flex items-center gap-2 text-sm text-green-700 font-medium bg-green-50 px-4 py-2 rounded-lg">
+            <div *ngIf="submitted"
+              class="flex items-center gap-2 text-sm text-green-700 font-medium bg-green-50 px-4 py-2 rounded-lg">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd" />
               </svg>
               Question posted successfully!
             </div>
           </div>
-
-          <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div class="flex items-start gap-2">
-              <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-              </svg>
-              <div class="text-sm text-gray-700">
-                <p class="font-semibold mb-1">Review your question before posting:</p>
-                <ul class="list-disc list-inside space-y-1">
-                  <li>Is your title clear and specific?</li>
-                  <li>Have you included all relevant details?</li>
-                  <li>Did you check for spelling and grammar?</li>
-                </ul>
-              </div>
-            </div>
-          </div>
         </div>
-
       </form>
-
     </div>
-
-    <!-- Sidebar -->
     <aside class="hidden lg:block w-[300px] shrink-0 space-y-6">
-
-      <!-- Community Stats -->
-      <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-5">
-        <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-100 pb-2">
-          Community Stats
-        </h2>
-        <div class="space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-600">Questions</span>
-            <span class="text-sm font-semibold text-gray-900">1,234</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-600">Answers</span>
-            <span class="text-sm font-semibold text-gray-900">4,567</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-600">Users</span>
-            <span class="text-sm font-semibold text-gray-900">890</span>
-          </div>
-          <div class="flex justify-between items-center pt-3 border-t border-gray-100">
-            <span class="text-sm text-gray-600">Your Questions</span>
-            <span class="text-sm font-semibold text-blue-600">12</span>
-          </div>
+        <div class="lg:sticky lg:top-6 space-y-6">
+        <app-community-stats></app-community-stats>
+        <app-trending-tags></app-trending-tags>
         </div>
-      </div>
-
-      <!-- Writing Guidelines -->
-      <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-5">
-        <h2 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-100 pb-2">
-          Writing Guidelines
-        </h2>
-        <ul class="space-y-3 text-sm text-gray-700">
-          <li class="flex items-start gap-2">
-            <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-            </svg>
-            <span>Be clear and specific</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-            </svg>
-            <span>Include code examples</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-            </svg>
-            <span>Show what you've tried</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-            </svg>
-            <span>Use proper formatting</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Trending Tags -->
-      <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-5">
-        <h2 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-100 pb-2">
-          Popular Tags
-        </h2>
-        <div class="flex flex-wrap gap-2">
-          <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">javascript</span>
-          <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">python</span>
-          <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">react</span>
-          <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">angular</span>
-          <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">node.js</span>
-          <span class="inline-flex px-2.5 py-1 bg-[#e1ecf4] text-[#39739d] rounded-sm text-xs hover:bg-[#d1e5f1] cursor-pointer">typescript</span>
-        </div>
-      </div>
 
     </aside>
-
   </div>
 </div>

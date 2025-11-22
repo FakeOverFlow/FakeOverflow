@@ -266,34 +266,4 @@ public class PostService(
         existingTags.AddRange(newTags);
         return existingTags;
     }
-
-    public async Task<(List<Tag> Tags, Dictionary<int, int> TagCounts)> GetTagsWithCountsAsync(int page = 0, int pageSize = 10,string? searchTerm = null, CancellationToken ct = default)
-    {
-        var postTagsEnumerable = dbContext.PostTags
-            .Include(pt => pt.Tag)
-            .AsQueryable()
-            .AsNoTracking();
-
-        if (!string.IsNullOrWhiteSpace(searchTerm))
-        {
-            postTagsEnumerable =
-                postTagsEnumerable.Where(pt => pt.Tag.VectorText.Matches(EF.Functions.ToTsQuery(searchTerm)));
-            logger.LogInformation("Searching for {SearchTerm}", searchTerm);
-        }
-
-
-        
-        var result = postTagsEnumerable
-            .GroupBy(pt => pt.Tag)
-            .Select(g => new 
-            {
-                Tag = g.Key,
-                Count = g.Count()
-            })
-            .Skip(page * pageSize)
-            .Take(pageSize)
-            .ToList();
-        
-        return (result.Select(x => x.Tag).ToList(), result.ToDictionary(x => x.Tag.Id, x => x.Count));
-    }
 }

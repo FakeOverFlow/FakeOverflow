@@ -31,7 +31,6 @@
           </div>
         </div>
 
-        <!-- Filter Tabs -->
         <div class="flex items-center gap-2 mb-6 bg-white/80 backdrop-blur-sm rounded-lg p-1.5 shadow-sm border border-gray-200">
           <button class="px-5 py-2 text-sm font-medium bg-[#3a5b9d] text-white rounded-md shadow-sm transition-all">Newest</button>
           <button class="px-5 py-2 text-sm font-medium text-gray-600 hover:text-[#3a5b9d] hover:bg-gray-50 rounded-md transition-all">Unanswered</button>
@@ -39,12 +38,13 @@
 
         <!-- Questions List -->
         <div class="space-y-6">
-          @for (post of posts; track post.postId){
-            <app-post-list-card [post]="post"></app-post-list-card>
+          @for (post of posts; track post.postId; let isLast = $last){
+            <div class="mb-4">
+              <app-post-list-card [post]="post"></app-post-list-card>
+            </div>
           }
         </div>
 
-        <!-- Pagination -->
         <div class="flex justify-center mt-8">
           <nav class="flex items-center gap-1">
             <button class="px-3 py-1.5 bg-white text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm">Prev</button>

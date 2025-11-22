@@ -9,10 +9,10 @@ export class UserNameExtractorPipe implements PipeTransform {
     const name = value?.toString() ?? "";
     const split = name.split(" ")
     if(split.length <= 1){
-      return name.at(0) ?? 'U';
+      return name.at(0)?.toUpperCase() || 'UK';
     }
 
-    return split[0][0] + split[1][0];
+    return (split[0][0] + split[1][0])?.toUpperCase() || 'UK';
   }
 
 }

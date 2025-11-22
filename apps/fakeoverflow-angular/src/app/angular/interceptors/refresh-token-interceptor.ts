@@ -28,7 +28,13 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() =>  err);
 
       if(!authService.currentIdentityAsValue?.secrets?.refreshToken || req.url.endsWith("/auth/refresh/"))
+      {
+        authService.logout({
+          redirectToLogout: true,
+          toastMessage: 'Failed to refresh your session, please try login again',
+        });
         return throwError(() =>  err);
+      }
 
 
       if(isRefreshing){
@@ -49,7 +55,13 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
       return authApiService.refresh().pipe(
         switchMap((res) => {
           if(!res)
+          {
+            authService.logout({
+              redirectToLogout: true,
+              toastMessage: 'Failed to refresh your session, please try login again',
+            });
             return throwError(() =>  err);
+          }
           const value = res.value;
           isRefreshing = false;
           refreshTokenSubject.next(value!.accessToken);
@@ -66,7 +78,10 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
         catchError((err) => {
           console.error("Error refreshing token", err);
           isRefreshing = false;
-          authService.logout();
+          authService.logout({
+            redirectToLogout: true,
+            toastMessage: 'Failed to refresh your session, please try login again',
+          });
           return EMPTY;
         })
       )

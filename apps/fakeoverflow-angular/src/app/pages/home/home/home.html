@@ -1,24 +1,70 @@
 <app-navbar></app-navbar>
 <div class="min-h-screen bg-gray-50">
-  <div class="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-6">Ask question</h1>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="flex flex-col lg:flex-row gap-6">
+      <main class="flex-1 min-w-0">
+        <!-- Header with Subtle Glass Effect -->
+        <div class="relative overflow-hidden bg-white/90 backdrop-blur-sm rounded-lg p-6 mb-6 shadow-sm border border-gray-200">
+          <div class="absolute inset-0 bg-gradient-to-r from-[#3a5b9d]/5 via-transparent to-[#3a5b9d]/5"></div>
+          <div class="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h1 class="text-3xl font-bold text-gray-800 mb-2">All Questions</h1>
+              <div class="flex items-center gap-3">
+                <p class="text-sm text-gray-600">4,234,567 questions</p>
+                <span class="text-gray-300">•</span>
+                <p class="text-sm text-gray-600">Updated just now</p>
+              </div>
+            </div>
+            <div class="flex gap-3 w-full sm:w-auto">
+              <a routerLink="/post/create" class="flex-1 sm:flex-none px-6 py-2.5 bg-[#3a5b9d] hover:bg-[#2d4879] text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
+                <span class="flex items-center justify-center gap-2">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  </svg>
+                  Ask Question
+                </span>
+              </a>
+              <a routerLink="/personalhome" class="flex-1 sm:flex-none px-6 py-2.5 bg-white hover:bg-gray-50 text-[#3a5b9d] font-medium rounded-lg border border-[#3a5b9d] hover:border-[#2d4879] transition-all duration-200">
+                Manage My Questions
+              </a>
+            </div>
+          </div>
+        </div>
 
-    <form [formGroup]="formGroup"  (ngSubmit)="submit()" novalidate class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-6">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-        <input formControlName="title" name="title" class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Please enter your title">
-        <div class="mt-1 text-sm text-red-600" *ngIf="formGroup.controls['title']?.touched && formGroup.controls['title']?.invalid">Enter at least 10 characters</div>
-      </div>
+        <!-- Filter Tabs -->
+        <div class="flex items-center gap-2 mb-6 bg-white/80 backdrop-blur-sm rounded-lg p-1.5 shadow-sm border border-gray-200">
+          <button class="px-5 py-2 text-sm font-medium bg-[#3a5b9d] text-white rounded-md shadow-sm transition-all">Newest</button>
+          <button class="px-5 py-2 text-sm font-medium text-gray-600 hover:text-[#3a5b9d] hover:bg-gray-50 rounded-md transition-all">Unanswered</button>
+        </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Body</label>
-        <textarea name="body" formControlName="content" rows="8" class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Describle the post in detail"></textarea>
-        <div class="mt-1 text-sm text-red-600" *ngIf="formGroup.controls['title']?.touched && formGroup.controls['title']?.invalid">Enter at least 20 characters</div>
-      </div>
-      <div class="flex items-center justify-between">
-        <button type="submit" [disabled]="formGroup.invalid || loading" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg disabled:opacity-50">Post your question</button>
-        <div *ngIf="submitted" class="text-sm text-green-700">Submitted</div>
-      </div>
-    </form>
+        <!-- Questions List -->
+        <div class="space-y-6">
+          @for (post of posts; track post.postId){
+            <app-post-list-card [post]="post"></app-post-list-card>
+          }
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center mt-8">
+          <nav class="flex items-center gap-1">
+            <button class="px-3 py-1.5 bg-white text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm">Prev</button>
+            <button class="px-3 py-1.5 bg-[#3a5b9d] text-white border border-[#3a5b9d] rounded font-medium transition-colors text-sm">1</button>
+            <button class="px-3 py-1.5 bg-white text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm">2</button>
+            <button class="px-3 py-1.5 bg-white text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm">3</button>
+            <span class="px-2 text-gray-500 text-sm">...</span>
+            <button class="px-3 py-1.5 bg-white text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm">99</button>
+            <button class="px-3 py-1.5 bg-white text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm">Next</button>
+          </nav>
+        </div>
+      </main>
+
+      <!-- Sidebar -->
+      <aside class="w-full lg:w-80 flex-shrink-0">
+        <div class="lg:sticky lg:top-6 space-y-12">
+          <app-community-stats></app-community-stats>
+          <app-trending-tags></app-trending-tags>
+        </div>
+      </aside>
+    </div>
   </div>
 </div>

@@ -12,6 +12,9 @@ export * from './fakeoverFlowBackendHttpApiFeaturesPostsContentsCreateContentCre
 export * from './fakeoverFlowBackendHttpApiFeaturesPostsContentsListContentsListContentsPostContent';
 export * from './fakeoverFlowBackendHttpApiFeaturesPostsContentsListContentsListContentsResponse';
 export * from './fakeoverFlowBackendHttpApiFeaturesPostsContentsListContentsListContentsUserActivity';
+export * from './fakeoverFlowBackendHttpApiFeaturesPostsContentsListContentsListContentsUserVote';
+export * from './fakeoverFlowBackendHttpApiFeaturesPostsContentsVotesVoteContentVoteContentRequest';
+export * from './fakeoverFlowBackendHttpApiFeaturesPostsContentsVotesVoteContentVoteContentResponse';
 export * from './fakeoverFlowBackendHttpApiFeaturesPostsCreatePostsPostsRequest';
 export * from './fakeoverFlowBackendHttpApiFeaturesPostsCreatePostsPostsResponse';
 export * from './fakeoverFlowBackendHttpApiFeaturesPostsListPostsListPostsPostSummary';
@@ -19,6 +22,7 @@ export * from './fakeoverFlowBackendHttpApiFeaturesPostsListPostsListPostsRespon
 export * from './fakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostResponse';
 export * from './fakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostUserActivity';
 export * from './fakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostUserDetails';
+export * from './fakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostUserVote';
 export * from './fakeoverFlowBackendHttpApiFeaturesTagsListTagsListTagsResponse';
 export * from './fakeoverFlowBackendHttpApiFeaturesTagsListTagsListTagsTags';
 export * from './fastEndpointsErrorResponse';

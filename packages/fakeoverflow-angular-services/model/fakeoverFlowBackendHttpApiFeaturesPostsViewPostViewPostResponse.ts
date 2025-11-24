@@ -8,16 +8,20 @@
  * Do not edit the class manually.
  */
 import { FakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostUserActivity } from './fakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostUserActivity';
+import { FakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostUserVote } from './fakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostUserVote';
 
 
 export interface FakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostResponse { 
     postId?: string;
     title?: string;
     content?: string;
+    contentId?: string;
     tags?: Array<string>;
     createdOn?: FakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostUserActivity;
     updatedOn?: FakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostUserActivity | null;
     views?: number;
-    votes?: number;
+    userVote?: FakeoverFlowBackendHttpApiFeaturesPostsViewPostViewPostUserVote | null;
+    upvotes?: number;
+    downvotes?: number;
 }
 

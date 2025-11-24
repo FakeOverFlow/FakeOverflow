@@ -41,10 +41,14 @@ public static partial class ViewPost
             {
                 PostId = postResultValue.post.Id,
                 Content = postResultValue.question!.Content,
+                ContentId = postResultValue.question.Id,
                 Title = postResultValue.post.Title,
                 Tags = [],
                 Views = postResultValue.post.Views,
-                HasUserVoted = postResultValue.question.VotesBy.Any(),
+                UserVote = postResultValue.question.VotesBy.Select(x => new UserVote()
+                {
+                    IsUpvote = x.UpVote,
+                }).FirstOrDefault(),
                 Upvotes = postResultValue.Item4.GetValueOrDefault(postResultValue.question.Id, (0, 0)).upvote,
                 Downvotes = postResultValue.Item4.GetValueOrDefault(postResultValue.question.Id, (0, 0)).downvote,
                 CreatedOn = new UserActivity()

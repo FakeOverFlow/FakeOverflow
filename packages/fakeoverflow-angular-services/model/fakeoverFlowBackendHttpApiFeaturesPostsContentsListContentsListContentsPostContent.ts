@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { FakeoverFlowBackendHttpApiFeaturesPostsContentsListContentsListContentsUserVote } from './fakeoverFlowBackendHttpApiFeaturesPostsContentsListContentsListContentsUserVote';
 import { FakeoverFlowBackendHttpApiFeaturesPostsContentsListContentsListContentsUserActivity } from './fakeoverFlowBackendHttpApiFeaturesPostsContentsListContentsListContentsUserActivity';
 
 
@@ -16,5 +17,8 @@ export interface FakeoverFlowBackendHttpApiFeaturesPostsContentsListContentsList
     content?: string;
     isInternal?: boolean;
     createdOn?: FakeoverFlowBackendHttpApiFeaturesPostsContentsListContentsListContentsUserActivity;
+    userVote?: FakeoverFlowBackendHttpApiFeaturesPostsContentsListContentsListContentsUserVote | null;
+    upVotes?: number;
+    downVotes?: number;
 }
 

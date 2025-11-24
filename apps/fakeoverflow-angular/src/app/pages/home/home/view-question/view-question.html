@@ -7,7 +7,7 @@
           <app-view-question-title-bar [post]="post()!"></app-view-question-title-bar>
         </div>
         <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
-          <app-view-question-question-box [post]="post()!"></app-view-question-question-box>
+          <app-view-question-question-box (updatePost)="onPostUpdateEvent()" [post]="post()!"></app-view-question-question-box>
         </div>
         <div>
           <app-view-question-ai-box></app-view-question-ai-box>
@@ -64,7 +64,7 @@
           <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
             <h2 class="text-2xl font-semibold text-gray-900 mb-6">{{answers().length}} Answers</h2>
             @for (ans of answers(); track ans.id; let last = $last){
-              <app-view-question-answer-box [answer]="ans" [isLast]="$last"></app-view-question-answer-box>
+              <app-view-question-answer-box (updatePost)="onAnswerUpdateEvent()" [answer]="ans" [isLast]="$last"></app-view-question-answer-box>
             }
           </div>
         }

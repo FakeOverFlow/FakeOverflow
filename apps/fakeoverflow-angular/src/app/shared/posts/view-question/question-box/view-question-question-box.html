@@ -1,18 +1,39 @@
 <div class="flex items-start space-x-4">
   <div class="flex flex-col items-center text-gray-500 gap-2">
-    <button class="p-2 hover:bg-gray-100 rounded-full transition-colors">
-      <svg class="w-8 h-8 text-gray-600 hover:text-[#3a5b9d]" fill="none" stroke="currentColor"
-           viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-      </svg>
-    </button>
-    <span class="text-2xl font-semibold text-gray-700">{{post().votes || 0}}</span>
-    <button class="p-2 hover:bg-gray-100 rounded-full transition-colors">
-      <svg class="w-8 h-8 text-gray-600 hover:text-[#3a5b9d]" fill="none" stroke="currentColor"
-           viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-      </svg>
-    </button>
+    @if (post().userVote && post().userVote?.isUpvote){
+      <button (click)="deleteVote()" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+        <svg class="w-8 h-8 text-[#3a5b9d]" fill="currentColor" stroke="currentColor"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+        </svg>
+      </button>
+    } @else {
+      <button [disabled]="!authenticationService.isAuthenticated" (click)="upvote()" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+        <svg class="w-8 h-8 text-gray-600 hover:text-[#3a5b9d]" fill="none" stroke="currentColor"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+        </svg>
+      </button>
+    }
+
+    @let totalVotes = (post().upvotes ?? 0) - (post().downvotes ?? 0);
+    <span class="text-2xl font-semibold " [class.text-red-500]="isNegativeInteger(totalVotes)" [class.text-gray-700]="!isNegativeInteger(totalVotes)">{{totalVotes}}</span>
+
+    @if (post().userVote && !post().userVote?.isUpvote){
+      <button (click)="deleteVote()" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+        <svg class="w-8 h-8 text-[#3a5b9d]" fill="currentColor" stroke="currentColor"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+    } @else {
+      <button [disabled]="!authenticationService.isAuthenticated" (click)="downvote()" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+        <svg class="w-8 h-8 text-gray-600 hover:text-[#3a5b9d]" fill="none" stroke="currentColor"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+    }
   </div>
   <div class="flex-1">
     <p class="text-gray-800 whitespace-pre-line leading-relaxed mb-4">

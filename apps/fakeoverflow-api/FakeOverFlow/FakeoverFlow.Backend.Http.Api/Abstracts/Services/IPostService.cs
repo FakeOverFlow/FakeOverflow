@@ -1,5 +1,6 @@
 using FakeoverFlow.Backend.Abstraction;
 using FakeoverFlow.Backend.Http.Api.Features.Posts.Contents.CreateContent;
+using FakeoverFlow.Backend.Http.Api.Features.Posts.Contents.Votes.VoteContent;
 using FakeoverFlow.Backend.Http.Api.Models.Posts;
 using Posts = FakeoverFlow.Backend.Http.Api.Features.Posts.CreatePosts.Posts;
 
@@ -44,7 +45,7 @@ public interface IPostService
     /// A task representing the asynchronous operation. The task result contains a tuple including the post,
     /// optional associated question content, and an optional list of answers.
     /// </returns>
-    public Task<Result<(Models.Posts.Posts post, PostContent? question, List<PostContent>? answers)>> GetPostByIdAsync(
+    public Task<Result<(Models.Posts.Posts post, PostContent? question, List<PostContent>? answers, Dictionary<Guid, (long upvote, long downvote)>)>> GetPostByIdAsync(
         string id,
         bool includeAudit = true,
         bool includeQuestion = true,
@@ -107,5 +108,37 @@ public interface IPostService
     /// <returns>
     /// A task representing the asynchronous operation. The task result contains a list of post contents associated with the specified post ID.
     /// </returns>
-    public Task<List<PostContent>> GetPostContentByPostIdAsync(string postId, CancellationToken ct = default);
+    public Task<(List<PostContent>, Dictionary<Guid, (long Upvote, long Downvote)>)> GetPostContentByPostIdAsync(string postId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Inserts or updates the votes for a specific post content based on the given request.
+    /// </summary>
+    /// <param name="request">
+    /// The request containing the details of the content vote, such as the content ID and the voting action (upvote or not).
+    /// </param>
+    /// <param name="ct">A cancellation token used to manage task cancellation.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The task result contains the updated content votes.
+    /// </returns>
+    public Task<Result<ContentVotes>> UpsertContentVotesAsync(VoteContent.Request request,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Deletes a vote associated with the specified post, user, and content.
+    /// </summary>
+    /// <param name="postId">
+    /// The unique identifier of the post associated with the vote to be deleted.
+    /// </param>
+    /// <param name="contentId">
+    /// The unique identifier of the content associated with the vote to be deleted.
+    /// </param>
+    /// <param name="ct">
+    /// A cancellation token used to manage task cancellation.
+    /// </param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The task result contains a result object
+    /// indicating whether the vote was successfully deleted.
+    /// </returns>
+    public Task<Result<bool>> DeleteVoteAsync(string postId, Guid contentId,
+        CancellationToken ct = default);
 }

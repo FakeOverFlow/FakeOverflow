@@ -2,6 +2,17 @@ namespace FakeoverFlow.Backend.Http.Api.Features.Posts.ListPosts;
 
 public static partial class ListPosts
 {
+    public class Request
+    {
+        public string? SearchTerm { get; set; } = string.Empty;
+
+        public string? Tag { get; set; } = null;
+        
+        public int? Page { get; set; } = 1;
+        
+        public int? PageSize { get; set; } = 30;
+    }
+    
     public class Response
     {
         public List<PostSummary> Posts { get; set; } = [];

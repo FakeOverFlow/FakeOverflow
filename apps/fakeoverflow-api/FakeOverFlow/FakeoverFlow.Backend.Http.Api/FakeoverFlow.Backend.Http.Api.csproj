@@ -12,6 +12,7 @@
         <PackageReference Include="FastEndpoints" Version="7.0.1" />
         <PackageReference Include="FastEndpoints.Security" Version="7.0.1" />
         <PackageReference Include="FastEndpoints.Swagger" Version="7.0.1" />
+        <PackageReference Include="FlexLabs.EntityFrameworkCore.Upsert" Version="9.101.0" />
         <PackageReference Include="MailKit" Version="4.13.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />

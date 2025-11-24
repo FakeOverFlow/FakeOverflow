@@ -44,7 +44,9 @@ public static partial class ViewPost
                 Title = postResultValue.post.Title,
                 Tags = [],
                 Views = postResultValue.post.Views,
-                Votes = postResultValue.question.Votes,
+                HasUserVoted = postResultValue.question.VotesBy.Any(),
+                Upvotes = postResultValue.Item4.GetValueOrDefault(postResultValue.question.Id, (0, 0)).upvote,
+                Downvotes = postResultValue.Item4.GetValueOrDefault(postResultValue.question.Id, (0, 0)).downvote,
                 CreatedOn = new UserActivity()
                 {
                     User = new UserDetails()
@@ -72,8 +74,8 @@ public static partial class ViewPost
                 };
             }
 
-            bool increaseViews = !contextFactory.RequestContext.IsAuthenticated ||
-                                 (contextFactory.RequestContext.UserId == postResultValue.post.CreatedBy);
+            bool increaseViews = contextFactory.RequestContext.IsAuthenticated &&
+                                 (contextFactory.RequestContext.UserId != postResultValue.post.CreatedBy);
             if (increaseViews)
             {
                 logger.LogTrace("Increasing view count for post {PostId}", id);

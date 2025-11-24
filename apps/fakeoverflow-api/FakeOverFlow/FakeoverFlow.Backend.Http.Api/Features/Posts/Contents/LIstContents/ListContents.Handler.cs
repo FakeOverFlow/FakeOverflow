@@ -31,7 +31,7 @@ public partial class ListContents
             var postContents = await postService.GetPostContentByPostIdAsync(req.PostId, ct);
             return TypedResults.Ok(new Response()
             {
-                Answers = postContents.Select(x => new PostContent()
+                Answers = postContents.Item1.Select(x => new PostContent()
                 {
                     Content = x.Content,
                     Id = x.Id,
@@ -41,7 +41,10 @@ public partial class ListContents
                         ActivityOn = x.CreatedOn,
                         UserId = x.CreatedByAccount.Id,
                         Username = x.CreatedByAccount.Username
-                    }
+                    },
+                    HasUserVoted = x.VotesBy.Count != 0,
+                    UpVotes = postContents.Item2.GetValueOrDefault(x.Id, (0, 0)).Upvote,
+                    DownVotes = postContents.Item2.GetValueOrDefault(x.Id, (0, 0)).Downvote
                 }).ToList()
             });
         }

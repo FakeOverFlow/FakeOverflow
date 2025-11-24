@@ -9,7 +9,7 @@ namespace FakeoverFlow.Backend.Http.Api.Features.Posts.ListPosts;
 
 public static partial class ListPosts
 {
-    public class Handler : EndpointWithoutRequest<Results<Ok<Response>, ErrorResponse, ProblemDetails>>
+    public class Handler : Endpoint<Request, Results<Ok<Response>, ErrorResponse, ProblemDetails>>
     {
         private readonly IContextFactory _contextFactory;
         private readonly ILogger<Handler> _logger;
@@ -34,36 +34,19 @@ public static partial class ListPosts
         }
 
         public override async Task<Results<Ok<Response>, ErrorResponse, ProblemDetails>> ExecuteAsync(
+            Request request,
             CancellationToken ct)
         {
             var q = HttpContext.Request.Query;
 
-            int page = 1;
-            int pageSize = 20;
+            int page = request.Page ?? 1;
+            int pageSize = request.PageSize ?? 30;
 
-            var tags = new List<string>();
-            if (q.TryGetValue("tags", out var tagValues))
-            {
-                tags = tagValues
-                    .SelectMany(v => v.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                    .Select(t => t.Trim().ToLower())
-                    .Distinct()
-                    .ToList();
-            }
-
-            if (q.TryGetValue("page", out var pv) && int.TryParse(pv.FirstOrDefault(), out var p))
-                page = p;
-
-            if (q.TryGetValue("pageSize", out var sv) && int.TryParse(sv.FirstOrDefault(), out var s))
-                pageSize = s;
-
-            if (page < 1)
-                AddError(new ValidationFailure("page", "page must be >= 1"));
-
-            if (pageSize < 1 || pageSize > 200)
-                AddError(new ValidationFailure("pageSize", "pageSize must be between 1 and 200"));
-
-            ThrowIfAnyErrors();
+            var tags = (request.Tag ?? string.Empty)
+                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                .Select(t => t.Trim().ToLower())
+                .Distinct()
+                .ToList();
 
             var listResult = await _postService.ListPostsAsync(page, pageSize, tags, ct);
 
@@ -85,9 +68,9 @@ public static partial class ListPosts
                         Title = post.Title ?? string.Empty,
 
                         Content = content?.Content ?? string.Empty,
-                        //Tags = post.Tags,
+                        Tags = post.Tags.Select(x => x.Tag.Value).ToList(),
                         Views = post.Views,
-                        //Votes = post.Votes
+                        Votes = content?.Votes ?? 0,
                         CreatedOn = post.CreatedOn,
                         UserId = post.CreatedByAccount.Id,
                         UserName = post.CreatedByAccount.Username

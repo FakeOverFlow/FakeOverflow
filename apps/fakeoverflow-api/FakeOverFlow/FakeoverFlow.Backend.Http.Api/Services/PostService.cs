@@ -2,6 +2,7 @@ using FakeoverFlow.Backend.Abstraction;
 using FakeoverFlow.Backend.Abstraction.Context;
 using FakeoverFlow.Backend.Http.Api.Abstracts.Services;
 using FakeoverFlow.Backend.Http.Api.Features.Posts.Contents.CreateContent;
+using FakeoverFlow.Backend.Http.Api.Features.Posts.Contents.Votes.VoteContent;
 using FakeoverFlow.Backend.Http.Api.Models.Enums;
 using FakeoverFlow.Backend.Http.Api.Models.Posts;
 using FakeoverFlow.Backend.Http.Api.Utils;
@@ -61,12 +62,13 @@ public class PostService(
         return post;
     }
 
-    public async Task<Result<(Posts post, PostContent? question, List<PostContent>? answers)>> GetPostByIdAsync(
-        string id, bool includeAudit = true, bool includeQuestion = true, int fetchAnswers = 0,
-        bool trackEntity = true, CancellationToken ct = default)
+    public async Task<Result<(Posts post, PostContent? question, List<PostContent>? answers, Dictionary<Guid, (long upvote, long downvote)>)>> GetPostByIdAsync(
+    string id, bool includeAudit = true, bool includeQuestion = true, int fetchAnswers = 0,
+    bool trackEntity = true, CancellationToken ct = default)
     {
         var normalizedId = id.ToUpper();
         var postsEnumerable = dbContext.Posts.AsQueryable();
+        var context = contextFactory.RequestContext;
 
         if (!trackEntity)
         {
@@ -83,21 +85,38 @@ public class PostService(
         var posts = await postsEnumerable.FirstOrDefaultAsync(x => x.Id == normalizedId, cancellationToken: ct);
 
         if (posts is null)
-            return Result<(Posts post, PostContent? question, List<PostContent>? answers)>.Failure(Errors.Errors
-                .PostErrors.NoPostFoundForId);
+            return Result<(Posts post, PostContent? question, List<PostContent>? answers, Dictionary<Guid, (long upvote, long downvote)>)>.Failure(
+                Errors.Errors.PostErrors.NoPostFoundForId);
 
+        Guid? userId = context.IsAuthenticated ? context.UserId : null;
         var contentEnumerable = dbContext.PostContent.AsQueryable();
+        
+        // Removes Tracking
         if (!trackEntity)
         {
             contentEnumerable = contentEnumerable.AsNoTracking();
         }
 
+        // If user is authenticated, include votes of the user
+        if (userId is not null)
+        {
+            contentEnumerable = contentEnumerable
+                .Include(c => c.VotesBy.Where(v => v.UserId == userId.Value));
+        }
+
         PostContent? question = null;
+        List<Guid> contentIds = new List<Guid>();
 
         if (includeQuestion)
         {
-            question = await contentEnumerable.FirstOrDefaultAsync(x =>
-                x.PostId == normalizedId && x.ContentType == ContentType.Questions, cancellationToken: ct);
+            question = await contentEnumerable
+                .FirstOrDefaultAsync(x =>
+                    x.PostId == normalizedId && x.ContentType == ContentType.Questions, cancellationToken: ct);
+            
+            if (question is not null)
+            {
+                contentIds.Add(question.Id);
+            }
         }
 
         List<PostContent>? answers = null;
@@ -107,11 +126,54 @@ public class PostService(
             answers = await contentEnumerable
                 .Where(x => x.PostId == normalizedId && x.ContentType == ContentType.Answers)
                 .OrderBy(x => x.CreatedOn)
+                .Take(fetchAnswers)
                 .ToListAsync(cancellationToken: ct);
+            
+            if (answers.Count > 0)
+            {
+                contentIds.AddRange(answers.Select(a => a.Id));
+            }
         }
 
-        return Result<(Posts post, PostContent? question, List<PostContent>? answers)>.Success((posts, question,
-            answers));
+        // Fetch vote counts for all content
+        Dictionary<Guid, (long upvote, long downvote)> voteCounts = new Dictionary<Guid, (long upvote, long downvote)>();
+        
+        if (contentIds.Count > 0)
+        {
+            var voteQuery = dbContext.Votes
+                .Where(v => contentIds.Contains(v.ContentId))
+                .GroupBy(v => v.ContentId)
+                .Select(g => new
+                {
+                    ContentId = g.Key,
+                    UpVoteCount = g.LongCount(v => v.UpVote),
+                    DownVoteCount = g.LongCount(v => !v.UpVote)
+                });
+
+            if (!trackEntity)
+            {
+                voteQuery = voteQuery.AsNoTracking();
+            }
+
+            var voteCountsResult = await voteQuery.ToListAsync(cancellationToken: ct);
+
+            foreach (var voteCount in voteCountsResult)
+            {
+                voteCounts[voteCount.ContentId] = (voteCount.UpVoteCount, voteCount.DownVoteCount);
+            }
+
+            // Ensure all content IDs have an entry (even if no votes)
+            foreach (var contentId in contentIds)
+            {
+                if (!voteCounts.ContainsKey(contentId))
+                {
+                    voteCounts[contentId] = (0, 0);
+                }
+            }
+        }
+
+        return Result<(Posts post, PostContent? question, List<PostContent>? answers, Dictionary<Guid, (long upvote, long downvote)>)>
+            .Success((posts, question, answers, voteCounts));
     }
 
     public async Task<bool> IncreaseViewCountAsync(string id, CancellationToken ct = default)
@@ -164,7 +226,19 @@ public class PostService(
 
         var contents = dbContext.PostContent.AsNoTracking()
             .Where(x => pageId.Contains(x.PostId) && x.ContentType == ContentType.Questions)
-            .ToList();
+            .Select(x => new
+            {
+                Content = x,
+                TotalVotes = x.VotesBy.Count(),
+            })
+            .ToList()
+            // Merge the total votes with the post content
+            .Select(x =>
+            {
+                x.Content.Votes = x.TotalVotes;
+                return x.Content;
+            });
+        
 
         var items = pagedPosts.Select(x => { return (x, contents.FirstOrDefault(c => c.PostId == x.Id)); });
 
@@ -225,16 +299,89 @@ public class PostService(
         return postContent;
     }
 
-    public async Task<List<PostContent>> GetPostContentByPostIdAsync(string postId, CancellationToken ct = default)
+    public async Task<(List<PostContent>, Dictionary<Guid, (long Upvote, long Downvote)>)> GetPostContentByPostIdAsync(string postId, CancellationToken ct = default)
     {
         postId = postId.ToUpper();
-        return await dbContext.PostContent
+        var context = contextFactory.RequestContext;
+        var contentEnumerable = dbContext.PostContent.AsNoTracking().AsQueryable();
+        Guid? userId = context.IsAuthenticated ? context.UserId : null;
+        if (userId is not null)
+        {
+            contentEnumerable = contentEnumerable
+                .Include(c => c.VotesBy.Where(v => v.UserId == userId.Value));
+        }
+
+        var postContents = await contentEnumerable
             .AsNoTracking()
             .Where(x => x.PostId == postId && x.ContentType == ContentType.Answers)
             .Include(x => x.CreatedByAccount)
             .OrderByDescending(x => x.Votes)
             .ThenByDescending(x => x.CreatedOn)
             .ToListAsync(ct);
+
+        // Fetch vote counts for all content
+        Dictionary<Guid, (long upvote, long downvote)> voteCounts = new Dictionary<Guid, (long upvote, long downvote)>();
+        var contentIds = postContents.Select(x => x.Id).ToList();
+        if (contentIds.Count > 0)
+        {
+            var voteQuery = dbContext.Votes
+                .AsNoTracking()
+                .Where(v => contentIds.Contains(v.ContentId))
+                .GroupBy(v => v.ContentId)
+                .Select(g => new
+                {
+                    ContentId = g.Key,
+                    UpVoteCount = g.LongCount(v => v.UpVote),
+                    DownVoteCount = g.LongCount(v => !v.UpVote)
+                });
+
+            var voteCountsResult = await voteQuery.ToListAsync(cancellationToken: ct);
+
+            foreach (var voteCount in voteCountsResult)
+            {
+                voteCounts[voteCount.ContentId] = (voteCount.UpVoteCount, voteCount.DownVoteCount);
+            }
+
+            foreach (var contentId in contentIds)
+            {
+                if (!voteCounts.ContainsKey(contentId))
+                {
+                    voteCounts[contentId] = (0, 0);
+                }
+            }
+        }
+        return (postContents, voteCounts);
+    }
+
+    public async Task<Result<ContentVotes>> UpsertContentVotesAsync(VoteContent.Request request, CancellationToken ct = default)
+    {
+        var context = contextFactory.RequestContext;
+        var contentVotes = new ContentVotes()
+        {
+            UserId = context.UserId,
+            ContentId = request.ContentId,
+            UpVote = request.IsUpvote
+        };
+        
+        await dbContext.Votes
+            .Upsert(contentVotes)
+            .On(v => new { v.UserId, v.ContentId })
+            .WhenMatched(v => new ContentVotes()
+            {
+                UpVote = request.IsUpvote
+            }).RunAsync(ct);
+        await dbContext.SaveChangesAsync(ct);
+        return Result<ContentVotes>.Success(contentVotes);
+    }
+
+    public async Task<Result<bool>> DeleteVoteAsync(string postId, Guid contentId, CancellationToken ct = default)
+    {
+        var context = contextFactory.RequestContext;
+        var count = await dbContext.Votes
+            .Where(x => x.UserId == context.UserId && x.ContentId == contentId)
+            .ExecuteDeleteAsync(ct);
+        
+        return count <= 0 ? Result<bool>.Failure(Errors.Errors.PostErrors.NoVoteFound) : Result<bool>.Success(true);
     }
 
     private async Task<List<Tag>> GetOrCreateTagsAsync(List<string> tags, CancellationToken ct = default)

@@ -18,7 +18,11 @@ public static partial class ViewPost
         
         public long Views { get; set; }
         
-        public long Votes { get; set; }
+        public bool HasUserVoted { get; set; }
+        
+        public long Upvotes { get; set; }
+        
+        public long Downvotes { get; set; }
     }
 
     public class UserActivity

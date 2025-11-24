@@ -22,6 +22,12 @@ public partial class ListContents
         public bool IsInternal { get; set; }
 
         public required UserActivity CreatedOn { get; set; }
+        
+        public bool? HasUserVoted { get; set; }
+        
+        public long UpVotes { get; set; }
+        
+        public long DownVotes { get; set; }
     }
 
     public class UserActivity

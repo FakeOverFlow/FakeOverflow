@@ -12,7 +12,7 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
   const apiBaseUrl = [
     environment.apiBaseUrl,
   ];
-  if (!apiBaseUrl.some(url => req.url.startsWith(url)) || !req.headers.has('Authorization')) {
+  if (!apiBaseUrl.some(url => req.url.startsWith(url)) || !req.headers.has('Authorization')|| req.url.endsWith("/auth/refresh/")) {
     return next(req);
   }
 
@@ -21,14 +21,15 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError(err => {
+
       if(!(err instanceof HttpErrorResponse) || !req.headers.has("Authorization"))
         return throwError(() => err);
-
       if(err.status !== 401)
         return throwError(() =>  err);
 
-      if(!authService.currentIdentityAsValue?.secrets?.refreshToken || req.url.endsWith("/auth/refresh/"))
+      if(!authService.currentIdentityAsValue?.secrets?.refreshToken || req.url.endsWith("/auth/refresh"))
       {
+        console.log("Refresh token failed refreshed");
         authService.logout({
           redirectToLogout: true,
           toastMessage: 'Failed to refresh your session, please try login again',
@@ -51,9 +52,21 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
 
       isRefreshing = true;
       refreshTokenSubject.next(null);
-
+      console.log(1)
       return authApiService.refresh().pipe(
+        catchError((err) => {
+          console.log(2)
+          console.error("Error refreshing token", err);
+          isRefreshing = false;
+          authService.logout({
+            redirectToLogout: true,
+            toastMessage: 'Failed to refresh your session, please try login again',
+          });
+          return throwError(() => err);
+        }),
         switchMap((res) => {
+          console.log(3)
+          console.trace(res, 'refreshTokenInterceptor');
           if(!res)
           {
             authService.logout({
@@ -75,15 +88,6 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
             }
           }))
         }),
-        catchError((err) => {
-          console.error("Error refreshing token", err);
-          isRefreshing = false;
-          authService.logout({
-            redirectToLogout: true,
-            toastMessage: 'Failed to refresh your session, please try login again',
-          });
-          return EMPTY;
-        })
       )
     })
   );

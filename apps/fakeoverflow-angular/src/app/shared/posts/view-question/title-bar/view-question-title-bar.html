@@ -11,6 +11,6 @@
   <div class="flex items-center gap-4 text-sm text-gray-600">
     <span>Asked <span class="font-medium">{{post().createdOn?.activityOn | relativeTime}}</span></span>
     <span>Viewed <span class="font-medium">{{post().views}} times</span></span>
-    <span>Voted <span class="font-medium">{{post().votes}} votes</span></span>
+    <span>Voted <span class="font-medium">{{(post().upvotes ?? 0) - (post().downvotes ?? 0)}} votes</span></span>
   </div>
 </div>

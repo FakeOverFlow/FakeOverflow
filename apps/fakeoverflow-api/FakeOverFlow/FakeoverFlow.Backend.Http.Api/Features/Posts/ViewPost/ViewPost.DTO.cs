@@ -10,6 +10,8 @@ public static partial class ViewPost
         
         public string Content { get; set; } = string.Empty;
 
+        public Guid ContentId { get; set; }
+
         public List<string> Tags { get; set; } = [];
 
         public UserActivity CreatedOn { get; set; } = null!;
@@ -18,11 +20,16 @@ public static partial class ViewPost
         
         public long Views { get; set; }
         
-        public bool HasUserVoted { get; set; }
+        public UserVote? UserVote { get; set; }
         
         public long Upvotes { get; set; }
         
         public long Downvotes { get; set; }
+    }
+
+    public class UserVote
+    {
+        public bool IsUpvote { get; set; }
     }
 
     public class UserActivity

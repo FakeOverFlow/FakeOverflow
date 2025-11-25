@@ -38,17 +38,23 @@ export class ViewQuestion implements OnInit{
   protected loadingAnswer = signal(false);
   protected answers = signal<FakeoverFlowBackendHttpApiFeaturesPostsContentsListContentsListContentsPostContent[]>([])
 
+  private id: string | null = null
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (!id) {
+    this.id = this.route.snapshot.paramMap.get('id');
+    if (!this.id) {
       this.toastService.error("Failed to load the question");
       return;
     }
-    this.loadingQuestion.set(true);
 
+    this.loadQuestion(this.id)
+  }
+
+  loadQuestion(postId?: string): void {
+    this.loadingQuestion.set(true);
+    postId = postId ?? this.id!;
     const pageSpinner = this.spinnerService.for("Loading post");
-    this.postService.getPostById(id).subscribe({
+    this.postService.getPostById(postId).subscribe({
       next: (response) => {
         pageSpinner.release()
         this.post.set(response);
@@ -80,5 +86,13 @@ export class ViewQuestion implements OnInit{
           this.toastService.error("Failed to load the answers");
         }
       })
+  }
+
+  protected onPostUpdateEvent() {
+    this.loadQuestion();
+  }
+
+  protected onAnswerUpdateEvent() {
+    this.loadAnswers();
   }
 }

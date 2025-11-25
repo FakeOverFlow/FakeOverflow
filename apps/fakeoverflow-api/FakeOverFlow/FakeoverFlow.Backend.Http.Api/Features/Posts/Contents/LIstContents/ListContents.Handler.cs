@@ -42,7 +42,10 @@ public partial class ListContents
                         UserId = x.CreatedByAccount.Id,
                         Username = x.CreatedByAccount.Username
                     },
-                    HasUserVoted = x.VotesBy.Count != 0,
+                    UserVote = x.VotesBy.Select(x => new UserVote()
+                    {
+                        IsUpvote = x.UpVote
+                    }).FirstOrDefault(),
                     UpVotes = postContents.Item2.GetValueOrDefault(x.Id, (0, 0)).Upvote,
                     DownVotes = postContents.Item2.GetValueOrDefault(x.Id, (0, 0)).Downvote
                 }).ToList()

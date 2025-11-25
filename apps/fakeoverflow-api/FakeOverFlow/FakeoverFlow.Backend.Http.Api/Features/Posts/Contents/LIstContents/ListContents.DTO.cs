@@ -23,11 +23,16 @@ public partial class ListContents
 
         public required UserActivity CreatedOn { get; set; }
         
-        public bool? HasUserVoted { get; set; }
+        public UserVote? UserVote { get; set; }
         
         public long UpVotes { get; set; }
         
         public long DownVotes { get; set; }
+    }
+
+    public class UserVote
+    {
+        public bool IsUpvote { get; set; }
     }
 
     public class UserActivity

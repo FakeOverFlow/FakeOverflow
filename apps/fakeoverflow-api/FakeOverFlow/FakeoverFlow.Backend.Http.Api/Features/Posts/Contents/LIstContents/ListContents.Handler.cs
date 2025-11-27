@@ -1,4 +1,5 @@
 using FakeoverFlow.Backend.Http.Api.Abstracts.Services;
+using FakeoverFlow.Backend.Http.Api.Models.Enums;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -36,6 +37,7 @@ public partial class ListContents
                     Content = x.Content,
                     Id = x.Id,
                     PostId = x.PostId,
+                    IsInternal = x.ContentType == ContentType.Analysis,
                     CreatedOn = new UserActivity()
                     {
                         ActivityOn = x.CreatedOn,

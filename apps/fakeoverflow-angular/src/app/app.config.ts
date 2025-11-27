@@ -2,7 +2,7 @@ import {
   ApplicationConfig,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
-  provideZoneChangeDetection
+  provideZoneChangeDetection, SecurityContext
 } from '@angular/core';
 import {provideRouter, withHashLocation} from '@angular/router';
 import Aura from '@primeuix/themes/aura';
@@ -16,6 +16,7 @@ import {environment} from '@environments/environment';
 import {provideApi} from 'fakeoverflow-angular-services';
 import { accessTokenInterceptor } from '@interceptors/access-token-interceptor';
 import { refreshTokenInterceptor } from '@interceptors/refresh-token-interceptor';
+import {provideMarkdown} from 'ngx-markdown';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,6 +27,7 @@ export const appConfig: ApplicationConfig = {
       provideRouter(routes, withHashLocation()) :
       provideRouter(routes),
     provideAnimationsAsync(),
+    provideMarkdown(),
     providePrimeNG({
       theme: {
         options: {

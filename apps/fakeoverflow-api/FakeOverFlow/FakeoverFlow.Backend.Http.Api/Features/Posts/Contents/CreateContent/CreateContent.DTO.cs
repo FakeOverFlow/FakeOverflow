@@ -10,7 +10,7 @@ public partial class CreateContent
 
         [OpenApiIgnore] public string PostId { get; set; } = string.Empty;
 
-        public bool IsInternal { get; set; }
+        public bool IsInternal { get; set; } = false;
     }
 
     public class Response

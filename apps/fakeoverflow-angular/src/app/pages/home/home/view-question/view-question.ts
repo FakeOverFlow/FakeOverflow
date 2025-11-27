@@ -24,7 +24,7 @@ import {Authentication} from '@services/authentication';
   standalone: true,
   imports: [CommonModule, RouterLink, Navbar, CommunityStats, TrendingTags, ViewQuestionTitleBar, ViewQuestionQuestionBox, ViewQuestionAiBox, ViewQuestionAnswerBox, ViewQuestionCreateAnswer, ViewQuestionLoginToAnswer],
   templateUrl: './view-question.html',
-  styleUrls: []
+  styleUrl: './view-question.scss'
 })
 export class ViewQuestion implements OnInit{
   private readonly postService = inject(PostService);
@@ -94,5 +94,13 @@ export class ViewQuestion implements OnInit{
 
   protected onAnswerUpdateEvent() {
     this.loadAnswers();
+  }
+
+  protected getAiAnswer() : FakeoverFlowBackendHttpApiFeaturesPostsContentsListContentsListContentsPostContent | undefined | null {
+    return (this.answers() ?? []).find(x => x.isInternal === true);
+  }
+
+  protected get content() : FakeoverFlowBackendHttpApiFeaturesPostsContentsListContentsListContentsPostContent[] {
+    return (this.answers() ?? []).filter(x => x.isInternal === false);
   }
 }

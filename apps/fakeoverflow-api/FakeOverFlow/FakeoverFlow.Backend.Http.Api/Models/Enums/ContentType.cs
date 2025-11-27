@@ -4,4 +4,5 @@ public enum ContentType
 {
     Questions,
     Answers,
+    Analysis
 }

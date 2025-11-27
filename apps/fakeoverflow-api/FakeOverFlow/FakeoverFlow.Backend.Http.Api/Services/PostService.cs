@@ -281,15 +281,16 @@ public class PostService(
         request.PostId = request.PostId.ToUpper();
         var requestContext = contextFactory.RequestContext;
         var now = DateTimeOffset.UtcNow;
+        var userId = request.IsInternal ? Guid.Parse("00000000-0000-0000-0000-000000000001") : requestContext.UserId;
         var postContent = new PostContent()
         {
             Id = Guid.CreateVersion7(),
             Content = request.Content,
             PostId = request.PostId,
-            ContentType = ContentType.Answers,
-            CreatedBy = requestContext.UserId,
+            ContentType = request.IsInternal ? ContentType.Analysis : ContentType.Answers,
+            CreatedBy = userId,
             CreatedOn = now,
-            UpdatedBy = requestContext.UserId,
+            UpdatedBy = userId,
             UpdatedOn = now,
             Votes = 0,
         };
@@ -313,7 +314,7 @@ public class PostService(
 
         var postContents = await contentEnumerable
             .AsNoTracking()
-            .Where(x => x.PostId == postId && x.ContentType == ContentType.Answers)
+            .Where(x => x.PostId == postId && x.ContentType != ContentType.Questions)
             .Include(x => x.CreatedByAccount)
             .OrderByDescending(x => x.Votes)
             .ThenByDescending(x => x.CreatedOn)

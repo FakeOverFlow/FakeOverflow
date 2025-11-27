@@ -9,9 +9,12 @@
         <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
           <app-view-question-question-box (updatePost)="onPostUpdateEvent()" [post]="post()!"></app-view-question-question-box>
         </div>
-        <div>
-          <app-view-question-ai-box></app-view-question-ai-box>
-        </div>
+        @let aiAnswer = getAiAnswer();
+        @if (aiAnswer){
+          <div>
+            <app-view-question-ai-box [answer]="aiAnswer"></app-view-question-ai-box>
+          </div>
+        }
         @if (loadingAnswer()){
           <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 flex items-center justify-center">
             <div class="flex items-center gap-3 text-gray-600">
@@ -22,7 +25,7 @@
               <span>Loading answers...</span>
             </div>
           </div>
-        } @else if (answers().length === 0) {
+        } @else if (content.length === 0) {
           <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
 
             <!-- Empty state message -->
@@ -62,15 +65,15 @@
           </div>
         } @else {
           <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
-            <h2 class="text-2xl font-semibold text-gray-900 mb-6">{{answers().length}} Answers</h2>
-            @for (ans of answers(); track ans.id; let last = $last){
+            <h2 class="text-2xl font-semibold text-gray-900 mb-6">{{content.length}} Answers</h2>
+            @for (ans of content; track ans.id; let last = $last){
               <app-view-question-answer-box (updatePost)="onAnswerUpdateEvent()" [answer]="ans" [isLast]="$last"></app-view-question-answer-box>
             }
           </div>
         }
         @if (authenticationService.isAuthenticated){
           <app-view-question-create-answer [post]="post()!" (postCreated)="loadAnswers()"></app-view-question-create-answer>
-        } @else if(answers().length !== 0) {
+        } @else if(content.length !== 0) {
           <app-view-question-login-to-answer></app-view-question-login-to-answer>
         }
       </div>

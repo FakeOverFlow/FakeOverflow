@@ -1,4 +1,24 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS base
+
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    py3-requests \
+    curl
+
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install Python packages
+RUN pip install --no-cache-dir \
+    langchain==0.1.0 \
+    langchain-community==0.0.13 \
+    requests==2.31.0 \
+    ollama==0.1.6 \
+    openai \
+    langchain-openai \
+   
+
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
@@ -23,4 +43,11 @@ RUN dotnet publish "FakeoverFlow.Backend.Http.Api.csproj" -c $BUILD_CONFIGURATIO
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+RUN mkdir -p /app/scripts
+COPY ["scripts/fact_checker.py", "/app/scripts/"]
+
+ENV PATH="/opt/venv/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
+
 ENTRYPOINT ["dotnet", "/app/FakeoverFlow.Backend.Http.Api.dll"]

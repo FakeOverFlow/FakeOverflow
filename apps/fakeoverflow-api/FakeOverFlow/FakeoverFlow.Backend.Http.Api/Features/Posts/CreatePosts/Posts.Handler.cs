@@ -1,5 +1,6 @@
 using FakeoverFlow.Backend.Abstraction.Context;
 using FakeoverFlow.Backend.Http.Api.Abstracts.Services;
+using FakeoverFlow.Backend.Http.Api.Events.Models;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -10,7 +11,8 @@ public static partial class Posts
     public class Handler(
         IPostService postService,
         IContextFactory contextFactory,
-        ILogger<Handler> logger
+        ILogger<Handler> logger,
+        IFactCheckerService factCheckerService
     ) : Endpoint<Request, Results<Ok<Response>, BadRequest<ErrorResponse>, ProblemHttpResult>>
     {
         public override void Configure()
@@ -25,8 +27,7 @@ public static partial class Posts
             CancellationToken ct)
         {
             var post = await postService.CreatePostAsync(req, ct);
-
-
+            await PublishAsync(new PostCreatedEvent(req.Title, req.Content, post.Id), Mode.WaitForNone, ct);
             return TypedResults.Ok(new Response()
             {
                 Id = post.Id,

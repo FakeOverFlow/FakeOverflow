@@ -108,6 +108,12 @@ f"Based on the original claim and web search results, Understand and reason if t
 "If 25% <= Alignment Score< 40%,  respond: Likely False. \n"
 
 "If Alignment Score < 25%, respond: Most Likely False. \n"
+"Use this exact JSON schema:\n"
+    "{\n"
+    '  "alignment_score": <number between 0 and 100>,\n'
+    '  "verdict": "<one of: Most likely True, Likely True, Uncertain, Likely False, Most Likely False>",\n'
+    '  "reasoning": "<1-3 short sentences explaining why>"\n'
+    "}\n\n"
 
 )
 response = model.respond(chat, config=highConfig)
